@@ -1,13 +1,9 @@
 <?php
 
-use App\Extraction\FixtureExtractor;
 use App\Extraction\YardObservationAgent;
-use App\Intake\PhotoStore;
 use App\Models\JobRequest;
-use App\Scoping\Data\PhotoInput;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Testing\TestResponse;
 use Inertia\Testing\AssertableInertia;
 use Laravel\Ai\Ai;
 use Laravel\Ai\Exceptions\ProviderConnectionException;
@@ -17,29 +13,6 @@ beforeEach(function () {
     $this->fixtures = scratchDirectory();
     config()->set('yardscope.extraction.fixtures', $this->fixtures);
 });
-
-/**
- * @return list<UploadedFile>
- */
-function demoUploads(int $count = 3): array
-{
-    return array_map(fn (int $number): UploadedFile => UploadedFile::fake()->image("yard-{$number}.jpg", 640 + $number, 480), range(1, $count));
-}
-
-function recordFor(array $uploads, string $sentence, array $observation, string $directory): void
-{
-    // Recordings key on the stored bytes; store a copy the same way the app will, then key on that.
-    $store = new PhotoStore;
-    $photos = [];
-
-    foreach ($uploads as $index => $upload) {
-        $stored = $store->store($upload, 'preview', $index + 1);
-        $photos[] = new PhotoInput($index + 1, Storage::disk('local')->path($stored['path']), 'image/jpeg');
-    }
-
-    file_put_contents((new FixtureExtractor($directory))->pathFor($photos, $sentence), json_encode(['observation' => $observation]));
-    Storage::disk('local')->deleteDirectory('requests/preview');
-}
 
 it('prices the worked example from three photos and one sentence', function () {
     $uploads = demoUploads();
@@ -116,25 +89,6 @@ it('serves stored photos and hides unknown ones', function () {
     $this->get(route('requests.photo', [$request, 1]))->assertOk()->assertHeader('content-type', 'image/jpeg');
     $this->get(route('requests.photo', [$request, 9]))->assertNotFound();
 });
-
-/**
- * Posts the worked example and returns the stored request.
- */
-function submittedWorkedExample(string $directory, ?array $observation = null, string $sentence = 'My backyard is a mess. Clean it up and trim whatever needs trimming.'): JobRequest
-{
-    $uploads = demoUploads();
-    recordFor($uploads, $sentence, $observation ?? workedExample()['observation'], $directory);
-    test()->post('/requests', ['sentence' => $sentence, 'photos' => $uploads]);
-
-    return JobRequest::sole();
-}
-
-function correct(JobRequest $request, string $lineId, string $field, string $customerValue, string $modelValue = '', ?string $reason = null): TestResponse
-{
-    return test()->post(route('requests.corrections.store', $request), [
-        'line_id' => $lineId, 'field' => $field, 'model_value' => $modelValue, 'customer_value' => $customerValue, 'reason' => $reason,
-    ]);
-}
 
 it('recomputes the price when the customer corrects a count up or down', function () {
     $request = submittedWorkedExample($this->fixtures);

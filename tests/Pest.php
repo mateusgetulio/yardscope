@@ -12,6 +12,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\RandomScopeFactory;
 use Tests\TestCase;
 
+require __DIR__.'/Support/Flow.php';
+
 const RANDOM_SCOPES = 1500;
 
 pest()->extend(TestCase::class)->use(RefreshDatabase::class)->in('Feature');
