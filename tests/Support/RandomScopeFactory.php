@@ -53,7 +53,7 @@ final class RandomScopeFactory
             $photos[] = [
                 'photo' => $number,
                 'view' => $this->pick(PhotoView::cases())->value,
-                'sections' => [$this->pick(Section::cases())->value],
+                'sections' => array_map(fn (Section $section): string => $section->value, $this->some(Section::cases())),
                 'usable' => $this->random->getInt(1, 8) !== 1,
             ];
         }
@@ -64,12 +64,21 @@ final class RandomScopeFactory
             $lines[] = $this->line($photoCount);
         }
 
+        // The sentence usually asks for what the photos show; sometimes for one more thing, sometimes for something unsupported.
         $requested = [];
 
-        foreach (ServiceType::cases() as $type) {
-            if ($this->random->getInt(0, 1) === 1) {
-                $requested[] = $type->value;
+        foreach (array_unique(array_column($lines, 'type')) as $type) {
+            if ($this->random->getInt(1, 5) !== 1) {
+                $requested[] = $type;
             }
+        }
+
+        if ($this->random->getInt(1, 5) === 1) {
+            $requested[] = $this->pick(ServiceType::cases())->value;
+        }
+
+        if ($this->random->getInt(1, 15) === 1) {
+            $requested[] = 'pool_cleaning';
         }
 
         $hazards = $this->random->getInt(1, 10) === 1
@@ -118,6 +127,19 @@ final class RandomScopeFactory
         $line['supporting_evidence'] = $this->random->getInt(0, 1) === 1 ? [$evidence()] : [];
 
         return $line;
+    }
+
+    /**
+     * @template T
+     *
+     * @param  list<T>  $cases
+     * @return list<T>
+     */
+    private function some(array $cases): array
+    {
+        $count = $this->random->getInt(1, count($cases));
+
+        return array_values(array_intersect_key($cases, array_flip($this->random->pickArrayKeys($cases, $count))));
     }
 
     /**
