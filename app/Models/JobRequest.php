@@ -16,13 +16,14 @@ use Illuminate\Support\Facades\Storage;
  * @property array<string, string> $profile
  * @property list<array{number: int, path: string, mime_type: string}> $photos
  * @property string|null $readiness
+ * @property int|null $booked_price_cents
  * @property CarbonImmutable|null $booked_at
  */
 class JobRequest extends Model
 {
     use HasUlids;
 
-    protected $fillable = ['sentence', 'profile', 'photos', 'readiness', 'booked_at'];
+    protected $fillable = ['sentence', 'profile', 'photos', 'readiness', 'booked_price_cents', 'booked_at'];
 
     protected function casts(): array
     {

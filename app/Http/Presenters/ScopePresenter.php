@@ -26,6 +26,7 @@ final readonly class ScopePresenter
             'id' => $request->id,
             'sentence' => $request->sentence,
             'booked' => $request->isBooked(),
+            'bookedPrice' => $request->booked_price_cents === null ? null : $this->money($request->booked_price_cents),
             'photos' => array_map(fn (array $photo): array => ['number' => $photo['number'], 'url' => route('requests.photo', [$request, $photo['number']])], $request->photos),
             'canAddPhoto' => count($request->photos) < 4 && ! $request->isBooked(),
             'profile' => $request->profile,
@@ -126,6 +127,10 @@ final readonly class ScopePresenter
             'labor' => $lineEstimate === null ? null : $this->money($lineEstimate->laborCents),
             'removed' => $line->wasRemoved(),
             'placeholder' => $line->isPlaceholder(),
+            'canRemove' => $line->disposition !== LineDisposition::Rejected && $line->disposition !== LineDisposition::Suggested,
+            'canAdd' => $line->disposition === LineDisposition::Suggested || $line->wasRemoved(),
+            'canChange' => ! $line->isPlaceholder() && ! in_array($line->disposition, [LineDisposition::Rejected, LineDisposition::Suggested], true),
+            'lastReason' => $line->lastCorrection()?->reason,
         ];
     }
 

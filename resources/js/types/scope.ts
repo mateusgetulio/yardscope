@@ -39,6 +39,10 @@ export interface ScopeLineView {
     labor: string | null;
     removed: boolean;
     placeholder: boolean;
+    canRemove: boolean;
+    canAdd: boolean;
+    canChange: boolean;
+    lastReason: string | null;
 }
 
 export interface EstimateView {
@@ -52,6 +56,7 @@ export interface RequestView {
     id: string;
     sentence: string;
     booked: boolean;
+    bookedPrice: string | null;
     photos: { number: number; url: string }[];
     canAddPhoto: boolean;
     profile: Record<string, string>;
@@ -66,4 +71,15 @@ export interface RequestView {
     access: { narrowGatePossible: boolean };
     hazards: { section: string; note: string }[];
     unsupportedRequests: string[];
+}
+
+export type CorrectionField =
+    'quantity' | 'size' | 'severity' | 'removed' | 'added';
+
+export interface CorrectionInput {
+    line_id: string;
+    field: CorrectionField;
+    model_value: string;
+    customer_value: string;
+    reason: string;
 }

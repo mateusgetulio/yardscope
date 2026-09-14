@@ -14,6 +14,7 @@ return new class extends Migration
             $table->json('profile');
             $table->json('photos');
             $table->string('readiness')->nullable();
+            $table->unsignedInteger('booked_price_cents')->nullable();
             $table->timestamp('booked_at')->nullable();
             $table->timestamps();
         });

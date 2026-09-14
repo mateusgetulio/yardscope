@@ -13,7 +13,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class JobRequestController extends Controller
 {
@@ -56,16 +55,5 @@ class JobRequestController extends Controller
     public function show(JobRequest $jobRequest, ScopeAssembler $assembler, ScopePresenter $presenter): Response
     {
         return Inertia::render('result', ['request' => $presenter->present($jobRequest, $assembler->assemble($jobRequest))]);
-    }
-
-    public function photo(JobRequest $jobRequest, int $number): BinaryFileResponse
-    {
-        foreach ($jobRequest->photos as $photo) {
-            if ($photo['number'] === $number) {
-                return response()->file(Storage::disk('local')->path($photo['path']));
-            }
-        }
-
-        abort(404);
     }
 }
