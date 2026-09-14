@@ -6,9 +6,9 @@ use App\Http\Requests\AddPhotoRequest;
 use App\Intake\Analyzer;
 use App\Intake\PhotoStore;
 use App\Models\JobRequest;
-use App\Scoping\Exceptions\NoRecordedObservation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class RequestPhotoController extends Controller
@@ -16,7 +16,7 @@ class RequestPhotoController extends Controller
     public function show(JobRequest $jobRequest, int $number): BinaryFileResponse
     {
         foreach ($jobRequest->photos as $photo) {
-            if ($photo['number'] === $number) {
+            if ($photo['number'] === $number && Storage::disk('local')->exists($photo['path'])) {
                 return response()->file(Storage::disk('local')->path($photo['path']));
             }
         }
@@ -40,12 +40,18 @@ class RequestPhotoController extends Controller
         }
 
         $before = $jobRequest->photos;
-        $stored = $photos->store($request->file('photo'), $jobRequest->id, count($before) + 1);
+
+        try {
+            $stored = $photos->store($request->file('photo'), $jobRequest->id, count($before) + 1);
+        } catch (RuntimeException $exception) {
+            return back()->withErrors(['photo' => $exception->getMessage()]);
+        }
+
         $jobRequest->update(['photos' => [...$before, $stored]]);
 
         try {
             $analyzer->analyze($jobRequest);
-        } catch (NoRecordedObservation $exception) {
+        } catch (RuntimeException $exception) {
             $jobRequest->update(['photos' => $before]);
             Storage::disk('local')->delete($stored['path']);
 

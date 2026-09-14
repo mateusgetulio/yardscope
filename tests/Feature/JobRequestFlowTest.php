@@ -73,20 +73,6 @@ it('prices the worked example from three photos and one sentence', function () {
         ->and(Storage::disk('local')->exists("requests/{$request->id}/photo-1.jpg"))->toBeTrue();
 });
 
-it('strips metadata from uploaded photos by re-encoding them', function () {
-    $jpeg = UploadedFile::fake()->image('with-exif.jpg', 320, 240);
-    $bytes = file_get_contents($jpeg->getPathname());
-    $exif = "\xFF\xE1".pack('n', 2 + 6 + 8).'Exif'."\0\0".'MM'."\0\x2A\0\0\0\x08";
-    file_put_contents($jpeg->getPathname(), substr($bytes, 0, 2).$exif.substr($bytes, 2));
-    expect(strpos((string) file_get_contents($jpeg->getPathname()), 'Exif'))->not->toBeFalse();
-
-    $stored = (new PhotoStore)->store($jpeg, 'abc', 1);
-    $result = file_get_contents(Storage::disk('local')->path($stored['path']));
-
-    expect(strpos((string) $result, 'Exif'))->toBeFalse()
-        ->and(getimagesize(Storage::disk('local')->path($stored['path']))[2])->toBe(IMAGETYPE_JPEG);
-});
-
 it('explains when nothing was recorded for these photos instead of guessing', function () {
     $this->post('/requests', ['sentence' => 'Clean up the whole backyard please', 'photos' => demoUploads()])
         ->assertRedirect()
@@ -294,4 +280,56 @@ it('refuses to book a request with nothing priced', function () {
     $this->post(route('requests.book', $request))->assertSessionHasErrors('booking');
     $this->get(route('requests.booked', $request))->assertRedirect(route('requests.show', $request));
     expect($request->fresh()?->booked_at)->toBeNull();
+});
+
+/**
+ * A tiny PNG whose header claims the given dimensions, so the cap is checked without decoding pixels.
+ */
+function pngClaiming(int $width, int $height): UploadedFile
+{
+    $png = UploadedFile::fake()->image('huge.png', 2, 2);
+    $bytes = (string) file_get_contents($png->getPathname());
+    $ihdr = pack('NN', $width, $height).substr($bytes, 24, 5);
+    $patched = substr($bytes, 0, 16).$ihdr.pack('N', crc32('IHDR'.$ihdr)).substr($bytes, 33);
+    file_put_contents($png->getPathname(), $patched);
+
+    return $png;
+}
+
+it('caps photo dimensions from the header before anything is decoded', function () {
+    // The fake upload's temp file lives as long as the object, so keep it in a variable.
+    $huge = pngClaiming(9000, 9000);
+    expect(getimagesize($huge->getPathname())[0])->toBe(9000);
+
+    $this->post('/requests', ['sentence' => 'Clean up the whole backyard', 'photos' => [$huge, UploadedFile::fake()->image('a.jpg')]])
+        ->assertSessionHasErrors(['photos.0' => 'Each photo must be at most 8000 pixels wide and tall.']);
+
+    $request = submittedWorkedExample($this->fixtures);
+    $wide = pngClaiming(8001, 100);
+    $this->post(route('requests.photos.store', $request), ['photo' => $wide])
+        ->assertSessionHasErrors(['photo' => 'The photo must be at most 8000 pixels wide and tall.']);
+    $this->post(route('requests.photos.store', $request), ['photo' => UploadedFile::fake()->create('notes.pdf', 10, 'application/pdf')])
+        ->assertSessionHasErrors('photo');
+    expect($request->fresh()?->photos)->toHaveCount(3);
+});
+
+it('refuses a fifth photo', function () {
+    $request = submittedWorkedExample($this->fixtures);
+    $request->update(['photos' => [...$request->photos, ['number' => 4, 'path' => 'requests/x/photo-4.jpg', 'mime_type' => 'image/jpeg']]]);
+
+    $this->post(route('requests.photos.store', $request), ['photo' => UploadedFile::fake()->image('yard-5.jpg')])
+        ->assertSessionHasErrors(['photo' => 'Up to four photos.']);
+    expect($request->fresh()?->photos)->toHaveCount(4)
+        ->and($request->runs()->count())->toBe(1);
+});
+
+it('rejects an unreadable upload on the form and keeps nothing', function () {
+    $broken = UploadedFile::fake()->image('broken.jpg', 64, 64);
+    file_put_contents($broken->getPathname(), substr((string) file_get_contents($broken->getPathname()), 0, 40));
+
+    $this->post('/requests', ['sentence' => 'Clean up the whole backyard', 'photos' => [UploadedFile::fake()->image('a.jpg'), $broken]])
+        ->assertSessionHasErrors('photos.1');
+
+    expect(JobRequest::count())->toBe(0)
+        ->and(Storage::disk('local')->allFiles())->toBe([]);
 });

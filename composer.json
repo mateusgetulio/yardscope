@@ -12,6 +12,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.4",
+        "ext-exif": "*",
+        "ext-gd": "*",
         "inertiajs/inertia-laravel": "^3.3",
         "laravel/ai": "^0.11",
         "laravel/framework": "^13.17",
