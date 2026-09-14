@@ -1,0 +1,30 @@
+{
+    "scenario": "cleanup_plus_shrubs",
+    "sentence": "Clear the cut brush along the back fence and trim the young shrubs planted there.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "notes": "Same fence line from two distances: three young viburnums along a wire fence with a pile of cut brush and a log at the base.",
+    "expected": {
+        "readiness": "ready",
+        "wide_view": true,
+        "unusable_photos": [],
+        "lines": [
+            {
+                "type": "yard_cleanup",
+                "section": "backyard",
+                "severity": "moderate",
+                "disposition": "priceable"
+            },
+            {
+                "type": "shrub_trimming",
+                "section": "backyard",
+                "quantity": 3,
+                "size": "small",
+                "counting_photo": 1,
+                "disposition": "priceable"
+            }
+        ]
+    }
+}

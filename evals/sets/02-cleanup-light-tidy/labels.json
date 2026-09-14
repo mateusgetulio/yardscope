@@ -1,0 +1,22 @@
+{
+    "scenario": "happy_path_cleanup",
+    "sentence": "Tidy up the backyard, it just needs a light clean.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "notes": "Two different backyards: a mown lawn with shed and deck, and a paved yard with moss between pavers and a few weeds.",
+    "expected": {
+        "readiness": "ready",
+        "wide_view": true,
+        "unusable_photos": [],
+        "lines": [
+            {
+                "type": "yard_cleanup",
+                "section": "backyard",
+                "severity": "light",
+                "disposition": "priceable"
+            }
+        ]
+    }
+}

@@ -1,0 +1,30 @@
+{
+    "scenario": "cleanup_plus_shrubs",
+    "sentence": "Clean up the backyard and trim the hibiscus shrubs along the pool cage.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "notes": "Photo 1 (medium view) shows five hibiscus shrubs along a screened pool enclosure; photo 2 is a wide view of a different backyard.",
+    "expected": {
+        "readiness": "ready",
+        "wide_view": true,
+        "unusable_photos": [],
+        "lines": [
+            {
+                "type": "yard_cleanup",
+                "section": "backyard",
+                "severity": "light",
+                "disposition": "priceable"
+            },
+            {
+                "type": "shrub_trimming",
+                "section": "backyard",
+                "quantity": 5,
+                "size": "medium",
+                "counting_photo": 1,
+                "disposition": "priceable"
+            }
+        ]
+    }
+}

@@ -1,0 +1,40 @@
+{
+    "scenario": "requested_service_unseen",
+    "sentence": "Clean up the backyard and haul away the fallen branch.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "notes": "Same backyard: patio with potted flowers, lawn, flower beds and shrubs along a fence. No fallen branch anywhere.",
+    "expected": {
+        "readiness": "partial",
+        "wide_view": true,
+        "unusable_photos": [],
+        "photo_request": {
+            "service": "branch_removal"
+        },
+        "lines": [
+            {
+                "type": "yard_cleanup",
+                "section": "backyard",
+                "severity": "light",
+                "disposition": "priceable"
+            },
+            {
+                "type": "branch_removal",
+                "section": null,
+                "disposition": "needs_photos"
+            },
+            {
+                "type": "shrub_trimming",
+                "section": "backyard",
+                "optional": true
+            },
+            {
+                "type": "bed_weeding",
+                "section": "backyard",
+                "optional": true
+            }
+        ]
+    }
+}

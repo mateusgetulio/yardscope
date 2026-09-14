@@ -1,0 +1,25 @@
+{
+    "scenario": "missing_wide_shot",
+    "sentence": "Trim the rose of Sharon shrubs in the backyard.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "notes": "Two close-ups of single flowers on the same shrub; no view shows the yard, so the count cannot be taken.",
+    "expected": {
+        "readiness": "needs_photos",
+        "wide_view": false,
+        "unusable_photos": [],
+        "photo_request": {
+            "service": "shrub_trimming",
+            "section": "backyard"
+        },
+        "lines": [
+            {
+                "type": "shrub_trimming",
+                "section": "backyard",
+                "disposition": "needs_photos"
+            }
+        ]
+    }
+}

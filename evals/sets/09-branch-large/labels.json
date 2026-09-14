@@ -1,0 +1,30 @@
+{
+    "scenario": "branch_uncertainty",
+    "sentence": "A big branch came down in the backyard. Get rid of it and clean up the mess.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "notes": "Photo 1: one large fallen conifer limb leaning on a fence in a backyard, debris on the lawn. Photo 2: a cut log with a close-up of split wood (different property).",
+    "expected": {
+        "readiness": "partial",
+        "wide_view": true,
+        "unusable_photos": [],
+        "lines": [
+            {
+                "type": "branch_removal",
+                "section": "backyard",
+                "quantity": 1,
+                "size": "large",
+                "counting_photo": 1,
+                "disposition": "manual_quote"
+            },
+            {
+                "type": "yard_cleanup",
+                "section": "backyard",
+                "severity": "heavy",
+                "disposition": "priceable"
+            }
+        ]
+    }
+}

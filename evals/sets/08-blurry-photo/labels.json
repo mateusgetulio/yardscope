@@ -1,0 +1,26 @@
+{
+    "scenario": "unusable_photo",
+    "sentence": "Rake up the leaves in the backyard.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "notes": "Photo 1 is a motion-blurred smear of green; photo 2 is a wide view of a leaf-covered backyard. One usable photo triggers rule R1.",
+    "expected": {
+        "readiness": "needs_photos",
+        "wide_view": true,
+        "unusable_photos": [
+            1
+        ],
+        "photo_request": {
+            "service": "yard_cleanup"
+        },
+        "lines": [
+            {
+                "type": "yard_cleanup",
+                "section": "backyard",
+                "disposition": "needs_photos"
+            }
+        ]
+    }
+}

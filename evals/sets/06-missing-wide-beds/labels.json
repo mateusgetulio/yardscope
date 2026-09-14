@@ -1,0 +1,25 @@
+{
+    "scenario": "missing_wide_shot",
+    "sentence": "Weed the flower beds in the backyard.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "notes": "Two close-ups of foliage in beds (heuchera and bleeding heart; a viburnum shoot over grass), no wide or medium view.",
+    "expected": {
+        "readiness": "needs_photos",
+        "wide_view": false,
+        "unusable_photos": [],
+        "photo_request": {
+            "service": "bed_weeding",
+            "section": "backyard"
+        },
+        "lines": [
+            {
+                "type": "bed_weeding",
+                "section": "backyard",
+                "disposition": "needs_photos"
+            }
+        ]
+    }
+}

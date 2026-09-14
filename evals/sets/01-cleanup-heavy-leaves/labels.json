@@ -1,0 +1,22 @@
+{
+    "scenario": "happy_path_cleanup",
+    "sentence": "The backyard is buried in leaves and dead weeds. Clean it all up.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "notes": "Two different backyards, both wide views; both need a heavy cleanup.",
+    "expected": {
+        "readiness": "ready",
+        "wide_view": true,
+        "unusable_photos": [],
+        "lines": [
+            {
+                "type": "yard_cleanup",
+                "section": "backyard",
+                "severity": "heavy",
+                "disposition": "priceable"
+            }
+        ]
+    }
+}

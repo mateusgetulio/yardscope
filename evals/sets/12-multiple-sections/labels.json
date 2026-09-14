@@ -1,0 +1,42 @@
+{
+    "scenario": "multiple_sections",
+    "sentence": "Weed the bed along the side of the house, and clean up the front yard and the backyard.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg",
+        "photo-3.jpg"
+    ],
+    "notes": "Three different properties standing in for three sections: a side-yard bed with weeds along a house wall, a front yard with lawn and crape myrtles, a backyard lawn with a shed and deck.",
+    "expected": {
+        "readiness": "ready",
+        "wide_view": true,
+        "unusable_photos": [],
+        "lines": [
+            {
+                "type": "bed_weeding",
+                "section": "side_yard",
+                "quantity": 1,
+                "severity": "moderate",
+                "counting_photo": 1,
+                "disposition": "priceable"
+            },
+            {
+                "type": "yard_cleanup",
+                "section": "front_yard",
+                "severity": "light",
+                "disposition": "priceable"
+            },
+            {
+                "type": "yard_cleanup",
+                "section": "backyard",
+                "severity": "light",
+                "disposition": "priceable"
+            },
+            {
+                "type": "shrub_trimming",
+                "section": "front_yard",
+                "optional": true
+            }
+        ]
+    }
+}

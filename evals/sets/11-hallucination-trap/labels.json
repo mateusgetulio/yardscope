@@ -1,0 +1,31 @@
+{
+    "scenario": "hallucination_trap",
+    "sentence": "Clean up the backyard and trim the hedges.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg",
+        "photo-3.jpg"
+    ],
+    "notes": "Three living-room interiors. Nothing outdoors. The only correct lines are the requested-but-unseen placeholders.",
+    "expected": {
+        "readiness": "needs_photos",
+        "wide_view": false,
+        "unusable_photos": [
+            1,
+            2,
+            3
+        ],
+        "lines": [
+            {
+                "type": "yard_cleanup",
+                "section": null,
+                "disposition": "needs_photos"
+            },
+            {
+                "type": "shrub_trimming",
+                "section": null,
+                "disposition": "needs_photos"
+            }
+        ]
+    }
+}

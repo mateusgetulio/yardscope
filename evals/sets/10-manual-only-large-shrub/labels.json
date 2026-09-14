@@ -1,0 +1,29 @@
+{
+    "scenario": "manual_only_service",
+    "sentence": "Trim the huge overgrown shrub next to the house.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "notes": "Photo 1: one very large fan-shaped conifer shrub against a house wall, taller than the roofline of the fence. Photo 2: a wide view of a different front yard.",
+    "expected": {
+        "readiness": "manual_quote",
+        "wide_view": true,
+        "unusable_photos": [],
+        "lines": [
+            {
+                "type": "shrub_trimming",
+                "section": "front_yard",
+                "quantity": 1,
+                "size": "large",
+                "counting_photo": 1,
+                "disposition": "manual_quote"
+            },
+            {
+                "type": "shrub_trimming",
+                "section": "backyard",
+                "optional": true
+            }
+        ]
+    }
+}
