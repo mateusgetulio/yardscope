@@ -9,6 +9,20 @@ enum ServiceType: string
     case BedWeeding = 'bed_weeding';
     case BranchRemoval = 'branch_removal';
 
+    /**
+     * Work a request for this service is understood to include. A general cleanup covers fallen
+     * branches, so the customer is not asked to name every piece of debris.
+     *
+     * @return list<self>
+     */
+    public function implies(): array
+    {
+        return match ($this) {
+            self::YardCleanup => [self::BranchRemoval],
+            default => [],
+        };
+    }
+
     public function isCounted(): bool
     {
         return $this !== self::YardCleanup;

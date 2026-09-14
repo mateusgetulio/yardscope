@@ -7,7 +7,7 @@
       {"photo": 2, "view": "close", "sections": ["backyard"], "usable": true},
       {"photo": 3, "view": "medium", "sections": ["side_yard"], "usable": true}
     ],
-    "requested_in_sentence": ["yard_cleanup", "shrub_trimming", "branch_removal"],
+    "requested_in_sentence": ["yard_cleanup", "shrub_trimming"],
     "service_lines": [
       {"type": "yard_cleanup", "section": "backyard", "severity": "heavy",
        "evidence": [{"photo": 1, "note": "leaves and debris along fence line and patio"}],

@@ -21,10 +21,11 @@ final readonly class ScopeBuilder
 
     public function build(Observation $observation, PropertyProfile $profile): JobScope
     {
+        $requested = self::requestedServices($observation);
         $lines = [];
 
         foreach ($observation->lines as $index => $observed) {
-            $lines[] = $this->fromObserved($observed, $index + 1, $observation);
+            $lines[] = $this->fromObserved($observed, $index + 1, $observation, in_array($observed->type, $requested, true));
         }
 
         foreach ($observation->requestedInSentence as $type) {
@@ -45,10 +46,30 @@ final readonly class ScopeBuilder
         );
     }
 
-    private function fromObserved(ObservedLine $observed, int $number, Observation $observation): ScopeLine
+    /**
+     * The services the sentence asks for, plus the ones those imply. Only these can be priced; anything
+     * else the photos show stays a suggestion until the customer adds it.
+     *
+     * @return list<ServiceType>
+     */
+    public static function requestedServices(Observation $observation): array
+    {
+        $requested = $observation->requestedInSentence;
+
+        foreach ($observation->requestedInSentence as $type) {
+            foreach ($type->implies() as $implied) {
+                if (! in_array($implied, $requested, true)) {
+                    $requested[] = $implied;
+                }
+            }
+        }
+
+        return $requested;
+    }
+
+    private function fromObserved(ObservedLine $observed, int $number, Observation $observation, bool $requested): ScopeLine
     {
         [$gated, $checks, $request, $note] = $this->gate->evaluate($observed->type, $observed->section, $observed->values, $observed->uncertain, $observation);
-        $requested = in_array($observed->type, $observation->requestedInSentence, true);
 
         return new ScopeLine(
             id: "line-{$number}",

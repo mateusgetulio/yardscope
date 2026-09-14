@@ -126,12 +126,13 @@ it('keeps an invalid line rejected even when its section is covered (R4 before t
 });
 
 it('marks services the customer did not ask for as suggested, never priced', function () {
-    $observation = observationWith(['requested_in_sentence' => ['yard_cleanup']]);
+    $observation = observationWith(['requested_in_sentence' => ['shrub_trimming']]);
 
     $scope = (new ScopeBuilder)->build($observation, workedProfile());
 
-    expect($scope->lines[1]->disposition)->toBe(LineDisposition::Suggested)
-        ->and($scope->lines[1]->photoRequest)->toBeNull()
+    expect($scope->lines[0]->disposition)->toBe(LineDisposition::Suggested)
+        ->and($scope->lines[0]->photoRequest)->toBeNull()
+        ->and($scope->lines[1]->disposition)->toBe(LineDisposition::Priceable)
         ->and($scope->lines[2]->disposition)->toBe(LineDisposition::Suggested)
         ->and($scope->priceableLines())->toHaveCount(1)
         ->and($scope->readiness)->toBe(RequestReadiness::Ready);
@@ -184,4 +185,16 @@ it('represents an unreadable observation as a manual quote request', function ()
     expect($scope->readiness)->toBe(RequestReadiness::ManualQuote)
         ->and($scope->lines)->toBe([])
         ->and($scope->requestNote)->toBe('The model output could not be read twice.');
+});
+
+it('treats a cleanup request as covering fallen branches, so the worked example is partial', function () {
+    expect(workedObservation()->requestedInSentence)->toBe([ServiceType::YardCleanup, ServiceType::ShrubTrimming])
+        ->and(ScopeBuilder::requestedServices(workedObservation()))->toBe([ServiceType::YardCleanup, ServiceType::ShrubTrimming, ServiceType::BranchRemoval])
+        ->and(ServiceType::BranchRemoval->implies())->toBe([]);
+
+    $scope = (new ScopeBuilder)->build(workedObservation(), workedProfile());
+
+    expect($scope->lines[2]->requested)->toBeTrue()
+        ->and($scope->lines[2]->disposition)->toBe(LineDisposition::ManualQuote)
+        ->and($scope->readiness)->toBe(RequestReadiness::Partial);
 });

@@ -12,7 +12,7 @@ it('parses the worked example', function () {
     $observation = workedObservation();
 
     expect($observation->photos)->toHaveCount(3)
-        ->and($observation->requestedInSentence)->toBe([ServiceType::YardCleanup, ServiceType::ShrubTrimming, ServiceType::BranchRemoval])
+        ->and($observation->requestedInSentence)->toBe([ServiceType::YardCleanup, ServiceType::ShrubTrimming])
         ->and($observation->lines)->toHaveCount(3)
         ->and($observation->rejected)->toBe([])
         ->and($observation->lines[1]->values->quantity)->toBe(4)

@@ -43,13 +43,13 @@ it('never raises the price when a line is removed', function () {
 });
 
 it('adds a suggested line through the gate', function () {
-    $observation = Observation::fromArray(array_replace(workedExample()['observation'], ['requested_in_sentence' => ['yard_cleanup']]));
+    $observation = Observation::fromArray(array_replace(workedExample()['observation'], ['requested_in_sentence' => ['shrub_trimming']]));
     $scope = (new ScopeBuilder)->build($observation, workedProfile());
 
-    $added = (new CorrectionApplier)->apply($scope, new Correction('line-2', CorrectionField::Added, '', '', null));
+    $added = (new CorrectionApplier)->apply($scope, new Correction('line-1', CorrectionField::Added, '', '', null));
     $branch = (new CorrectionApplier)->apply($scope, new Correction('line-3', CorrectionField::Added, '', '', null));
 
-    expect($added->line('line-2')?->disposition)->toBe(LineDisposition::Priceable)
+    expect($added->line('line-1')?->disposition)->toBe(LineDisposition::Priceable)
         ->and(pricer()->estimate($added)?->priceCents)->toBe(16500)
         ->and($branch->line('line-3')?->disposition)->toBe(LineDisposition::ManualQuote);
 });
@@ -71,14 +71,14 @@ it('gives an added suggestion in an uncovered section its photo request', functi
     $observation = Observation::fromArray(array_replace(workedExample()['observation'], [
         'photos' => [['photo' => 1, 'view' => 'close', 'sections' => ['backyard'], 'usable' => true], ['photo' => 2, 'view' => 'close', 'sections' => ['backyard'], 'usable' => true]],
         'access' => ['narrow_gate_possible' => false, 'evidence' => []],
-        'requested_in_sentence' => ['yard_cleanup'],
+        'requested_in_sentence' => ['shrub_trimming'],
     ]));
     $scope = (new ScopeBuilder)->build($observation, workedProfile());
 
-    $added = (new CorrectionApplier)->apply($scope, new Correction('line-2', CorrectionField::Added, '', '', null));
+    $added = (new CorrectionApplier)->apply($scope, new Correction('line-1', CorrectionField::Added, '', '', null));
 
-    expect($added->line('line-2')?->disposition)->toBe(LineDisposition::NeedsPhotos)
-        ->and($added->line('line-2')?->photoRequest?->message)->toBe('One photo showing the whole backyard, taken from the far end.');
+    expect($added->line('line-1')?->disposition)->toBe(LineDisposition::NeedsPhotos)
+        ->and($added->line('line-1')?->photoRequest?->message)->toBe('One photo showing the whole backyard, taken from the far end.');
 });
 
 it('brings a large shrub back into the price when corrected down to medium', function () {
