@@ -2,8 +2,8 @@
 
 use App\Extraction\FixtureExtractor;
 use App\Extraction\YardObservationAgent;
+use App\Intake\PhotoStore;
 use App\Models\JobRequest;
-use App\Requests\PhotoStore;
 use App\Scoping\Data\PhotoInput;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;

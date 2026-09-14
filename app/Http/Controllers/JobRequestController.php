@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Presenters\ScopePresenter;
 use App\Http\Requests\StoreJobRequest;
+use App\Intake\Analyzer;
+use App\Intake\PhotoStore;
+use App\Intake\ScopeAssembler;
 use App\Models\JobRequest;
-use App\Requests\Analyzer;
-use App\Requests\PhotoStore;
-use App\Requests\ScopeAssembler;
 use App\Scoping\Exceptions\NoRecordedObservation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;

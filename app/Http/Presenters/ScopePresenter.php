@@ -2,8 +2,8 @@
 
 namespace App\Http\Presenters;
 
+use App\Intake\AssembledScope;
 use App\Models\JobRequest;
-use App\Requests\AssembledScope;
 use App\Scoping\Data\Estimate;
 use App\Scoping\Data\LineValues;
 use App\Scoping\Data\ScopeLine;

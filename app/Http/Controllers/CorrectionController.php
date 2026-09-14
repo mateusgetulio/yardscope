@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCorrectionRequest;
+use App\Intake\ScopeAssembler;
 use App\Models\JobRequest;
-use App\Requests\ScopeAssembler;
 use App\Scoping\CorrectionApplier;
 use App\Scoping\Data\Correction;
 use App\Scoping\Enums\CorrectionField;

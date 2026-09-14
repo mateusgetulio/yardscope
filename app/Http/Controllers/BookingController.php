@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Presenters\ScopePresenter;
+use App\Intake\ScopeAssembler;
 use App\Models\JobRequest;
-use App\Requests\ScopeAssembler;
 use App\Scoping\Enums\RequestReadiness;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;

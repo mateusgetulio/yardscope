@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Requests;
+namespace App\Intake;
 
 use App\Models\JobRequest;
 use App\Scoping\CorrectionApplier;
