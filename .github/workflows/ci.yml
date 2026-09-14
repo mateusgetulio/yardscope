@@ -58,3 +58,6 @@ jobs:
 
       - name: Run tests
         run: vendor/bin/pest --ci --coverage
+
+      - name: Replay the evals on the recorded answers
+        run: php artisan yardscope:eval --fixtures

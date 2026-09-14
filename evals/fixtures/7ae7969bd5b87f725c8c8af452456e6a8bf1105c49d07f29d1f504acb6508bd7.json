@@ -1,0 +1,77 @@
+{
+    "set": "03-cleanup-plus-hibiscus",
+    "sentence": "Clean up the backyard and trim the hibiscus shrubs along the pool cage.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "recorded_at": "2026-09-14T08:53:30+00:00",
+    "observation": {
+        "access": {
+            "narrow_gate_possible": false,
+            "evidence": []
+        },
+        "hazards": [],
+        "model_notes": "Photo 1 and Photo 2 appear to show two different properties, not one yard from two angles: Photo 1 is a screened pool cage bordered by a hibiscus hedge (warm-climate landscaping, mulched bed, manicured lawn), while Photo 2 is a shed-and-deck backyard with a mowed lawn, chain-link fencing, and overhead utility lines, with no pool cage or hibiscus visible anywhere in frame. Confirm with the customer which photo(s) belong to the property being scoped before finalizing the job, since the hibiscus/pool-cage trim request can only be matched to Photo 1.",
+        "photos": [
+            {
+                "photo": 1,
+                "view": "wide",
+                "sections": [
+                    "backyard"
+                ],
+                "usable": true
+            },
+            {
+                "photo": 2,
+                "view": "wide",
+                "sections": [
+                    "backyard"
+                ],
+                "usable": true
+            }
+        ],
+        "requested_in_sentence": [
+            "yard_cleanup",
+            "shrub_trimming"
+        ],
+        "service_lines": [
+            {
+                "type": "yard_cleanup",
+                "section": "backyard",
+                "severity": "light",
+                "supporting_evidence": [
+                    {
+                        "photo": 1,
+                        "note": "Lawn and mulched bed around the pool cage look edged and tidy, no debris piles visible."
+                    }
+                ],
+                "evidence": [
+                    {
+                        "photo": 2,
+                        "note": "Open lawn behind the shed/deck is mowed but shows uneven, patchy dry/tan patches; no leaf piles, branches, or trash visible on the ground."
+                    }
+                ],
+                "uncertain": "No overt clutter or overgrowth is visible in either photo, so the cleanup need reads as general tidying rather than heavy debris removal."
+            },
+            {
+                "type": "shrub_trimming",
+                "section": "backyard",
+                "quantity": 5,
+                "size": "large",
+                "supporting_evidence": [],
+                "evidence": [
+                    {
+                        "photo": 1,
+                        "note": "Row of hibiscus shrubs in bloom (pink, red, yellow flowers) growing directly against the pool cage screen, dense and tall enough to press into the mesh."
+                    }
+                ],
+                "counting_evidence": {
+                    "photo": 1,
+                    "note": "Counted approximately 5 separate hibiscus canopies along the cage: one large clump at left and roughly four more forming a hedge-like row to the right; canopies overlap, so the exact boundary between plants is hard to pin down."
+                },
+                "uncertain": "The shrubs on the right form a near-continuous hedge with merging canopies, so the count of 5 is an estimate, not a confident individual tally."
+            }
+        ]
+    }
+}

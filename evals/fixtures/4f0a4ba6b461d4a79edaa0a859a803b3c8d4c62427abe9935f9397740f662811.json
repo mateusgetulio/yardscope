@@ -1,0 +1,109 @@
+{
+    "set": "09-branch-large",
+    "sentence": "A big branch came down in the backyard. Get rid of it and clean up the mess.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "recorded_at": "2026-09-14T08:58:16+00:00",
+    "observation": {
+        "access": {
+            "narrow_gate_possible": false,
+            "evidence": []
+        },
+        "hazards": [
+            {
+                "section": "backyard",
+                "note": "The large broken limb is propped diagonally against the pergola/deck framing rather than lying fully on the ground (photo 1) \u2014 it may still be under tension and could shift unexpectedly when cut or pulled free.",
+                "evidence": [
+                    {
+                        "photo": 1,
+                        "note": "Branch trunk leans from ground up through and against the wooden pergola beams, not flat on the lawn"
+                    }
+                ]
+            },
+            {
+                "section": "backyard",
+                "note": "A thin red cord/wire runs across the cut end of the branch and disappears into the grass near a hardhat (photo 2). Cannot tell from the photo whether this is a work cord/string line or a power cord \u2014 worth checking on site before work starts.",
+                "evidence": [
+                    {
+                        "photo": 2,
+                        "note": "Red cord/wire draped over the splintered stump, running off into the lawn"
+                    }
+                ]
+            }
+        ],
+        "model_notes": "Photo 2 is a close-up of the branch's broken/cut base with a hardhat set on top and a thin red cord nearby, suggesting a work crew may already be on site or has staged for the job; this should be clarified with the customer. Species and full extent of the branch (how far it extends out of frame, whether it's still attached to a live tree overhead) are not fully shown in either photo.",
+        "photos": [
+            {
+                "photo": 1,
+                "view": "wide",
+                "sections": [
+                    "backyard"
+                ],
+                "usable": true
+            },
+            {
+                "photo": 2,
+                "view": "close",
+                "sections": [
+                    "backyard"
+                ],
+                "usable": true
+            }
+        ],
+        "requested_in_sentence": [
+            "branch_removal",
+            "yard_cleanup"
+        ],
+        "service_lines": [
+            {
+                "type": "branch_removal",
+                "section": "backyard",
+                "quantity": 1,
+                "size": "large",
+                "counting_evidence": {
+                    "photo": 1,
+                    "note": "One large limb, thick trunk-like diameter, spans from the ground up to roughly pergola-beam height, leaning across the yard"
+                },
+                "supporting_evidence": [
+                    {
+                        "photo": 2,
+                        "note": "Close-up of the same branch's splintered, broken base confirming its thick diameter"
+                    }
+                ],
+                "evidence": [
+                    {
+                        "photo": 1,
+                        "note": "Full downed branch visible leaning against pergola structure"
+                    },
+                    {
+                        "photo": 2,
+                        "note": "Broken end of the branch showing torn, splintered wood"
+                    }
+                ]
+            },
+            {
+                "type": "yard_cleanup",
+                "section": "backyard",
+                "severity": "moderate",
+                "supporting_evidence": [
+                    {
+                        "photo": 2,
+                        "note": "Additional smaller branch pieces visible on the ground in the background"
+                    }
+                ],
+                "evidence": [
+                    {
+                        "photo": 1,
+                        "note": "Smaller branches and greenery scattered across the lawn beneath and around the main branch"
+                    },
+                    {
+                        "photo": 2,
+                        "note": "Cut branch sections and debris lying on the grass"
+                    }
+                ]
+            }
+        ]
+    }
+}

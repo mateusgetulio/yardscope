@@ -1,0 +1,35 @@
+{
+    "set": "05-missing-wide-shrubs",
+    "sentence": "Trim the rose of Sharon shrubs in the backyard.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "recorded_at": "2026-09-14T08:55:01+00:00",
+    "observation": {
+        "access": {
+            "narrow_gate_possible": false,
+            "evidence": []
+        },
+        "hazards": [],
+        "model_notes": "Both photos are extreme close-up (macro) shots of a single rose of Sharon flower bloom, not of the shrub itself. Neither photo shows the shrub's overall size, shape, branch structure, or its location in the yard \u2014 only blurred green foliage is visible in the background, with no ground, fence, structure, or other landmark to confirm which yard section this is. As a result, I cannot verify the shrubs are in the backyard (as stated in the request) or judge how many shrubs there are, their size, or how much trimming they need. Wide or medium shots showing the full shrub(s) and their surroundings would be needed to scope the shrub_trimming request.",
+        "photos": [
+            {
+                "photo": 1,
+                "view": "close",
+                "sections": [],
+                "usable": false
+            },
+            {
+                "photo": 2,
+                "view": "close",
+                "sections": [],
+                "usable": false
+            }
+        ],
+        "requested_in_sentence": [
+            "shrub_trimming"
+        ],
+        "service_lines": []
+    }
+}

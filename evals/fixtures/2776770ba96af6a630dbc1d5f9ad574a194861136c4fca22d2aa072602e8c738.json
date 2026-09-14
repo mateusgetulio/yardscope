@@ -1,0 +1,64 @@
+{
+    "set": "02-cleanup-light-tidy",
+    "sentence": "Tidy up the backyard, it just needs a light clean.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "recorded_at": "2026-09-14T08:52:23+00:00",
+    "observation": {
+        "access": {
+            "narrow_gate_possible": true,
+            "evidence": [
+                {
+                    "photo": 2,
+                    "note": "A wooden plank gate is visible in the fence line to the right of the shed; its width can't be judged from this angle, so a narrow side gate is possible but not confirmed."
+                }
+            ]
+        },
+        "hazards": [],
+        "model_notes": "The two photos appear to show two visually distinct properties (Photo 1: a North American-style yard with a wood-frame shed, an above-ground pool built into a deck, chain-link fencing, and neighboring clapboard houses; Photo 2: a different-looking property with a brick outbuilding, paved patio, gravel strip, and wooden board fencing, with brick buildings behind). A scope should confirm both photos are from the same job/address before finalizing, since I cannot verify that from the images alone.",
+        "photos": [
+            {
+                "photo": 1,
+                "view": "wide",
+                "sections": [
+                    "backyard"
+                ],
+                "usable": true
+            },
+            {
+                "photo": 2,
+                "view": "medium",
+                "sections": [
+                    "backyard"
+                ],
+                "usable": true
+            }
+        ],
+        "requested_in_sentence": [
+            "yard_cleanup"
+        ],
+        "service_lines": [
+            {
+                "type": "yard_cleanup",
+                "section": "backyard",
+                "quantity": null,
+                "severity": "light",
+                "uncertain": null,
+                "counting_evidence": null,
+                "supporting_evidence": [],
+                "evidence": [
+                    {
+                        "photo": 1,
+                        "note": "Lawn shows mower-stripe pattern with some patchy, drier/thinner patches; no large debris, downed branches, or heavy overgrowth visible."
+                    },
+                    {
+                        "photo": 2,
+                        "note": "Scattered dry leaves and small twigs cover the paved patio and gravel strip, and a few weeds are growing in the gravel and along the shed wall base; overall clutter is minor."
+                    }
+                ]
+            }
+        ]
+    }
+}

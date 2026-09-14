@@ -1,0 +1,67 @@
+{
+    "set": "07-requested-unseen-branch",
+    "sentence": "Clean up the backyard and haul away the fallen branch.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "recorded_at": "2026-09-14T08:57:03+00:00",
+    "observation": {
+        "access": {
+            "narrow_gate_possible": false,
+            "evidence": [
+                {
+                    "photo": 1,
+                    "note": "No side gate is visible in this wide backyard shot; only wood fence panels are shown."
+                },
+                {
+                    "photo": 2,
+                    "note": "No gate visible in this close/medium shot either \u2014 cannot assess gate width from either photo."
+                }
+            ]
+        },
+        "hazards": [],
+        "model_notes": "The customer's sentence asks to haul away a fallen branch, but no fallen or downed branch is visible anywhere in either photo. Photo 1 is a wide backyard shot (fence, lawn, bird bath, sundial, flower beds, potted plants) and photo 2 is a closer shot of potted flowers against a trimmed hedge \u2014 neither shows loose branches, brush piles, or storm debris on the ground. A branch_removal line has been omitted from service_lines because there is no photographic evidence to size or locate it; confirm with the customer where the branch is (it may be in a yard section/area not captured by these two photos) before scoping that line item.",
+        "photos": [
+            {
+                "photo": 1,
+                "view": "wide",
+                "sections": [
+                    "backyard"
+                ],
+                "usable": true
+            },
+            {
+                "photo": 2,
+                "view": "medium",
+                "sections": [
+                    "backyard"
+                ],
+                "usable": true
+            }
+        ],
+        "requested_in_sentence": [
+            "yard_cleanup",
+            "branch_removal"
+        ],
+        "service_lines": [
+            {
+                "type": "yard_cleanup",
+                "section": "backyard",
+                "severity": "light",
+                "supporting_evidence": [
+                    {
+                        "photo": 2,
+                        "note": "Patio/planting area is tidy and maintained \u2014 no litter, no overflowing debris."
+                    }
+                ],
+                "evidence": [
+                    {
+                        "photo": 1,
+                        "note": "Lawn is mowed and even, flower beds and potted plants look maintained, no visible leaf piles, trash, or overgrowth across the yard."
+                    }
+                ]
+            }
+        ]
+    }
+}

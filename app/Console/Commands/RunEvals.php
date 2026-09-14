@@ -58,7 +58,7 @@ class RunEvals extends Command
             mkdir($results, 0755, true);
         }
 
-        $file = $results.'/'.date('Y-m-d').'.json';
+        $file = $results.'/'.date('Y-m-d-His').'.json';
         file_put_contents($file, json_encode([
             'ran_at' => date('c'),
             'mode' => $live ? 'live' : 'fixtures',

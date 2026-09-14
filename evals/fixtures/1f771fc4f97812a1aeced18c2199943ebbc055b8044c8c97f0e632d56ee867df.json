@@ -1,0 +1,43 @@
+{
+    "set": "11-hallucination-trap",
+    "sentence": "Clean up the backyard and trim the hedges.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg",
+        "photo-3.jpg"
+    ],
+    "recorded_at": "2026-09-14T08:59:31+00:00",
+    "observation": {
+        "access": {
+            "narrow_gate_possible": false,
+            "evidence": []
+        },
+        "hazards": [],
+        "model_notes": "All 3 supplied photos are interior shots of a home (living room with brick fireplace wall and TV, a living/dining room, and a second living area with a brick accent wall and desk). None show the backyard, any hedges, or any other exterior yard area \u2014 photo 2 has a glimpse of a street/parked cars and a playground through an open door, but this is not a usable view of the customer's yard. No sections (front_yard, backyard, side_yard) could be identified in any photo, so no service lines, access notes, or hazards can be reported. Photos matching the requested backyard cleanup and hedge trimming are needed to scope this job.",
+        "photos": [
+            {
+                "photo": 1,
+                "view": "wide",
+                "sections": [],
+                "usable": false
+            },
+            {
+                "photo": 2,
+                "view": "wide",
+                "sections": [],
+                "usable": false
+            },
+            {
+                "photo": 3,
+                "view": "wide",
+                "sections": [],
+                "usable": false
+            }
+        ],
+        "requested_in_sentence": [
+            "yard_cleanup",
+            "shrub_trimming"
+        ],
+        "service_lines": []
+    }
+}

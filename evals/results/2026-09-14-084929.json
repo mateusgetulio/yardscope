@@ -1,0 +1,630 @@
+{
+    "ran_at": "2026-09-14T08:49:29+00:00",
+    "mode": "live",
+    "driver": "claude-code",
+    "metrics": {
+        "sets": 12,
+        "schema_valid_rate": 1.0,
+        "service_precision": 0.81,
+        "service_recall": 0.895,
+        "count_exact_rate": 0.8,
+        "count_within_one_rate": 0.8,
+        "hallucinated_lines": 4,
+        "severity_accuracy": 0.889,
+        "size_accuracy": 0.25,
+        "disposition_accuracy": 0.474,
+        "readiness_accuracy": 0.583,
+        "photo_request_accuracy": 0.5,
+        "counting_photo_accuracy": 0.8,
+        "unusable_photo_accuracy": 0.917
+    },
+    "sets": [
+        {
+            "slug": "01-cleanup-heavy-leaves",
+            "scenario": "happy_path_cleanup",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "yard_cleanup@backyard"
+            ],
+            "observed_services": [
+                "yard_cleanup@backyard"
+            ],
+            "hallucinated": [],
+            "counts": [],
+            "dispositions": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "expected": "priceable",
+                    "observed": "manual_quote",
+                    "correct": false
+                }
+            ],
+            "counting_photos": [],
+            "attributes": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "attribute": "severity",
+                    "expected": "heavy",
+                    "observed": "heavy",
+                    "correct": true
+                }
+            ],
+            "optional_services": [],
+            "expected_readiness": "ready",
+            "observed_readiness": "manual_quote",
+            "readiness_correct": false,
+            "photo_request_correct": null,
+            "unusable_photos_correct": true
+        },
+        {
+            "slug": "02-cleanup-light-tidy",
+            "scenario": "happy_path_cleanup",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "yard_cleanup@backyard"
+            ],
+            "observed_services": [
+                "yard_cleanup@backyard",
+                "yard_cleanup@backyard",
+                "bed_weeding@backyard"
+            ],
+            "hallucinated": [
+                "bed_weeding@backyard"
+            ],
+            "counts": [],
+            "dispositions": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "expected": "priceable",
+                    "observed": "manual_quote",
+                    "correct": false
+                }
+            ],
+            "counting_photos": [],
+            "attributes": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "attribute": "severity",
+                    "expected": "light",
+                    "observed": "light",
+                    "correct": true
+                }
+            ],
+            "optional_services": [],
+            "expected_readiness": "ready",
+            "observed_readiness": "manual_quote",
+            "readiness_correct": false,
+            "photo_request_correct": null,
+            "unusable_photos_correct": true
+        },
+        {
+            "slug": "03-cleanup-plus-hibiscus",
+            "scenario": "cleanup_plus_shrubs",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "yard_cleanup@backyard",
+                "shrub_trimming@backyard"
+            ],
+            "observed_services": [
+                "yard_cleanup@backyard",
+                "shrub_trimming@backyard"
+            ],
+            "hallucinated": [],
+            "counts": [
+                {
+                    "service": "shrub_trimming@backyard",
+                    "expected": 5,
+                    "observed": 5,
+                    "exact": true,
+                    "withinOne": true
+                }
+            ],
+            "dispositions": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "expected": "priceable",
+                    "observed": "manual_quote",
+                    "correct": false
+                },
+                {
+                    "service": "shrub_trimming@backyard",
+                    "expected": "priceable",
+                    "observed": "manual_quote",
+                    "correct": false
+                }
+            ],
+            "counting_photos": [
+                {
+                    "service": "shrub_trimming@backyard",
+                    "expected": 1,
+                    "observed": 1,
+                    "correct": true
+                }
+            ],
+            "attributes": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "attribute": "severity",
+                    "expected": "light",
+                    "observed": "light",
+                    "correct": true
+                },
+                {
+                    "service": "shrub_trimming@backyard",
+                    "attribute": "size",
+                    "expected": "medium",
+                    "observed": "large",
+                    "correct": false
+                }
+            ],
+            "optional_services": [],
+            "expected_readiness": "ready",
+            "observed_readiness": "manual_quote",
+            "readiness_correct": false,
+            "photo_request_correct": null,
+            "unusable_photos_correct": true
+        },
+        {
+            "slug": "04-cleanup-plus-viburnums",
+            "scenario": "cleanup_plus_shrubs",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "yard_cleanup@backyard",
+                "shrub_trimming@backyard"
+            ],
+            "observed_services": [
+                "yard_cleanup@backyard",
+                "shrub_trimming@backyard"
+            ],
+            "hallucinated": [],
+            "counts": [
+                {
+                    "service": "shrub_trimming@backyard",
+                    "expected": 3,
+                    "observed": 3,
+                    "exact": true,
+                    "withinOne": true
+                }
+            ],
+            "dispositions": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "expected": "priceable",
+                    "observed": "priceable",
+                    "correct": true
+                },
+                {
+                    "service": "shrub_trimming@backyard",
+                    "expected": "priceable",
+                    "observed": "priceable",
+                    "correct": true
+                }
+            ],
+            "counting_photos": [
+                {
+                    "service": "shrub_trimming@backyard",
+                    "expected": 1,
+                    "observed": 1,
+                    "correct": true
+                }
+            ],
+            "attributes": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "attribute": "severity",
+                    "expected": "moderate",
+                    "observed": "moderate",
+                    "correct": true
+                },
+                {
+                    "service": "shrub_trimming@backyard",
+                    "attribute": "size",
+                    "expected": "small",
+                    "observed": "medium",
+                    "correct": false
+                }
+            ],
+            "optional_services": [],
+            "expected_readiness": "ready",
+            "observed_readiness": "ready",
+            "readiness_correct": true,
+            "photo_request_correct": null,
+            "unusable_photos_correct": true
+        },
+        {
+            "slug": "05-missing-wide-shrubs",
+            "scenario": "missing_wide_shot",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "shrub_trimming@backyard"
+            ],
+            "observed_services": [
+                "shrub_trimming@none"
+            ],
+            "hallucinated": [
+                "shrub_trimming@none"
+            ],
+            "counts": [],
+            "dispositions": [
+                {
+                    "service": "shrub_trimming@backyard",
+                    "expected": "needs_photos",
+                    "observed": null,
+                    "correct": false
+                }
+            ],
+            "counting_photos": [],
+            "attributes": [],
+            "optional_services": [],
+            "expected_readiness": "needs_photos",
+            "observed_readiness": "needs_photos",
+            "readiness_correct": true,
+            "photo_request_correct": false,
+            "unusable_photos_correct": false
+        },
+        {
+            "slug": "06-missing-wide-beds",
+            "scenario": "missing_wide_shot",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "bed_weeding@backyard"
+            ],
+            "observed_services": [
+                "bed_weeding@none"
+            ],
+            "hallucinated": [
+                "bed_weeding@none"
+            ],
+            "counts": [],
+            "dispositions": [
+                {
+                    "service": "bed_weeding@backyard",
+                    "expected": "needs_photos",
+                    "observed": null,
+                    "correct": false
+                }
+            ],
+            "counting_photos": [],
+            "attributes": [],
+            "optional_services": [],
+            "expected_readiness": "needs_photos",
+            "observed_readiness": "needs_photos",
+            "readiness_correct": true,
+            "photo_request_correct": false,
+            "unusable_photos_correct": true
+        },
+        {
+            "slug": "07-requested-unseen-branch",
+            "scenario": "requested_service_unseen",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "yard_cleanup@backyard",
+                "branch_removal@none"
+            ],
+            "observed_services": [
+                "yard_cleanup@backyard",
+                "branch_removal@none"
+            ],
+            "hallucinated": [],
+            "counts": [],
+            "dispositions": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "expected": "priceable",
+                    "observed": "priceable",
+                    "correct": true
+                },
+                {
+                    "service": "branch_removal@none",
+                    "expected": "needs_photos",
+                    "observed": "needs_photos",
+                    "correct": true
+                }
+            ],
+            "counting_photos": [],
+            "attributes": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "attribute": "severity",
+                    "expected": "light",
+                    "observed": "light",
+                    "correct": true
+                }
+            ],
+            "optional_services": [
+                "shrub_trimming@backyard",
+                "bed_weeding@backyard"
+            ],
+            "expected_readiness": "partial",
+            "observed_readiness": "partial",
+            "readiness_correct": true,
+            "photo_request_correct": true,
+            "unusable_photos_correct": true
+        },
+        {
+            "slug": "08-blurry-photo",
+            "scenario": "unusable_photo",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "yard_cleanup@backyard"
+            ],
+            "observed_services": [
+                "yard_cleanup@backyard"
+            ],
+            "hallucinated": [],
+            "counts": [],
+            "dispositions": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "expected": "needs_photos",
+                    "observed": "needs_photos",
+                    "correct": true
+                }
+            ],
+            "counting_photos": [],
+            "attributes": [],
+            "optional_services": [],
+            "expected_readiness": "needs_photos",
+            "observed_readiness": "needs_photos",
+            "readiness_correct": true,
+            "photo_request_correct": true,
+            "unusable_photos_correct": true
+        },
+        {
+            "slug": "09-branch-large",
+            "scenario": "branch_uncertainty",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "branch_removal@backyard",
+                "yard_cleanup@backyard"
+            ],
+            "observed_services": [
+                "branch_removal@backyard",
+                "yard_cleanup@backyard"
+            ],
+            "hallucinated": [],
+            "counts": [
+                {
+                    "service": "branch_removal@backyard",
+                    "expected": 1,
+                    "observed": 1,
+                    "exact": true,
+                    "withinOne": true
+                }
+            ],
+            "dispositions": [
+                {
+                    "service": "branch_removal@backyard",
+                    "expected": "manual_quote",
+                    "observed": "manual_quote",
+                    "correct": true
+                },
+                {
+                    "service": "yard_cleanup@backyard",
+                    "expected": "priceable",
+                    "observed": "manual_quote",
+                    "correct": false
+                }
+            ],
+            "counting_photos": [
+                {
+                    "service": "branch_removal@backyard",
+                    "expected": 1,
+                    "observed": 1,
+                    "correct": true
+                }
+            ],
+            "attributes": [
+                {
+                    "service": "branch_removal@backyard",
+                    "attribute": "size",
+                    "expected": "large",
+                    "observed": "large",
+                    "correct": true
+                },
+                {
+                    "service": "yard_cleanup@backyard",
+                    "attribute": "severity",
+                    "expected": "heavy",
+                    "observed": "moderate",
+                    "correct": false
+                }
+            ],
+            "optional_services": [],
+            "expected_readiness": "partial",
+            "observed_readiness": "manual_quote",
+            "readiness_correct": false,
+            "photo_request_correct": null,
+            "unusable_photos_correct": true
+        },
+        {
+            "slug": "10-manual-only-large-shrub",
+            "scenario": "manual_only_service",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "shrub_trimming@front_yard"
+            ],
+            "observed_services": [
+                "shrub_trimming@side_yard"
+            ],
+            "hallucinated": [
+                "shrub_trimming@side_yard"
+            ],
+            "counts": [
+                {
+                    "service": "shrub_trimming@front_yard",
+                    "expected": 1,
+                    "observed": null,
+                    "exact": false,
+                    "withinOne": false
+                }
+            ],
+            "dispositions": [
+                {
+                    "service": "shrub_trimming@front_yard",
+                    "expected": "manual_quote",
+                    "observed": null,
+                    "correct": false
+                }
+            ],
+            "counting_photos": [
+                {
+                    "service": "shrub_trimming@front_yard",
+                    "expected": 1,
+                    "observed": null,
+                    "correct": false
+                }
+            ],
+            "attributes": [
+                {
+                    "service": "shrub_trimming@front_yard",
+                    "attribute": "size",
+                    "expected": "large",
+                    "observed": null,
+                    "correct": false
+                }
+            ],
+            "optional_services": [
+                "shrub_trimming@backyard"
+            ],
+            "expected_readiness": "manual_quote",
+            "observed_readiness": "manual_quote",
+            "readiness_correct": true,
+            "photo_request_correct": null,
+            "unusable_photos_correct": true
+        },
+        {
+            "slug": "11-hallucination-trap",
+            "scenario": "hallucination_trap",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "yard_cleanup@none",
+                "shrub_trimming@none"
+            ],
+            "observed_services": [
+                "yard_cleanup@none",
+                "shrub_trimming@none"
+            ],
+            "hallucinated": [],
+            "counts": [],
+            "dispositions": [
+                {
+                    "service": "yard_cleanup@none",
+                    "expected": "needs_photos",
+                    "observed": "needs_photos",
+                    "correct": true
+                },
+                {
+                    "service": "shrub_trimming@none",
+                    "expected": "needs_photos",
+                    "observed": "needs_photos",
+                    "correct": true
+                }
+            ],
+            "counting_photos": [],
+            "attributes": [],
+            "optional_services": [],
+            "expected_readiness": "needs_photos",
+            "observed_readiness": "needs_photos",
+            "readiness_correct": true,
+            "photo_request_correct": null,
+            "unusable_photos_correct": true
+        },
+        {
+            "slug": "12-multiple-sections",
+            "scenario": "multiple_sections",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "bed_weeding@side_yard",
+                "yard_cleanup@front_yard",
+                "yard_cleanup@backyard"
+            ],
+            "observed_services": [
+                "bed_weeding@side_yard",
+                "yard_cleanup@front_yard",
+                "yard_cleanup@backyard"
+            ],
+            "hallucinated": [],
+            "counts": [
+                {
+                    "service": "bed_weeding@side_yard",
+                    "expected": 1,
+                    "observed": 1,
+                    "exact": true,
+                    "withinOne": true
+                }
+            ],
+            "dispositions": [
+                {
+                    "service": "bed_weeding@side_yard",
+                    "expected": "priceable",
+                    "observed": "priceable",
+                    "correct": true
+                },
+                {
+                    "service": "yard_cleanup@front_yard",
+                    "expected": "priceable",
+                    "observed": "manual_quote",
+                    "correct": false
+                },
+                {
+                    "service": "yard_cleanup@backyard",
+                    "expected": "priceable",
+                    "observed": "manual_quote",
+                    "correct": false
+                }
+            ],
+            "counting_photos": [
+                {
+                    "service": "bed_weeding@side_yard",
+                    "expected": 1,
+                    "observed": 1,
+                    "correct": true
+                }
+            ],
+            "attributes": [
+                {
+                    "service": "bed_weeding@side_yard",
+                    "attribute": "severity",
+                    "expected": "moderate",
+                    "observed": "moderate",
+                    "correct": true
+                },
+                {
+                    "service": "yard_cleanup@front_yard",
+                    "attribute": "severity",
+                    "expected": "light",
+                    "observed": "light",
+                    "correct": true
+                },
+                {
+                    "service": "yard_cleanup@backyard",
+                    "attribute": "severity",
+                    "expected": "light",
+                    "observed": "light",
+                    "correct": true
+                }
+            ],
+            "optional_services": [
+                "shrub_trimming@front_yard"
+            ],
+            "expected_readiness": "ready",
+            "observed_readiness": "partial",
+            "readiness_correct": false,
+            "photo_request_correct": null,
+            "unusable_photos_correct": true
+        }
+    ]
+}

@@ -1,0 +1,85 @@
+{
+    "set": "04-cleanup-plus-viburnums",
+    "sentence": "Clear the cut brush along the back fence and trim the young shrubs planted there.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "recorded_at": "2026-09-14T08:54:41+00:00",
+    "observation": {
+        "access": {
+            "narrow_gate_possible": false,
+            "evidence": []
+        },
+        "hazards": [],
+        "model_notes": "Both photos show only the back fence-line planting bed; front yard, side yard, and the rest of the backyard are not shown, so overall yard condition can't be assessed. The fence is a wire livestock/field fence bordering open pasture, not a gated enclosure \u2014 no gate is visible in either photo. Shrub species can't be confirmed from the photos (folder context suggests viburnums, but this isn't visual evidence). Not clear whether the cut brush pile needs to be hauled off-site or can be left/mulched on-site.",
+        "photos": [
+            {
+                "photo": 1,
+                "view": "wide",
+                "sections": [
+                    "backyard"
+                ],
+                "usable": true
+            },
+            {
+                "photo": 2,
+                "view": "medium",
+                "sections": [
+                    "backyard"
+                ],
+                "usable": true
+            }
+        ],
+        "requested_in_sentence": [
+            "yard_cleanup",
+            "shrub_trimming"
+        ],
+        "service_lines": [
+            {
+                "type": "yard_cleanup",
+                "section": "backyard",
+                "severity": "moderate",
+                "counting_evidence": null,
+                "evidence": [
+                    {
+                        "photo": 1,
+                        "note": "Cut brush and branches piled along the ground between the young shrubs, running along the bed near the back fence; two cut log rounds lie at the left edge of the bed."
+                    },
+                    {
+                        "photo": 2,
+                        "note": "Closer view of the same bed showing a dense pile of cut brush/stems on bare soil in the foreground, at the base of the shrubs."
+                    }
+                ],
+                "supporting_evidence": [
+                    {
+                        "photo": 1,
+                        "note": "Tall grass and weeds along the fence line behind the bed are not part of the cut-brush pile but visible in the same shot."
+                    }
+                ]
+            },
+            {
+                "type": "shrub_trimming",
+                "section": "backyard",
+                "quantity": 3,
+                "size": "small",
+                "counting_evidence": {
+                    "photo": 1,
+                    "note": "Three young shrubs are spaced along the fence-line bed: one on the left near wire/stake caging, one in the center, and one on the right near a wood post."
+                },
+                "evidence": [
+                    {
+                        "photo": 2,
+                        "note": "Closer view of two of the shrubs showing full, leafy young growth with multiple thin stems reaching roughly shoulder height, untrimmed and irregular in shape."
+                    }
+                ],
+                "supporting_evidence": [
+                    {
+                        "photo": 1,
+                        "note": "Wide view confirms all three shrubs are similarly young and leafy along the same bed."
+                    }
+                ]
+            }
+        ]
+    }
+}

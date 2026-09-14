@@ -1,0 +1,58 @@
+{
+    "set": "10-manual-only-large-shrub",
+    "sentence": "Trim the huge overgrown shrub next to the house.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "recorded_at": "2026-09-14T08:59:13+00:00",
+    "observation": {
+        "access": {
+            "narrow_gate_possible": false,
+            "evidence": []
+        },
+        "hazards": [],
+        "model_notes": "Photo 2 shows a different property scene (front yard, driveway, porch shrubs, flowering tree) and does not show the shrub referenced in the request \u2014 its foundation shrubs are small and tidy, not overgrown, so no trimming line was created for it. The privacy fence in Photo 1 has no visible gate or access point in frame, so crew access to the shrub's enclosure (side/back area) is unconfirmed. Photo 1 shows some cut conifer branches already piled near a trash bin, suggesting a prior partial trim attempt \u2014 worth confirming with the customer whether that debris needs hauling too.",
+        "photos": [
+            {
+                "photo": 1,
+                "view": "wide",
+                "sections": [
+                    "side_yard"
+                ],
+                "usable": true
+            },
+            {
+                "photo": 2,
+                "view": "wide",
+                "sections": [
+                    "front_yard"
+                ],
+                "usable": true
+            }
+        ],
+        "requested_in_sentence": [
+            "shrub_trimming"
+        ],
+        "service_lines": [
+            {
+                "type": "shrub_trimming",
+                "section": "side_yard",
+                "quantity": 1,
+                "size": "large",
+                "uncertain": "The shrub has several vertical stems rising from a shared base against the fence \u2014 could be one multi-stem shrub or several plants grown together; counted as one per the customer's singular description ('the huge overgrown shrub').",
+                "counting_evidence": {
+                    "photo": 1,
+                    "note": "Tall columnar conifer shrub with shaggy, untrimmed foliage rising well above the ~6ft wood fence it grows against, next to the house roofline visible in the background."
+                },
+                "supporting_evidence": [],
+                "evidence": [
+                    {
+                        "photo": 1,
+                        "note": "Shrub foliage is dense and overgrown along its full height with no visible recent shaping; a stub/cut stem near the base and a pile of cut conifer branches near the trash bin suggest a prior partial trim."
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -44,9 +44,25 @@ Nine invariants run over 1,500 seeded random scopes on every test run (`SCOPE_TE
 
 ## Evals
 
-The model is not covered by invariants; it is measured. `evals/sets/<name>/labels.json` labels a photo set with the expected lines, counts, counting photo, dispositions, readiness, unusable photos and photo request. `php artisan yardscope:eval --live` runs every set through the configured extractor, records each answer, and writes `evals/results/<date>.json` with service precision and recall, count accuracy (exact and within one), schema-valid rate, hallucinated lines, and disposition, readiness and photo-request accuracy. `--fixtures` replays the recorded answers, which is what CI runs. The `/evals` page shows the latest file as written; nothing is rounded up or edited.
+The model is not covered by invariants; it is measured. `evals/sets/<name>/labels.json` labels a photo set with the expected lines, counts, counting photo, dispositions, readiness, unusable photos and photo request. `php artisan yardscope:eval --live` runs every set through the configured extractor, records each answer, and writes `evals/results/<date>.json` with service precision and recall, count accuracy (exact and within one), schema-valid rate, hallucinated lines, and disposition, readiness and photo-request accuracy. `--fixtures` replays the recorded answers, which is what CI runs, and reproduces the live numbers exactly. The `/evals` page shows the latest file as written; nothing is rounded up or edited.
 
-The labeled sets are not in this repository yet: the twelve scenarios (happy path, cleanup plus shrubs, missing wide shot, requested service unseen, unusable photo, branch uncertainty, manual-only service, hallucination trap, multiple sections) need real yard photos, and every image will carry its license in `evals/LICENSES.md`.
+Twelve labeled sets live in `evals/sets`, one per scenario from the plan (happy path twice, cleanup plus shrubs twice, missing wide shot twice, requested service unseen, unusable photo, branch uncertainty, manual-only service, hallucination trap, multiple sections). The photos are openly licensed images found through Openverse; every title, creator, license and source is in `evals/LICENSES.md`. Several sets combine photos of different properties and say so in their labels.
+
+Two live runs were made on 2026-09-14 through the Claude Code driver, both kept in `evals/results` as written:
+
+| Metric | First run | Second run |
+|---|---|---|
+| Schema-valid answers | 12/12 | 12/12 |
+| Service precision / recall | 0.81 / 0.90 | 1.00 / 1.00 |
+| Counts exact / within one | 0.80 / 0.80 | 1.00 / 1.00 |
+| Hallucinated lines | 4 | 0 |
+| Severity / size correct | 0.89 / 0.25 | 0.89 / 0.75 |
+| Dispositions correct | 0.47 | 0.89 |
+| Request readiness correct | 7/12 | 10/12 |
+| Photo request correct | 0.50 | 1.00 |
+| Unusable photos flagged | 0.92 | 0.92 |
+
+The first run found a real problem: the model reported ordinary overhead power lines as hazards in five sets, and rule R5 then sent whole sections to a pro quote. The instruction was tightened to name what makes the work itself unsafe, and three labels were corrected to the pipeline's own conventions (a requested service no photo shows is a placeholder without a section). The second run is what the model does now. Its two readiness misses are honest disagreements: it calls the five hibiscus shrubs large where the label says medium, so that line goes to a pro, and it rates the storm-debris cleanup moderate instead of heavy while flagging the fallen limb leaning on a pergola as a hazard.
 
 ## Running it
 

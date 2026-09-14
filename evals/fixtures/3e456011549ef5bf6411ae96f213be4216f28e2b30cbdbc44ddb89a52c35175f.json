@@ -1,0 +1,53 @@
+{
+    "set": "08-blurry-photo",
+    "sentence": "Rake up the leaves in the backyard.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "recorded_at": "2026-09-14T08:57:25+00:00",
+    "observation": {
+        "photos": [
+            {
+                "photo": 1,
+                "view": "close",
+                "sections": [],
+                "usable": false
+            },
+            {
+                "photo": 2,
+                "view": "wide",
+                "sections": [
+                    "backyard"
+                ],
+                "usable": true
+            }
+        ],
+        "requested_in_sentence": [
+            "yard_cleanup"
+        ],
+        "service_lines": [
+            {
+                "type": "yard_cleanup",
+                "section": "backyard",
+                "severity": "heavy",
+                "quantity": null,
+                "supporting_evidence": [],
+                "evidence": [
+                    {
+                        "photo": 2,
+                        "note": "Ground is almost entirely covered in fallen leaves across the visible lawn, from the foreground to the base of the shed and trees."
+                    }
+                ],
+                "counting_evidence": null,
+                "uncertain": null
+            }
+        ],
+        "access": {
+            "narrow_gate_possible": false,
+            "evidence": []
+        },
+        "hazards": [],
+        "model_notes": "Photo 1 is too blurry/out of focus to identify what it shows (indistinct green streaks, possibly foliage) \u2014 it could not be used for scoping and is excluded from section and service evidence. Only one usable photo (Photo 2) is available for the backyard, so the leaf coverage assessment (heavy, \"almost entirely covered\") is based on that single wide view; areas of the yard outside its frame were not photographed. A thin wire is visible crossing the upper-right of Photo 2, consistent with a normal overhead utility line rather than a hazard."
+    }
+}
