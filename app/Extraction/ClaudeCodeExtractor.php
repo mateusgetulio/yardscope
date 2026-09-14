@@ -79,23 +79,24 @@ final readonly class ClaudeCodeExtractor implements RecordsObservations, VisionE
 
         // The prompt goes on stdin: --add-dir takes a list, so a trailing argument would be read as a directory.
         try {
-            $result = Process::path($directories[0])->timeout($this->timeoutSeconds)->input($prompt)->run($command);
+            $result = Process::path($directories[0])->env($this->environment())->timeout($this->timeoutSeconds)->input($prompt)->run($command);
         } catch (ProcessTimedOutException $exception) {
             throw new ExtractionFailed("Claude Code did not answer within {$this->timeoutSeconds} seconds.", previous: $exception);
+        }
+
+        $reply = json_decode($result->output(), true);
+
+        // The CLI reports its own errors (not logged in, model refused) as a JSON result with a non-zero exit.
+        if (is_array($reply) && ($reply['is_error'] ?? false) === true) {
+            throw new ExtractionFailed('Claude Code reported an error: '.(is_string($reply['result'] ?? null) ? $reply['result'] : 'no details'));
         }
 
         if ($result->failed()) {
             throw new ExtractionFailed('Claude Code could not be run: '.trim($result->errorOutput() ?: $result->output()));
         }
 
-        $reply = json_decode($result->output(), true);
-
         if (! is_array($reply)) {
             throw new ExtractionFailed('Claude Code answered with something other than its JSON result.');
-        }
-
-        if (($reply['is_error'] ?? false) === true) {
-            throw new ExtractionFailed('Claude Code reported an error: '.(is_string($reply['result'] ?? null) ? $reply['result'] : 'no details'));
         }
 
         if (! is_array($reply['structured_output'] ?? null)) {
@@ -103,5 +104,27 @@ final readonly class ClaudeCodeExtractor implements RecordsObservations, VisionE
         }
 
         return [$reply['structured_output'], is_string($reply['session_id'] ?? null) ? $reply['session_id'] : ''];
+    }
+
+    /**
+     * A child of a web request inherits only the .env variables, and the CLI finds the signed-in
+     * account through USER and HOME, so those are passed along explicitly.
+     *
+     * @return array<string, string>
+     */
+    private function environment(): array
+    {
+        $account = function_exists('posix_getpwuid') ? posix_getpwuid(posix_geteuid()) : false;
+        $environment = [
+            'HOME' => is_string($account['dir'] ?? null) ? $account['dir'] : (string) getenv('HOME'),
+            'USER' => is_string($account['name'] ?? null) ? $account['name'] : (string) getenv('USER'),
+        ];
+        $path = getenv('PATH');
+
+        if (is_string($path)) {
+            $environment['PATH'] = $path;
+        }
+
+        return $environment;
     }
 }

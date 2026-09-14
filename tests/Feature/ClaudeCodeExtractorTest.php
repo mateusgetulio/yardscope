@@ -46,6 +46,8 @@ it('runs the CLI in print mode with the agent schema, the photo directory and ev
             && in_array('--add-dir', $command, true)
             && in_array(dirname($this->photos[0]->path), $command, true)
             && $process->path === dirname($this->photos[0]->path)
+            && ($process->environment['USER'] ?? '') !== ''
+            && ($process->environment['HOME'] ?? '') !== ''
             && ! in_array('--resume', $command, true)
             && str_contains($prompt, 'Customer request: My backyard is a mess.')
             && str_contains($prompt, "Photo 3: {$this->photos[2]->path}");
@@ -83,7 +85,7 @@ it('gives up after the second unreadable answer instead of guessing', function (
 it('reports the CLI failing, erroring or answering in prose as an extraction failure', function (string $case, string $message) {
     Process::fake(['*' => match ($case) {
         'exit code' => Process::result(output: '', errorOutput: 'command not found: claude', exitCode: 127),
-        'is_error' => Process::result(claudeReply(null, error: true)),
+        'is_error' => Process::result(claudeReply(null, error: true), exitCode: 1),
         'no structured output' => Process::result(json_encode(['is_error' => false, 'result' => 'I looked at the photos.'])),
         default => Process::result('not json at all'),
     }]);
