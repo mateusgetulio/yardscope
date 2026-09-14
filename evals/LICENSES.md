@@ -1,6 +1,6 @@
 # Photo licenses
 
-Every eval photo comes from Openverse (openverse.org), which indexes openly licensed images on Flickr and Wikimedia Commons. Each file was resized to at most 1280 pixels and re-encoded, which also removed the original metadata; nothing else was changed. Several sets combine photos of different properties, and `labels.json` says so in its `notes`. No photo was taken from any company's site or from a customer.
+Every eval photo comes from Openverse (openverse.org), which indexes openly licensed images on Flickr and Wikimedia Commons. Each file was resized to at most 1280 pixels and re-encoded, which also removed the original metadata; nothing else was changed. Each resized copy is redistributed under the same license as the original, named on its row; the code in this repository is under the MIT license in LICENSE, which does not cover these photos. Three photos are used in more than one set. Several sets combine photos of different properties, and `labels.json` says so in its `notes`. No photo was taken from any company's site or from a customer.
 
 | Set | File | Title | Creator | License | Source |
 |---|---|---|---|---|---|
