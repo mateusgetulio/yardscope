@@ -1,5 +1,7 @@
 <?php
 
+use App\Scoping\Data\Observation;
+use App\Scoping\Data\PropertyProfile;
 use Tests\TestCase;
 
 /*
@@ -14,3 +16,21 @@ use Tests\TestCase;
 */
 
 pest()->extend(TestCase::class)->in('Feature');
+
+/**
+ * @return array<string, mixed>
+ */
+function workedExample(): array
+{
+    return json_decode((string) file_get_contents(__DIR__.'/fixtures/backyard-cleanup.json'), true);
+}
+
+function workedObservation(): Observation
+{
+    return Observation::fromArray(workedExample()['observation']);
+}
+
+function workedProfile(): PropertyProfile
+{
+    return PropertyProfile::fromArray(workedExample()['profile']);
+}

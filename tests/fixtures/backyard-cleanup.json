@@ -1,0 +1,28 @@
+{
+  "profile": {"backyard": "medium", "side_yard": "small", "front_yard": "small"},
+  "sentence": "My backyard is a mess. Clean it up and trim whatever needs trimming.",
+  "observation": {
+    "photos": [
+      {"photo": 1, "view": "wide", "sections": ["backyard"], "usable": true},
+      {"photo": 2, "view": "close", "sections": ["backyard"], "usable": true},
+      {"photo": 3, "view": "medium", "sections": ["side_yard"], "usable": true}
+    ],
+    "requested_in_sentence": ["yard_cleanup", "shrub_trimming"],
+    "service_lines": [
+      {"type": "yard_cleanup", "section": "backyard", "severity": "heavy",
+       "evidence": [{"photo": 1, "note": "leaves and debris along fence line and patio"}],
+       "uncertain": null},
+      {"type": "shrub_trimming", "section": "backyard", "quantity": 4, "size": "medium",
+       "counting_evidence": {"photo": 1, "note": "wide view shows four distinct shrubs along back fence"},
+       "supporting_evidence": [{"photo": 2, "note": "close view supports medium size"}],
+       "uncertain": null},
+      {"type": "branch_removal", "section": "backyard", "quantity": 1, "size": "large",
+       "counting_evidence": {"photo": 2, "note": "one fallen branch near patio"},
+       "supporting_evidence": [],
+       "uncertain": "branch diameter hard to judge"}
+    ],
+    "access": {"narrow_gate_possible": true, "evidence": [{"photo": 3, "note": "side gate looks narrower than a mower deck"}]},
+    "hazards": [],
+    "model_notes": "No photo shows the left side of the backyard."
+  }
+}
