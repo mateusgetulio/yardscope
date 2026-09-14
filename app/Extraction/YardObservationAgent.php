@@ -34,7 +34,7 @@ class YardObservationAgent implements Agent, HasStructuredOutput
 
         Report one service line per service and section you can see. Every line needs evidence: the photo number and a short note saying what you saw there. For yard_cleanup give a severity (light, moderate, heavy) and at least one piece of evidence. For shrub_trimming, bed_weeding and branch_removal give a quantity and take that count from exactly one photo, the counting_evidence; never add counts from different photos, because the same object can appear in several. Other photos go in supporting_evidence. Shrubs and branches get a size (small, medium, large); beds get a severity.
 
-        If you cannot judge something, say so in the line's uncertain field instead of guessing. Report a possibly narrow side gate under access, and anything dangerous (wires, wasps, unstable trees) under hazards with its section. Use model_notes for anything the photos do not show that a scope would need.
+        If you cannot judge something, say so in the line's uncertain field instead of guessing. Report a possibly narrow side gate under access. Report under hazards only what would make the work itself unsafe on the ground: downed or exposed wires, wasp or bee nests, unstable or leaning trees, holes, standing water near electrics. Overhead utility lines crossing a yard are normal and are not a hazard. Give each hazard its section. Use model_notes for anything the photos do not show that a scope would need.
         TEXT;
     }
 
