@@ -1,4 +1,4 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { useEffect, useState, type FormEvent } from 'react';
 
 interface Props {
@@ -141,6 +141,11 @@ export default function RequestPage({ profile, extractor }: Props) {
                             : 'Analyze my yard'}
                     </button>
                 </form>
+                <p className="mt-10 text-sm text-stone-500">
+                    <Link href="/evals">
+                        How the model scores on the labeled photo sets
+                    </Link>
+                </p>
             </main>
         </>
     );

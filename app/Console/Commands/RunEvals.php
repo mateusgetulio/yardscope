@@ -13,7 +13,7 @@ use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use InvalidArgumentException;
 
-#[Signature('yardscope:eval {--live : Run the labeled sets through the configured live extractor and record the answers} {--fixtures : Replay the recorded answers}')]
+#[Signature('yardscope:eval {--live : Run the labeled sets through the configured live extractor and record the answers} {--fixtures : Replay the recorded answers} {--expect= : Fail when the metrics, readiness or dispositions drift from this results file ("latest" for the newest one)}')]
 #[Description('Score the labeled photo sets and write the results file')]
 class RunEvals extends Command
 {
@@ -58,6 +58,8 @@ class RunEvals extends Command
             mkdir($results, 0755, true);
         }
 
+        $drift = $this->option('expect') === null ? [] : $this->drift((string) $this->option('expect'), $results, $metrics, $scores);
+
         $file = $results.'/'.date('Y-m-d-His').'.json';
         file_put_contents($file, json_encode([
             'ran_at' => date('c'),
@@ -76,7 +78,72 @@ class RunEvals extends Command
         $this->newLine();
         $this->info("Wrote {$file}");
 
-        return array_any($scores, fn (SetScore $score): bool => ! $score->schemaValid) ? self::FAILURE : self::SUCCESS;
+        foreach ($drift as $line) {
+            $this->error($line);
+        }
+
+        return $drift !== [] || array_any($scores, fn (SetScore $score): bool => ! $score->schemaValid) ? self::FAILURE : self::SUCCESS;
+    }
+
+    /**
+     * Differences from a committed results file, so a change in the gate, the pricing or the
+     * scorer cannot pass unnoticed on the recorded answers.
+     *
+     * @param  array<string, mixed>  $metrics
+     * @param  list<SetScore>  $scores
+     * @return list<string>
+     */
+    private function drift(string $expect, string $results, array $metrics, array $scores): array
+    {
+        if ($expect === 'latest') {
+            $files = glob($results.'/*.json') ?: [];
+            rsort($files);
+            $expect = $files[0] ?? '';
+        }
+
+        if (! is_file($expect)) {
+            return ["No results file to compare with at [{$expect}]."];
+        }
+
+        $reference = json_decode((string) file_get_contents($expect), true);
+
+        if (! is_array($reference)) {
+            return ["The results file at [{$expect}] could not be read."];
+        }
+
+        $drift = [];
+
+        foreach ($reference['metrics'] ?? [] as $name => $value) {
+            if (($metrics[$name] ?? null) !== $value) {
+                $drift[] = "{$name}: ".json_encode($metrics[$name] ?? null).' now, '.json_encode($value).' in '.basename($expect).'.';
+            }
+        }
+
+        $expectedSets = [];
+
+        foreach ($reference['sets'] ?? [] as $set) {
+            $expectedSets[$set['slug']] = $set;
+        }
+
+        foreach ($scores as $score) {
+            $before = $expectedSets[$score->slug] ?? null;
+
+            if ($before === null) {
+                $drift[] = "{$score->slug}: not in ".basename($expect).'.';
+
+                continue;
+            }
+
+            $now = $score->toArray();
+
+            foreach (['observed_readiness', 'dispositions', 'hallucinated', 'observed_services'] as $field) {
+                if (($before[$field] ?? null) !== $now[$field]) {
+                    $drift[] = "{$score->slug} {$field}: ".json_encode($now[$field]).' now, '.json_encode($before[$field] ?? null).' before.';
+                }
+            }
+        }
+
+        return $drift;
     }
 
     private function summary(SetScore $score): string
@@ -89,6 +156,10 @@ class RunEvals extends Command
 
         if ($score->hallucinated !== []) {
             $parts[] = 'hallucinated '.implode(', ', $score->hallucinated);
+        }
+
+        if ($score->duplicateLines > 0) {
+            $parts[] = "{$score->duplicateLines} duplicate line".($score->duplicateLines === 1 ? '' : 's');
         }
 
         $missed = array_values(array_diff($score->expectedServices, $score->observedServices));

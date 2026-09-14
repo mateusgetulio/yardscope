@@ -128,8 +128,14 @@ function scratchDirectory(): string
     $directory = sys_get_temp_dir().'/yardscope-'.bin2hex(random_bytes(6));
     mkdir($directory);
     register_shutdown_function(function () use ($directory): void {
-        array_map(unlink(...), glob("{$directory}/*") ?: []);
-        @rmdir($directory);
+        $remove = function (string $path) use (&$remove): void {
+            foreach (glob("{$path}/*") ?: [] as $entry) {
+                is_dir($entry) ? $remove($entry) : unlink($entry);
+            }
+
+            @rmdir($path);
+        };
+        $remove($directory);
     });
 
     return $directory;

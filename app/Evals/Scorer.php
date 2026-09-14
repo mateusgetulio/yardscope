@@ -9,7 +9,9 @@ use App\Scoping\Enums\LineDisposition;
 
 /**
  * Compares what the pipeline produced for a set with its labels. Services are matched by type
- * and section; a line with no section in the labels is a requested-but-unseen placeholder.
+ * and section. Lines without a section are placeholders the pipeline itself adds for requested
+ * work no photo shows (rule R3): they are scored on their disposition and the photo request,
+ * never as something the model said.
  */
 final readonly class Scorer
 {
@@ -21,8 +23,10 @@ final readonly class Scorer
         $required = array_values(array_filter($expectedLines, fn (array $line): bool => ($line['optional'] ?? false) !== true));
         $expectedServices = array_map(fn (array $line): string => self::key($line['type'] ?? '', $line['section'] ?? null), $required);
         $optionalServices = array_map(fn (array $line): string => self::key($line['type'] ?? '', $line['section'] ?? null), array_values(array_diff_key($expectedLines, $required)));
-        $observedLines = $scope === null ? [] : array_values(array_filter($scope->lines, fn (ScopeLine $line): bool => $line->disposition !== LineDisposition::Rejected));
-        $observedServices = array_map(fn (ScopeLine $line): string => self::key($line->type->value, $line->section?->value), $observedLines);
+        $lines = $scope === null ? [] : array_values(array_filter($scope->lines, fn (ScopeLine $line): bool => $line->disposition !== LineDisposition::Rejected));
+        $modelLines = array_values(array_filter($lines, fn (ScopeLine $line): bool => ! $line->isPlaceholder()));
+        $observedAll = array_map(fn (ScopeLine $line): string => self::key($line->type->value, $line->section?->value), $modelLines);
+        $observedServices = array_values(array_unique($observedAll));
         $hallucinated = array_values(array_diff($observedServices, $expectedServices, $optionalServices));
 
         $counts = [];
@@ -32,7 +36,7 @@ final readonly class Scorer
 
         foreach ($expectedLines as $expected) {
             $key = self::key($expected['type'] ?? '', $expected['section'] ?? null);
-            $match = $this->find($observedLines, $key);
+            $match = $this->find($lines, $key);
 
             if (isset($expected['quantity']) && is_int($expected['quantity'])) {
                 $observedQuantity = $match?->current->quantity;
@@ -78,6 +82,7 @@ final readonly class Scorer
             $failure,
             $expectedServices,
             $observedServices,
+            count($observedAll) - count($observedServices),
             $hallucinated,
             $counts,
             $dispositions,
@@ -86,8 +91,9 @@ final readonly class Scorer
             $optionalServices,
             is_string($set->expected['readiness'] ?? null) ? $set->expected['readiness'] : null,
             $scope?->readiness->value,
-            $this->photoRequestCorrect($set, $observedLines),
+            $this->photoRequestCorrect($set, $lines),
             $this->unusablePhotosCorrect($set, $observation),
+            $observation?->toArray(),
         );
     }
 

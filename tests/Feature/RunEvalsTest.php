@@ -108,7 +108,8 @@ it('replays recorded answers, scores every set and writes the results file', fun
         ->and($results['sets'][0]['slug'])->toBe('a-worked')
         ->and($results['sets'][1]['hallucinated'])->toBe(['shrub_trimming@backyard'])
         ->and($results['sets'][2]['hallucinated'])->toBe([])
-        ->and($results['sets'][2]['optional_services'])->toBe(['shrub_trimming@backyard']);
+        ->and($results['sets'][2]['optional_services'])->toBe(['shrub_trimming@backyard'])
+        ->and($results['sets'][0]['observation']['service_lines'])->toHaveCount(3);
 });
 
 it('scores the photo request and the unusable photos, and marks a missing recording instead of guessing', function () {
@@ -162,4 +163,78 @@ it('runs live through the configured extractor and records every answer for repl
 it('refuses to run without a mode or without sets', function () {
     $this->artisan('yardscope:eval')->expectsOutputToContain('Choose one of --live or --fixtures.')->assertFailed();
     $this->artisan('yardscope:eval', ['--fixtures' => true])->expectsOutputToContain('No labeled sets under')->assertFailed();
+});
+
+it('counts a line the model reported twice as a duplicate, not as a second match or a hallucination', function () {
+    $labels = workedLabels();
+    $photos = labeledSet($this->root, 'a-twice', $labels);
+    $observation = workedExample()['observation'];
+    $observation['service_lines'][] = $observation['service_lines'][0];
+    recordEval($this->root, $photos, $labels['sentence'], $observation);
+
+    $this->artisan('yardscope:eval', ['--fixtures' => true])->expectsOutputToContain('1 duplicate line')->assertSuccessful();
+
+    $results = json_decode((string) file_get_contents(glob($this->root.'/results/*.json')[0]), true);
+
+    expect($results['metrics']['service_precision'])->toBe(1.0)
+        ->and($results['metrics']['service_recall'])->toBe(1.0)
+        ->and($results['metrics']['duplicate_lines'])->toBe(1)
+        ->and($results['metrics']['hallucinated_lines'])->toBe(0)
+        ->and($results['sets'][0]['observed_services'])->toHaveCount(3);
+});
+
+it('never scores a requested-but-unseen placeholder as a hallucination', function () {
+    // Nothing observed, so the pipeline adds placeholders for the two requested services.
+    $labels = workedLabels('needs_photos');
+    $labels['expected']['lines'] = [['type' => 'yard_cleanup', 'section' => null, 'disposition' => 'needs_photos']];
+    $labels['expected']['photo_request'] = ['service' => 'yard_cleanup'];
+    $photos = labeledSet($this->root, 'a-nothing', $labels);
+    $observation = workedExample()['observation'];
+    $observation['service_lines'] = [];
+    recordEval($this->root, $photos, $labels['sentence'], $observation);
+
+    $this->artisan('yardscope:eval', ['--fixtures' => true])->assertSuccessful();
+
+    $results = json_decode((string) file_get_contents(glob($this->root.'/results/*.json')[0]), true);
+
+    expect($results['sets'][0]['observed_services'])->toBe([])
+        ->and($results['sets'][0]['hallucinated'])->toBe([])
+        ->and($results['sets'][0]['dispositions'][0]['observed'])->toBe('needs_photos')
+        ->and($results['sets'][0]['photo_request_correct'])->toBeTrue()
+        ->and($results['metrics']['service_precision'])->toBeNull()
+        ->and($results['metrics']['readiness_accuracy'])->toBe(1.0);
+});
+
+it('fails when the replay drifts from the committed results', function () {
+    $labels = workedLabels();
+    $photos = labeledSet($this->root, 'a-worked', $labels);
+    recordEval($this->root, $photos, $labels['sentence'], workedExample()['observation']);
+
+    $this->artisan('yardscope:eval', ['--fixtures' => true])->assertSuccessful();
+    $this->artisan('yardscope:eval', ['--fixtures' => true, '--expect' => 'latest'])->assertSuccessful();
+
+    // A rate card change moves nothing the guard watches; a changed answer does.
+    config()->set('yardscope.rates.hours.shrub_trimming.medium', [5.0, 6.0]);
+    $this->artisan('yardscope:eval', ['--fixtures' => true, '--expect' => 'latest'])->assertSuccessful();
+
+    $observation = workedExample()['observation'];
+    $observation['service_lines'][1]['size'] = 'large';
+    recordEval($this->root, $photos, $labels['sentence'], $observation);
+    $this->artisan('yardscope:eval', ['--fixtures' => true, '--expect' => 'latest'])
+        ->expectsOutputToContain('a-worked dispositions:')
+        ->assertFailed();
+
+    $this->artisan('yardscope:eval', ['--fixtures' => true, '--expect' => $this->root.'/missing.json'])
+        ->expectsOutputToContain('No results file to compare with')
+        ->assertFailed();
+});
+
+it('refuses labels the pipeline does not understand', function () {
+    $labels = workedLabels();
+    $labels['expected']['lines'][0]['disposition'] = 'priced';
+    labeledSet($this->root, 'a-typo', $labels);
+
+    $this->artisan('yardscope:eval', ['--fixtures' => true])
+        ->expectsOutputToContain('line 0 disposition ["priced"] is not one of')
+        ->assertFailed();
 });

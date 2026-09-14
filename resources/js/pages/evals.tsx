@@ -14,6 +14,9 @@ const metricLabels: Record<string, string> = {
     count_exact_rate: 'Counts exact',
     count_within_one_rate: 'Counts within one',
     hallucinated_lines: 'Hallucinated lines',
+    duplicate_lines: 'Duplicate lines',
+    severity_accuracy: 'Severity correct',
+    size_accuracy: 'Size correct',
     disposition_accuracy: 'Dispositions correct',
     readiness_accuracy: 'Request readiness correct',
     photo_request_accuracy: 'Photo requests correct',
@@ -25,7 +28,11 @@ function format(name: string, value: number | null): string {
     if (value === null) {
         return 'nothing to measure';
     }
-    if (name === 'sets' || name === 'hallucinated_lines') {
+    if (
+        name === 'sets' ||
+        name === 'hallucinated_lines' ||
+        name === 'duplicate_lines'
+    ) {
         return String(value);
     }
     return `${Math.round(value * 100)}%`;
@@ -111,6 +118,43 @@ export default function EvalsPage({ results, file }: Props) {
                                                     {count.exact ? '' : ', off'}
                                                 </li>
                                             ))}
+                                            {set.attributes
+                                                .filter((item) => !item.correct)
+                                                .map((item) => (
+                                                    <li
+                                                        key={`${item.service}-${item.attribute}`}
+                                                    >
+                                                        {item.service}{' '}
+                                                        {item.attribute}:{' '}
+                                                        {item.observed ??
+                                                            'missing'}{' '}
+                                                        instead of{' '}
+                                                        {item.expected}
+                                                    </li>
+                                                ))}
+                                            {set.counting_photos
+                                                .filter((item) => !item.correct)
+                                                .map((item) => (
+                                                    <li
+                                                        key={`${item.service}-counting`}
+                                                    >
+                                                        {item.service}: counted
+                                                        from photo{' '}
+                                                        {item.observed ??
+                                                            'none'}{' '}
+                                                        instead of{' '}
+                                                        {item.expected}
+                                                    </li>
+                                                ))}
+                                            {set.duplicate_lines > 0 && (
+                                                <li>
+                                                    {set.duplicate_lines}{' '}
+                                                    duplicate line
+                                                    {set.duplicate_lines === 1
+                                                        ? ''
+                                                        : 's'}
+                                                </li>
+                                            )}
                                             {set.dispositions
                                                 .filter((line) => !line.correct)
                                                 .map((line) => (

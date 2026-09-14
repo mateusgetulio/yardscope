@@ -4,7 +4,8 @@ namespace App\Evals;
 
 /**
  * Aggregates over the set scores. Every rate is a plain fraction of what was measured; a metric
- * with nothing to measure is null rather than a flattering 1.0.
+ * with nothing to measure is null rather than a flattering 1.0. Each expected line is matched at
+ * most once, and a line the model reported twice counts as a duplicate, not as a second match.
  */
 final readonly class Metrics
 {
@@ -19,6 +20,8 @@ final readonly class Metrics
         $matched = 0;
         $matchedRequired = 0;
         $hallucinated = 0;
+        $duplicates = 0;
+        $valid = 0;
         $counts = ['total' => 0, 'exact' => 0, 'withinOne' => 0];
         $dispositions = ['total' => 0, 'correct' => 0];
         $countingPhotos = ['total' => 0, 'correct' => 0];
@@ -27,16 +30,16 @@ final readonly class Metrics
         $readiness = ['total' => 0, 'correct' => 0];
         $photoRequests = ['total' => 0, 'correct' => 0];
         $unusable = ['total' => 0, 'correct' => 0];
-        $valid = 0;
 
         foreach ($scores as $score) {
             $valid += $score->schemaValid ? 1 : 0;
             $expected += count($score->expectedServices);
             $observed += count($score->observedServices);
             // Recall counts the required lines the model found; precision also credits optional lines it volunteered.
-            $matchedRequired += count(array_intersect($score->observedServices, $score->expectedServices));
+            $matchedRequired += count(array_intersect($score->expectedServices, $score->observedServices));
             $matched += count(array_intersect($score->observedServices, [...$score->expectedServices, ...$score->optionalServices]));
             $hallucinated += count($score->hallucinated);
+            $duplicates += $score->duplicateLines;
 
             foreach ($score->counts as $count) {
                 $counts['total']++;
@@ -64,11 +67,19 @@ final readonly class Metrics
                 }
             }
 
-            foreach ([[&$readiness, $score->readinessCorrect()], [&$photoRequests, $score->photoRequestCorrect], [&$unusable, $score->unusablePhotosCorrect]] as [&$bucket, $result]) {
-                if ($result !== null) {
-                    $bucket['total']++;
-                    $bucket['correct'] += $result ? 1 : 0;
-                }
+            if ($score->readinessCorrect() !== null) {
+                $readiness['total']++;
+                $readiness['correct'] += $score->readinessCorrect() ? 1 : 0;
+            }
+
+            if ($score->photoRequestCorrect !== null) {
+                $photoRequests['total']++;
+                $photoRequests['correct'] += $score->photoRequestCorrect ? 1 : 0;
+            }
+
+            if ($score->unusablePhotosCorrect !== null) {
+                $unusable['total']++;
+                $unusable['correct'] += $score->unusablePhotosCorrect ? 1 : 0;
             }
         }
 
@@ -82,6 +93,7 @@ final readonly class Metrics
             'count_exact_rate' => $rate($counts['exact'], $counts['total']),
             'count_within_one_rate' => $rate($counts['withinOne'], $counts['total']),
             'hallucinated_lines' => $hallucinated,
+            'duplicate_lines' => $duplicates,
             'severity_accuracy' => $rate($severities['correct'], $severities['total']),
             'size_accuracy' => $rate($sizes['correct'], $sizes['total']),
             'disposition_accuracy' => $rate($dispositions['correct'], $dispositions['total']),

@@ -60,4 +60,4 @@ jobs:
         run: vendor/bin/pest --ci --coverage
 
       - name: Replay the evals on the recorded answers
-        run: php artisan yardscope:eval --fixtures
+        run: php artisan yardscope:eval --fixtures --expect latest

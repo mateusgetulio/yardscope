@@ -218,6 +218,21 @@ export interface EvalResults {
             observed: string | null;
             correct: boolean;
         }[];
+        counting_photos: {
+            service: string;
+            expected: number;
+            observed: number | null;
+            correct: boolean;
+        }[];
+        attributes: {
+            service: string;
+            attribute: string;
+            expected: string;
+            observed: string | null;
+            correct: boolean;
+        }[];
+        optional_services: string[];
+        duplicate_lines: number;
         expected_readiness: string | null;
         observed_readiness: string | null;
         readiness_correct: boolean | null;
