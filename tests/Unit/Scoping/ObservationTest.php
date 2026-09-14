@@ -109,3 +109,18 @@ it('counts only usable wide or medium photos as covering a section', function ()
         ->and($observation->covers(Section::FrontYard))->toBeTrue()
         ->and($observation->usablePhotos())->toHaveCount(2);
 });
+
+it('round-trips through toArray without losing rejected lines or their reasons', function () {
+    $data = workedExample()['observation'];
+    $data['service_lines'][] = ['type' => 'shrub_trimming', 'section' => 'front_yard', 'quantity' => 40, 'size' => 'small', 'counting_evidence' => ['photo' => 1, 'note' => 'forty?'], 'supporting_evidence' => [], 'evidence' => [], 'uncertain' => null];
+    $data['service_lines'][] = 'not a line';
+    $data['requested_in_sentence'][] = 'gutter_cleaning';
+
+    $first = Observation::fromArray($data);
+    $second = Observation::fromArray($first->toArray());
+
+    expect($first->rejected)->toHaveCount(2)
+        ->and($second->toArray())->toBe($first->toArray())
+        ->and(array_map(fn ($line) => [$line->type, $line->reason], $second->rejected))->toBe(array_map(fn ($line) => [$line->type, $line->reason], $first->rejected))
+        ->and($second->unsupportedRequests)->toBe(['gutter_cleaning']);
+});

@@ -106,7 +106,8 @@ final readonly class Observation
     }
 
     /**
-     * The observation in the model's own shape, so it can be stored and parsed again unchanged.
+     * The observation in the model's own shape. Rejected lines come back verbatim, so parsing the
+     * stored array again gives the same lines, the same rejections and the same reasons.
      *
      * @return array<string, mixed>
      */
@@ -134,7 +135,7 @@ final readonly class Observation
                     'evidence' => $evidence($line->evidence),
                     'uncertain' => $line->uncertain,
                 ], $this->lines),
-                ...array_map(fn (RejectedLine $line): array => ['type' => $line->type, 'rejected' => $line->reason], $this->rejected),
+                ...array_map(fn (RejectedLine $line): mixed => $line->raw, $this->rejected),
             ],
             'access' => ['narrow_gate_possible' => $this->access->narrowGatePossible, 'evidence' => $evidence($this->access->evidence)],
             'hazards' => array_map(fn (Hazard $hazard): array => ['section' => $hazard->section->value, 'note' => $hazard->note, 'evidence' => $evidence($hazard->evidence)], $this->hazards),
@@ -174,17 +175,17 @@ final readonly class Observation
     private static function lineFrom(mixed $line, array $photoNumbers): ObservedLine|RejectedLine
     {
         if (! is_array($line)) {
-            return new RejectedLine('unknown', 'A service line must be an object.');
+            return new RejectedLine('unknown', 'A service line must be an object.', $line);
         }
 
         $typeValue = is_string($line['type'] ?? null) ? $line['type'] : 'unknown';
         $type = ServiceType::tryFrom($typeValue);
 
         if ($type === null) {
-            return new RejectedLine($typeValue, "Unknown service type [{$typeValue}].");
+            return new RejectedLine($typeValue, "Unknown service type [{$typeValue}].", $line);
         }
 
-        $reject = fn (string $reason): RejectedLine => new RejectedLine($type->value, $reason);
+        $reject = fn (string $reason): RejectedLine => new RejectedLine($type->value, $reason, $line);
         $section = is_string($line['section'] ?? null) ? Section::tryFrom($line['section']) : null;
 
         if ($section === null) {
