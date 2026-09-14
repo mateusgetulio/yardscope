@@ -198,6 +198,8 @@ it('never scores a requested-but-unseen placeholder as a hallucination', functio
     $results = json_decode((string) file_get_contents(glob($this->root.'/results/*.json')[0]), true);
 
     expect($results['sets'][0]['observed_services'])->toBe([])
+        ->and($results['sets'][0]['expected_services'])->toBe([])
+        ->and($results['metrics']['service_recall'])->toBeNull()
         ->and($results['sets'][0]['hallucinated'])->toBe([])
         ->and($results['sets'][0]['dispositions'][0]['observed'])->toBe('needs_photos')
         ->and($results['sets'][0]['photo_request_correct'])->toBeTrue()

@@ -1,18 +1,18 @@
 {
-    "set": "05-missing-wide-shrubs",
+    "set": "06-close-ups-only",
     "sentence": "Trim the rose of Sharon shrubs in the backyard.",
     "photos": [
         "photo-1.jpg",
         "photo-2.jpg"
     ],
-    "recorded_at": "2026-09-14T08:55:01+00:00",
+    "recorded_at": "2026-09-14T09:21:35+00:00",
     "observation": {
         "access": {
             "narrow_gate_possible": false,
             "evidence": []
         },
         "hazards": [],
-        "model_notes": "Both photos are extreme close-up (macro) shots of a single rose of Sharon flower bloom, not of the shrub itself. Neither photo shows the shrub's overall size, shape, branch structure, or its location in the yard \u2014 only blurred green foliage is visible in the background, with no ground, fence, structure, or other landmark to confirm which yard section this is. As a result, I cannot verify the shrubs are in the backyard (as stated in the request) or judge how many shrubs there are, their size, or how much trimming they need. Wide or medium shots showing the full shrub(s) and their surroundings would be needed to scope the shrub_trimming request.",
+        "model_notes": "Both photos are extreme macro close-ups of a single rose of Sharon flower bloom (white petals with a magenta/crimson eye and cream-colored stamen column). Neither photo shows any part of the shrub's overall form \u2014 no branches, canopy, height, spread, or surrounding yard context (fences, house, other plants) are visible, and no indication of which yard section the plant is in beyond the customer's stated location. As a result these photos cannot support scoping shrub_trimming (no way to judge plant size, overgrowth, or how many shrubs are involved) or confirm access/hazards. A wider, medium-distance photo of the shrub(s) in place would be needed to scope this job.",
         "photos": [
             {
                 "photo": 1,
@@ -30,6 +30,34 @@
         "requested_in_sentence": [
             "shrub_trimming"
         ],
-        "service_lines": []
+        "service_lines": [
+            {
+                "type": "shrub_trimming",
+                "section": "backyard",
+                "quantity": null,
+                "uncertain": "Both photos are extreme macro shots of a single flower bloom, not the shrub itself. No branch structure, plant height/spread, or shrub count is visible, so quantity and size cannot be determined from these images.",
+                "counting_evidence": null,
+                "supporting_evidence": [
+                    {
+                        "photo": 1,
+                        "note": "Close-up of a white rose of Sharon flower with magenta center; blurred green foliage in background, no shrub form visible."
+                    },
+                    {
+                        "photo": 2,
+                        "note": "Close-up of a similar rose of Sharon flower with a visible bud beside it; again only foliage in soft background, no shrub structure visible."
+                    }
+                ],
+                "evidence": [
+                    {
+                        "photo": 1,
+                        "note": "Flower macro shot confirms rose of Sharon species but gives no view of the shrub to assess trimming needs."
+                    },
+                    {
+                        "photo": 2,
+                        "note": "Second flower macro shot, same limitation \u2014 no shrub structure shown."
+                    }
+                ]
+            }
+        ]
     }
 }

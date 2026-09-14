@@ -9,9 +9,9 @@ use App\Scoping\Enums\LineDisposition;
 
 /**
  * Compares what the pipeline produced for a set with its labels. Services are matched by type
- * and section. Lines without a section are placeholders the pipeline itself adds for requested
- * work no photo shows (rule R3): they are scored on their disposition and the photo request,
- * never as something the model said.
+ * and section. Lines without a section, labeled or observed, are placeholders the pipeline itself
+ * adds for requested work no photo shows (rule R3): they are scored on their disposition and the
+ * photo request, never as something the model said or failed to say.
  */
 final readonly class Scorer
 {
@@ -20,9 +20,9 @@ final readonly class Scorer
         $expectedLines = array_values(array_filter($set->expected['lines'] ?? [], 'is_array'));
         // Optional lines are visible in the photos but not asked for: the model may volunteer them
         // (as suggestions) or not, and neither counts against it.
-        $required = array_values(array_filter($expectedLines, fn (array $line): bool => ($line['optional'] ?? false) !== true));
+        $required = array_values(array_filter($expectedLines, fn (array $line): bool => ($line['optional'] ?? false) !== true && ($line['section'] ?? null) !== null));
         $expectedServices = array_map(fn (array $line): string => self::key($line['type'] ?? '', $line['section'] ?? null), $required);
-        $optionalServices = array_map(fn (array $line): string => self::key($line['type'] ?? '', $line['section'] ?? null), array_values(array_diff_key($expectedLines, $required)));
+        $optionalServices = array_map(fn (array $line): string => self::key($line['type'] ?? '', $line['section'] ?? null), array_values(array_filter($expectedLines, fn (array $line): bool => ($line['optional'] ?? false) === true)));
         $lines = $scope === null ? [] : array_values(array_filter($scope->lines, fn (ScopeLine $line): bool => $line->disposition !== LineDisposition::Rejected));
         $modelLines = array_values(array_filter($lines, fn (ScopeLine $line): bool => ! $line->isPlaceholder()));
         $observedAll = array_map(fn (ScopeLine $line): string => self::key($line->type->value, $line->section?->value), $modelLines);

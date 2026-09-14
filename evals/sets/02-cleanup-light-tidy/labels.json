@@ -5,7 +5,7 @@
         "photo-1.jpg",
         "photo-2.jpg"
     ],
-    "notes": "Two different backyards: a mown lawn with shed and deck, and a paved yard with moss between pavers and a few weeds.",
+    "notes": "Two different backyards: a mown lawn with shed and deck, and a paved yard with moss between pavers and a few weeds. Photo 2 also shows a small weedy bed by the shed.",
     "expected": {
         "readiness": "ready",
         "wide_view": true,
@@ -16,6 +16,11 @@
                 "section": "backyard",
                 "severity": "light",
                 "disposition": "priceable"
+            },
+            {
+                "type": "bed_weeding",
+                "section": "backyard",
+                "optional": true
             }
         ]
     }

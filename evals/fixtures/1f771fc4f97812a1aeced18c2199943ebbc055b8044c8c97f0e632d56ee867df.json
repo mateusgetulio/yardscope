@@ -6,14 +6,14 @@
         "photo-2.jpg",
         "photo-3.jpg"
     ],
-    "recorded_at": "2026-09-14T08:59:31+00:00",
+    "recorded_at": "2026-09-14T09:24:47+00:00",
     "observation": {
         "access": {
             "narrow_gate_possible": false,
             "evidence": []
         },
         "hazards": [],
-        "model_notes": "All 3 supplied photos are interior shots of a home (living room with brick fireplace wall and TV, a living/dining room, and a second living area with a brick accent wall and desk). None show the backyard, any hedges, or any other exterior yard area \u2014 photo 2 has a glimpse of a street/parked cars and a playground through an open door, but this is not a usable view of the customer's yard. No sections (front_yard, backyard, side_yard) could be identified in any photo, so no service lines, access notes, or hazards can be reported. Photos matching the requested backyard cleanup and hedge trimming are needed to scope this job.",
+        "model_notes": "All 3 supplied photos are interior shots of the same home (a living room with a brick accent wall and fireplace, an adjoining dining area, and what appears to be a second living space with an AC unit and desk) \u2014 none show a yard, backyard, side yard, hedges, or any outdoor area. The customer asked to clean up the backyard and trim hedges, but no yard is visible in any photo, so no service lines, sections, or hazards can be scoped from this photo set. Photo-2 does show a glimpse of an exterior fenced area and street through an open door/window, but it is a narrow street-facing view (parked cars, a railing, a park across the street) with no lawn, planting bed, shrub, or hedge visible \u2014 it cannot be used to scope backyard cleanup or hedge trimming. To scope this job, new photos actually showing the backyard (and any hedges/shrubs in it) are needed.",
         "photos": [
             {
                 "photo": 1,

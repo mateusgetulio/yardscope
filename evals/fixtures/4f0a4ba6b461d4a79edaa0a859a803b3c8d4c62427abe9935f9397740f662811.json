@@ -5,7 +5,7 @@
         "photo-1.jpg",
         "photo-2.jpg"
     ],
-    "recorded_at": "2026-09-14T08:58:16+00:00",
+    "recorded_at": "2026-09-14T09:23:42+00:00",
     "observation": {
         "access": {
             "narrow_gate_possible": false,
@@ -14,26 +14,26 @@
         "hazards": [
             {
                 "section": "backyard",
-                "note": "The large broken limb is propped diagonally against the pergola/deck framing rather than lying fully on the ground (photo 1) \u2014 it may still be under tension and could shift unexpectedly when cut or pulled free.",
+                "note": "The fallen branch is still propped at a steep angle against the wooden fence rather than lying flat on the ground, so it could shift or drop further while being handled.",
                 "evidence": [
                     {
                         "photo": 1,
-                        "note": "Branch trunk leans from ground up through and against the wooden pergola beams, not flat on the lawn"
+                        "note": "large branch leaning diagonally, resting its upper end against the fence and pergola-style frame, not fully grounded"
                     }
                 ]
             },
             {
                 "section": "backyard",
-                "note": "A thin red cord/wire runs across the cut end of the branch and disappears into the grass near a hardhat (photo 2). Cannot tell from the photo whether this is a work cord/string line or a power cord \u2014 worth checking on site before work starts.",
+                "note": "An orange/red extension cord runs across the ground right next to the cut branch end, in the immediate work area.",
                 "evidence": [
                     {
                         "photo": 2,
-                        "note": "Red cord/wire draped over the splintered stump, running off into the lawn"
+                        "note": "cord visible looping across the grass and under the cut branch section"
                     }
                 ]
             }
         ],
-        "model_notes": "Photo 2 is a close-up of the branch's broken/cut base with a hardhat set on top and a thin red cord nearby, suggesting a work crew may already be on site or has staged for the job; this should be clarified with the customer. Species and full extent of the branch (how far it extends out of frame, whether it's still attached to a live tree overhead) are not fully shown in either photo.",
+        "model_notes": "Neither photo gives a clear read on the branch's full length or whether it came from a tree still standing in this yard or an adjacent one \u2014 only the down section and one cut end are visible. Photo 2 is a close-up of just the cut end plus a hard hat and cord, so it mainly confirms the wood is already partly sectioned rather than showing overall debris extent.",
         "photos": [
             {
                 "photo": 1,
@@ -64,24 +64,25 @@
                 "size": "large",
                 "counting_evidence": {
                     "photo": 1,
-                    "note": "One large limb, thick trunk-like diameter, spans from the ground up to roughly pergola-beam height, leaning across the yard"
+                    "note": "one large branch/limb (trunk-like diameter) down, spanning from the fence line diagonally across the lawn"
                 },
                 "supporting_evidence": [
                     {
                         "photo": 2,
-                        "note": "Close-up of the same branch's splintered, broken base confirming its thick diameter"
+                        "note": "close-up of the same branch's cut end, showing splintered, freshly-cut wood consistent with a large limb"
                     }
                 ],
                 "evidence": [
                     {
                         "photo": 1,
-                        "note": "Full downed branch visible leaning against pergola structure"
+                        "note": "full branch visible leaning across yard"
                     },
                     {
                         "photo": 2,
-                        "note": "Broken end of the branch showing torn, splintered wood"
+                        "note": "cut end detail"
                     }
-                ]
+                ],
+                "uncertain": "Cannot tell from the photos whether this came down from a tree still standing in this yard or fell from a neighboring tree, or whether it is one large branch versus a small fallen tree top."
             },
             {
                 "type": "yard_cleanup",
@@ -90,17 +91,13 @@
                 "supporting_evidence": [
                     {
                         "photo": 2,
-                        "note": "Additional smaller branch pieces visible on the ground in the background"
+                        "note": "smaller cut branch pieces already lying in the grass near the main cut end"
                     }
                 ],
                 "evidence": [
                     {
                         "photo": 1,
-                        "note": "Smaller branches and greenery scattered across the lawn beneath and around the main branch"
-                    },
-                    {
-                        "photo": 2,
-                        "note": "Cut branch sections and debris lying on the grass"
+                        "note": "scattered smaller twigs, needles, and branch fragments across the lawn around and under the main fallen branch"
                     }
                 ]
             }

@@ -5,11 +5,14 @@
         "photo-1.jpg",
         "photo-2.jpg"
     ],
-    "notes": "Two close-ups of single flowers on the same shrub. Nothing shows the yard, so the outcome is either a placeholder for the requested service (rule R3) or, if the model still names the section, a line without coverage (rule R2); the photo request must name the service either way.",
+    "notes": "Two close-ups of single flowers on the same shrub. By the instruction's own definition (in focus and showing a yard) neither photo is usable, so the outcome is either a placeholder for the requested service (rule R3) or, if the model still names the section, a line without coverage (rule R2); the photo request must name the service either way.",
     "expected": {
         "readiness": "needs_photos",
         "wide_view": false,
-        "unusable_photos": [],
+        "unusable_photos": [
+            1,
+            2
+        ],
         "photo_request": {
             "service": "shrub_trimming"
         },

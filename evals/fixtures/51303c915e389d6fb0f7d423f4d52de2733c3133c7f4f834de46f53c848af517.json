@@ -5,14 +5,14 @@
         "photo-1.jpg",
         "photo-2.jpg"
     ],
-    "recorded_at": "2026-09-14T08:54:41+00:00",
+    "recorded_at": "2026-09-14T09:19:48+00:00",
     "observation": {
         "access": {
             "narrow_gate_possible": false,
             "evidence": []
         },
         "hazards": [],
-        "model_notes": "Both photos show only the back fence-line planting bed; front yard, side yard, and the rest of the backyard are not shown, so overall yard condition can't be assessed. The fence is a wire livestock/field fence bordering open pasture, not a gated enclosure \u2014 no gate is visible in either photo. Shrub species can't be confirmed from the photos (folder context suggests viburnums, but this isn't visual evidence). Not clear whether the cut brush pile needs to be hauled off-site or can be left/mulched on-site.",
+        "model_notes": "No gate or path into the yard is visible in either photo, so side-yard access could not be assessed. The bed may extend beyond the frame in both directions along the fence line; only what's visible was counted. Cut-brush volume and haul-away needs are not estimated here per instructions.",
         "photos": [
             {
                 "photo": 1,
@@ -40,21 +40,20 @@
                 "type": "yard_cleanup",
                 "section": "backyard",
                 "severity": "moderate",
-                "counting_evidence": null,
+                "supporting_evidence": [
+                    {
+                        "photo": 2,
+                        "note": "Larger, denser pile of cut sticks/brush at the base of the fence-line bed, near the marker pole"
+                    }
+                ],
                 "evidence": [
                     {
                         "photo": 1,
-                        "note": "Cut brush and branches piled along the ground between the young shrubs, running along the bed near the back fence; two cut log rounds lie at the left edge of the bed."
+                        "note": "Pile of cut brush/sticks sitting on bare soil between two of the young shrubs along the fence"
                     },
                     {
-                        "photo": 2,
-                        "note": "Closer view of the same bed showing a dense pile of cut brush/stems on bare soil in the foreground, at the base of the shrubs."
-                    }
-                ],
-                "supporting_evidence": [
-                    {
                         "photo": 1,
-                        "note": "Tall grass and weeds along the fence line behind the bed are not part of the cut-brush pile but visible in the same shot."
+                        "note": "Several cut log rounds/wood pieces lying at the near end of the bed"
                     }
                 ]
             },
@@ -65,20 +64,21 @@
                 "size": "small",
                 "counting_evidence": {
                     "photo": 1,
-                    "note": "Three young shrubs are spaced along the fence-line bed: one on the left near wire/stake caging, one in the center, and one on the right near a wood post."
+                    "note": "Wide shot shows three distinct young shrubs planted in a row along the fence bed"
                 },
-                "evidence": [
-                    {
-                        "photo": 2,
-                        "note": "Closer view of two of the shrubs showing full, leafy young growth with multiple thin stems reaching roughly shoulder height, untrimmed and irregular in shape."
-                    }
-                ],
                 "supporting_evidence": [
                     {
-                        "photo": 1,
-                        "note": "Wide view confirms all three shrubs are similarly young and leafy along the same bed."
+                        "photo": 2,
+                        "note": "Closer view of two of the same shrubs (matching the ones right of the marker pole in photo 1), showing leaf/branch detail"
                     }
-                ]
+                ],
+                "evidence": [
+                    {
+                        "photo": 1,
+                        "note": "Three young, thin shrubs staked/caged in bare soil along the fence, roughly waist to shoulder height"
+                    }
+                ],
+                "uncertain": "The shrubs appear young with light, open growth and no obviously overgrown or crossing branches in these photos, so it's hard to judge from the images alone how much trimming they need."
             }
         ]
     }

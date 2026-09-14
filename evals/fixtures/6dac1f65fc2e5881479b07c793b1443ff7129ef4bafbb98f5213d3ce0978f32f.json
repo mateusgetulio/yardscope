@@ -5,23 +5,14 @@
         "photo-1.jpg",
         "photo-2.jpg"
     ],
-    "recorded_at": "2026-09-14T08:57:03+00:00",
+    "recorded_at": "2026-09-14T09:22:41+00:00",
     "observation": {
         "access": {
             "narrow_gate_possible": false,
-            "evidence": [
-                {
-                    "photo": 1,
-                    "note": "No side gate is visible in this wide backyard shot; only wood fence panels are shown."
-                },
-                {
-                    "photo": 2,
-                    "note": "No gate visible in this close/medium shot either \u2014 cannot assess gate width from either photo."
-                }
-            ]
+            "evidence": []
         },
         "hazards": [],
-        "model_notes": "The customer's sentence asks to haul away a fallen branch, but no fallen or downed branch is visible anywhere in either photo. Photo 1 is a wide backyard shot (fence, lawn, bird bath, sundial, flower beds, potted plants) and photo 2 is a closer shot of potted flowers against a trimmed hedge \u2014 neither shows loose branches, brush piles, or storm debris on the ground. A branch_removal line has been omitted from service_lines because there is no photographic evidence to size or locate it; confirm with the customer where the branch is (it may be in a yard section/area not captured by these two photos) before scoping that line item.",
+        "model_notes": "The customer's sentence asks to \"haul away the fallen branch,\" but no fallen or downed branch is visible in either photo. Photo 1 is a wide shot of the whole backyard (lawn, fence line, patio, beds) and Photo 2 is a closer shot of a shrub and potted plants \u2014 neither shows any loose branch, log, or brush pile on the ground. The location, size, and quantity of the branch could not be confirmed from these photos and would need to be verified on site.",
         "photos": [
             {
                 "photo": 1,
@@ -48,17 +39,20 @@
             {
                 "type": "yard_cleanup",
                 "section": "backyard",
+                "quantity": null,
                 "severity": "light",
+                "uncertain": null,
+                "counting_evidence": null,
                 "supporting_evidence": [
                     {
                         "photo": 2,
-                        "note": "Patio/planting area is tidy and maintained \u2014 no litter, no overflowing debris."
+                        "note": "Patio, potted plants, and shrub area in the foreground appear tidy and maintained, no loose debris or clutter visible."
                     }
                 ],
                 "evidence": [
                     {
                         "photo": 1,
-                        "note": "Lawn is mowed and even, flower beds and potted plants look maintained, no visible leaf piles, trash, or overgrowth across the yard."
+                        "note": "Lawn is mostly green and mowed; only minor thin/bare turf patches are visible near the tree line at back-left and around the birdbath post, and a few small weeds are visible among the stepping stones on the right side of the yard."
                     }
                 ]
             }

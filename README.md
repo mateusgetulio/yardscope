@@ -1,107 +1,60 @@
 # YardScope
 
-Turn a homeowner's sentence and two to four yard photos into a job scope a marketplace can price, correct and book, with a pre-visit brief for the pro.
+Turn a homeowner's sentence and two to four yard photos into a job a marketplace can price, correct and book, with a pre-visit brief for the pro.
+
+Instant pricing already works for services that can be measured from satellite imagery. YardScope explores the long tail that still needs someone to come and quote it. Not affiliated with any lawn-care or home-services company; rates are synthetic.
 
 ![Pipeline](docs/pipeline.svg)
 
-Not affiliated with any lawn-care or home-services company. Rates are synthetic. Built as a one-day prototype to explore one question: how far can a vision model take a "manual quote" job before a human has to look?
+## Demo
 
-## What it does
+DEMO
 
-1. **Request.** The customer writes what they need ("My backyard is a mess. Clean it up and trim whatever needs trimming.") and adds two to four photos. Photos are re-encoded so no metadata survives, with the EXIF orientation applied first.
-2. **Observation.** A vision model reports what the photos show, through a strict schema: one service line per service and yard section, with the photo and note that support it, which photo it counted from, the view of each photo, a possible narrow gate, hazards, and what it could not judge. It never prices, never measures, never decides readiness.
-3. **Readiness gate.** Deterministic rules decide, per line, whether the work can be priced from these photos (`priceable`), needs a specific photo (`needs_photos`, with the exact request), has to be seen by a pro (`manual_quote`: large shrubs, large or uncertain branches, hazards), was seen but not asked for (`suggested`), or could not be read (`rejected`). The rules have a fixed precedence, so there is no tie-break to invent.
-4. **Price and correct.** A synthetic rate card prices the priceable lines only. The customer can remove lines, add suggestions, and correct counts, sizes and severities within bounds; every correction is re-gated by the same rules (a shrub corrected to large becomes a pro quote) and stored with the value the customer was looking at and their reason.
-5. **Book and brief.** "Book this job, $165" when everything is priced, "Book priced work, $165" when some lines are gated, with the gated lines named under the price. The pro reads a brief built from the scope alone: every value tagged as seen in the photos or corrected by the customer, evidence per photo, access flags, open questions, and three actions (accept the scope, request a photo, adjust the quote).
+## How it decides
 
-A collapsible panel on the result page and the Pro View shows what each stage produced for the request: the photos as described, the extraction runs, validation rejections, every line's rule checks, the pricing arithmetic, and the correction history.
+1. **Observation.** A vision model reports what the photos show through a strict schema: one line per service and yard section, with the photo and note that support it, which photo it counted from, each photo's view, a possible narrow gate, hazards, and what it could not judge. It never prices, never measures, never decides readiness.
+2. **Readiness gate.** Deterministic rules with a fixed precedence decide, per line: `priceable`, `needs_photos` (with the exact photo request), `manual_quote` (large shrubs, large or uncertain branches, hazards), `suggested` (seen but not asked for), or `rejected` (could not be read). Readiness rolls up from the lines: ready, partial, needs photos, or pro quote.
+3. **Price and correct.** A synthetic rate card prices the priceable lines only. The customer can remove lines, add suggestions, and correct counts, sizes and severities within bounds; every correction is re-gated by the same rules and stored with the value the customer was looking at and their reason. Adding a photo runs the analysis again and carries the corrections that still apply.
+4. **Book and brief.** "Book this job, $165" when everything is priced, "Book priced work, $165" when some lines are gated, with the gated lines named under the price. The pro reads a brief built from the scope alone: every value tagged as seen in the photos or corrected by the customer, evidence per photo, open questions, and three actions.
 
-## The worked example
-
-Three photos of a medium backyard, sentence above. The model sees a heavy cleanup, four medium shrubs counted from photo 1, and one large fallen branch it cannot judge from photo 2, plus a side gate that looks narrow.
-
-| Line | Disposition | Why |
-|---|---|---|
-| Yard cleanup, backyard, heavy | priceable | wide view of the section, evidence on photo 1 |
-| Shrub trimming, backyard, 4 medium | priceable | one counting view, size within range |
-| Branch removal, backyard, 1 large | manual quote | large and uncertain branches are quoted on site |
-
-Result: **partial**, $165 for 2 to 3.5 hours of estimated work including a $29 visit fee, "Branch removal is not included. A pro will quote it separately." The arithmetic is in the panel: 2.3 to 3.225 hours, midpoint at $48 per hour plus the visit fee, rounded up to the next $5.
-
-## Invariants
-
-Nine invariants run over 1,500 seeded random scopes on every test run (`SCOPE_TEST_SEED=<n> vendor/bin/pest --filter='INV-5\b'` reruns one with a chosen seed):
-
-- INV-1 no line is priced without valid evidence; observed counts have exactly one counting view.
-- INV-2 only validated scopes reach pricing; unknown types and rejected lines never do.
-- INV-3 lines that need photos, a pro, or were only suggested never contribute to the price.
-- INV-4 pricing is deterministic.
-- INV-5 adding priceable work or raising a count, size or severity within range never lowers the price.
-- INV-6 corrections stay within bounds; a correction that crosses a rule boundary changes the disposition instead of being priced.
-- INV-7 the pro brief mentions only what the scope contains, and every value carries its origin.
-- INV-8 access notes and suggested lines never change the price.
-- INV-9 readiness is a pure function of the dispositions, and a photo that satisfies a failed rule never makes a line worse.
+The worked example (three backyard photos, "clean it up and trim whatever needs trimming") prices a heavy cleanup and four medium shrubs at $165 for 2 to 3.5 hours and sends one large fallen branch to the pro: **partial**. The arithmetic is in the collapsible pipeline panel on every result page. Nine invariants over 1,500 seeded random scopes guard the domain; they are listed in [docs/invariants.md](docs/invariants.md).
 
 ## Evals
 
-The model is not covered by invariants; it is measured. `evals/sets/<name>/labels.json` labels a photo set with the expected lines, counts, counting photo, dispositions, readiness, unusable photos and photo request. `php artisan yardscope:eval --live` runs every set through the configured extractor, records each answer, and writes `evals/results/<date>.json` with service precision and recall, count accuracy (exact and within one), schema-valid rate, hallucinated lines, and disposition, readiness and photo-request accuracy. `--fixtures` replays the recorded answers, which is what CI runs, and reproduces the live numbers exactly. The `/evals` page shows the latest file as written; nothing is rounded up or edited.
+Twelve labeled photo sets, three live runs on 2026-09-14, every number as the run produced it. The current state (the third run's answers, scored after the labels and the scorer were corrected):
 
-Twelve labeled sets live in `evals/sets`, one per scenario from the plan (happy path twice, cleanup plus shrubs twice, missing wide shot twice, requested service unseen, unusable photo, branch uncertainty, manual-only service, hallucination trap, multiple sections). The photos are openly licensed images found through Openverse; every title, creator, license and source is in `evals/LICENSES.md`. Several sets combine photos of different properties and say so in their labels.
+| Metric | Value |
+|---|---|
+| Schema-valid answers | 12/12 |
+| Service precision / recall | 1.000 / 0.933 |
+| Counts exact / within one | 0.800 / 1.000 |
+| Hallucinated lines | 0 |
+| Severity / size correct | 0.889 / 0.750 |
+| Dispositions correct | 0.789 |
+| Request readiness correct | 9/12 |
+| Photo request correct | 0.750 |
+| Unusable photos flagged | 1.000 |
 
-Two live runs were made on 2026-09-14 through the Claude Code driver, both kept in `evals/results` as written:
+Run 1 found the model flagging ordinary overhead power lines as hazards; the instruction was tightened. Between runs, four labels were corrected and the scorer was fixed to stop counting the pipeline's own placeholders as model lines; [docs/evals.md](docs/evals.md) says exactly which gain came from which change, and names every miss. The `/evals` page shows the newest results file; CI replays the recordings and fails on drift.
 
-| Metric | First run | Second run |
-|---|---|---|
-| Schema-valid answers | 12/12 | 12/12 |
-| Service precision / recall | 0.81 / 0.90 | 1.00 / 1.00 |
-| Counts exact / within one | 0.80 / 0.80 | 1.00 / 1.00 |
-| Hallucinated lines | 4 | 0 |
-| Severity / size correct | 0.89 / 0.25 | 0.89 / 0.75 |
-| Dispositions correct | 0.47 | 0.89 |
-| Request readiness correct | 7/12 | 10/12 |
-| Photo request correct | 0.50 | 1.00 |
-| Unusable photos flagged | 0.92 | 0.92 |
+## What I would measure in production
 
-The first run found a real problem: the model reported ordinary overhead power lines as hazards in five sets, and rule R5 then sent whole sections to a pro quote. The instruction was tightened to name what makes the work itself unsafe, and three labels were corrected to the pipeline's own conventions (a requested service no photo shows is a placeholder without a section). The second run is what the model does now. Its two readiness misses are honest disagreements: it calls the five hibiscus shrubs large where the label says medium, so that line goes to a pro, and it rates the storm-debris cleanup moderate instead of heavy while flagging the fallen limb leaning on a pergola as a hazard.
+Quote-to-booking conversion for photo-scoped jobs against manual quotes, and for partial requests specifically; time from request to booked job; how often and by how much pros adjust the scope or price; the needs-photos rate and how often the requested photo unlocks the line; the customer correction rate and its direction (adding work the photos missed, or removing work the model invented); disputes and refunds after the visit; cost and latency per analysis. Corrections from customers and pros would feed the eval set, so the model is judged against what happened on site.
 
-## Running it
+## What it deliberately does not do
 
-```bash
-composer install && npm install
-cp .env.example .env && php artisan key:generate
-php artisan migrate
-npm run build
-php artisan serve
-```
-
-Everything runs on recorded model answers by default (`YARDSCOPE_EXTRACTOR=fixtures`), so the tests and CI need no key. Two live drivers exist:
-
-- `YARDSCOPE_EXTRACTOR=api` sends the photos through the Laravel AI SDK to the configured provider (`YARDSCOPE_AI_PROVIDER`, `YARDSCOPE_AI_MODEL`, default Anthropic with `ANTHROPIC_API_KEY`).
-- `YARDSCOPE_EXTRACTOR=claude-code` runs the same instructions and schema through the local Claude Code CLI in print mode on the developer's own session, for development without an API key. The CLI reads the photos with its own tool and answers through structured output; the repair attempt resumes the same session.
-
-`php artisan yardscope:record "<sentence>" photo1.jpg photo2.jpg` records one live answer as a fixture keyed by the photo bytes and the sentence.
-
-Checks: `vendor/bin/pint --test`, `vendor/bin/phpstan analyse`, `vendor/bin/pest`, `npm run types:check`, `npm run lint`, `npm run format:check`.
+No authentication, payments, provider matching, scheduling, maps or notifications. No satellite or address data: the yard size is a simulated property profile in config. No square-footage estimates from photos, which have no reliable scale; the model reports counts, size buckets and severity only. No bounding boxes, no fine-tuning, no claim of conversion uplift, no deployment. Analysis runs inside the request in this prototype; production would queue it.
 
 ## How it was built
 
-- **Stack.** Laravel 13 on PHP 8.4, Inertia with React 19 and TypeScript, Vite, Tailwind, Pest, Larastan at level 7, Pint. SQLite with four tables: requests, observation runs, correction records and pro actions. The scope itself is never stored; it is rebuilt from the latest observation plus the replayed corrections on every load, so what the customer sees is always what the domain computes.
-- **Domain first.** `app/Scoping` has no framework dependency, enforced by an architecture test: final readonly value objects, backed enums, integer cents, domain exceptions. The readiness rules, pricing, corrections and the pro brief are all there and all unit tested.
-- **Extraction.** The observation schema and the prompt live in one agent class. The Laravel AI SDK version used (0.11) has no `AgentFake` class despite the docs; the fake is `Ai::fakeAgent()`, and the driver tests use it. The Claude Code driver was verified live; the API driver was built against the SDK's fake and not exercised against a provider, because no API key was available while building.
-- **Fixtures as the test seam.** Feature tests re-encode the same bytes the app stores and key the recording on them, so the fixture lookup is exercised honestly rather than mocked.
-- **Repair, then refuse.** An observation that fails the schema gets one repair attempt with the parser's own message; a second failure lands the request on a pro quote, never on a guess. A provider failure is stored on the run and the customer sees one plain sentence; the raw error stays on the Pro View.
-- **What would change in production.** Analysis would run on a queue with a timeout instead of inside the request; the property profile would come from an address lookup instead of config; the rate card would be real; photos would go to object storage; the pro actions would notify someone.
+Laravel 13 on PHP 8.4, Inertia with React 19 and TypeScript, Pest, Larastan at level 7, Pint, SQLite with four tables (requests, observation runs, correction records, pro actions). The scope is never stored: it is rebuilt from the latest observation plus the replayed corrections on every load. `app/Scoping` has no framework dependency, enforced by an architecture test.
 
-## Layout
+Built with Claude Code over two days, every milestone reviewed by a separate reviewer agent against a frozen spec and fixed before merging. The extraction step has three drivers, chosen by `YARDSCOPE_EXTRACTOR`: `fixtures` (recorded answers keyed by photo bytes and sentence; the default, what tests and CI use), `api` (the Laravel AI SDK with `ANTHROPIC_API_KEY`), and `claude-code` (the same instructions and schema through the Claude Code CLI on the developer's own session). The Claude Code driver ran every live eval; the API driver was built against the SDK's fake and was not exercised against a provider, because no key was available. The SDK version used (0.11) has no `AgentFake` despite its docs; the fake is `Ai::fakeAgent()`.
 
+```bash
+composer install && npm install
+cp .env.example .env && php artisan key:generate && php artisan migrate
+npm run build && php artisan serve
 ```
-app/Scoping        domain: observation parsing, readiness gate, pricing, corrections, pro brief
-app/Extraction     vision extractors: fixtures, AI SDK agent, Claude Code CLI
-app/Intake         photo store, analyzer, scope assembler
-app/Evals          labeled sets, scorer, metrics, runner
-app/Http           controllers, form requests, presenters
-resources/js       Inertia pages: request, result, booked, pro, evals; the pipeline panel
-tests/Unit         domain tests and the invariants
-tests/Feature      the customer flow, the pro view, the drivers, the commands
-evals/             labeled sets, recorded answers, results
-```
+
+Checks: `vendor/bin/pint --test`, `vendor/bin/phpstan analyse`, `vendor/bin/pest`, `npm run types:check`, `npm run lint`, `npm run format:check`, `php artisan yardscope:eval --fixtures --expect latest`. Code is MIT licensed; the eval photos keep their own licenses, listed in `evals/LICENSES.md`.

@@ -5,8 +5,14 @@
         "photo-1.jpg",
         "photo-2.jpg"
     ],
-    "recorded_at": "2026-09-14T08:57:25+00:00",
+    "recorded_at": "2026-09-14T09:22:59+00:00",
     "observation": {
+        "access": {
+            "narrow_gate_possible": false,
+            "evidence": []
+        },
+        "hazards": [],
+        "model_notes": "Photo 1 is extremely blurry (heavy motion blur, only smeared green tones visible) and could not be identified as any yard section or used as evidence. Only photo 2 is usable, and it shows just one angle of the backyard, so full extent of leaf coverage (e.g., corners, side areas) cannot be confirmed beyond what's visible in that frame.",
         "photos": [
             {
                 "photo": 1,
@@ -30,24 +36,18 @@
             {
                 "type": "yard_cleanup",
                 "section": "backyard",
-                "severity": "heavy",
                 "quantity": null,
+                "severity": "heavy",
                 "supporting_evidence": [],
                 "evidence": [
                     {
                         "photo": 2,
-                        "note": "Ground is almost entirely covered in fallen leaves across the visible lawn, from the foreground to the base of the shed and trees."
+                        "note": "Ground is almost entirely blanketed in fallen leaves (orange/brown) across the whole visible lawn area, from foreground to the base of the shed and tree line."
                     }
                 ],
                 "counting_evidence": null,
                 "uncertain": null
             }
-        ],
-        "access": {
-            "narrow_gate_possible": false,
-            "evidence": []
-        },
-        "hazards": [],
-        "model_notes": "Photo 1 is too blurry/out of focus to identify what it shows (indistinct green streaks, possibly foliage) \u2014 it could not be used for scoping and is excluded from section and service evidence. Only one usable photo (Photo 2) is available for the backyard, so the leaf coverage assessment (heavy, \"almost entirely covered\") is based on that single wide view; areas of the yard outside its frame were not photographed. A thin wire is visible crossing the upper-right of Photo 2, consistent with a normal overhead utility line rather than a hazard."
+        ]
     }
 }

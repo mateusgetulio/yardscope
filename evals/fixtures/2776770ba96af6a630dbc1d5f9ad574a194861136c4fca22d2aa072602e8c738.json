@@ -5,19 +5,19 @@
         "photo-1.jpg",
         "photo-2.jpg"
     ],
-    "recorded_at": "2026-09-14T08:52:23+00:00",
+    "recorded_at": "2026-09-14T09:17:19+00:00",
     "observation": {
         "access": {
-            "narrow_gate_possible": true,
+            "narrow_gate_possible": false,
             "evidence": [
                 {
                     "photo": 2,
-                    "note": "A wooden plank gate is visible in the fence line to the right of the shed; its width can't be judged from this angle, so a narrow side gate is possible but not confirmed."
+                    "note": "Wooden fence includes one lighter-colored panel that may be a secondary gate/door, but its width can't be judged from this angle."
                 }
             ]
         },
         "hazards": [],
-        "model_notes": "The two photos appear to show two visually distinct properties (Photo 1: a North American-style yard with a wood-frame shed, an above-ground pool built into a deck, chain-link fencing, and neighboring clapboard houses; Photo 2: a different-looking property with a brick outbuilding, paved patio, gravel strip, and wooden board fencing, with brick buildings behind). A scope should confirm both photos are from the same job/address before finalizing, since I cannot verify that from the images alone.",
+        "model_notes": "Photo 1 and Photo 2 appear to show two visually distinct spaces: Photo 1 is an American-style backyard with a storage shed, raised deck and pool. Photo 2 is a small enclosed paved courtyard against a brick outbuilding with a wooden privacy fence, in what looks like a different architectural context. Both were labeled backyard on the assumption they belong to the same property per the customer's request, but this should be confirmed before scoping, since they may represent different areas or even be mismatched photos.",
         "photos": [
             {
                 "photo": 1,
@@ -43,19 +43,19 @@
             {
                 "type": "yard_cleanup",
                 "section": "backyard",
-                "quantity": null,
                 "severity": "light",
+                "quantity": null,
                 "uncertain": null,
                 "counting_evidence": null,
                 "supporting_evidence": [],
                 "evidence": [
                     {
                         "photo": 1,
-                        "note": "Lawn shows mower-stripe pattern with some patchy, drier/thinner patches; no large debris, downed branches, or heavy overgrowth visible."
+                        "note": "Lawn is mowed with visible mower stripes, no debris or overgrowth visible around shed, deck, or fence line."
                     },
                     {
                         "photo": 2,
-                        "note": "Scattered dry leaves and small twigs cover the paved patio and gravel strip, and a few weeds are growing in the gravel and along the shed wall base; overall clutter is minor."
+                        "note": "Scattered dried leaves across the paver patio and a few small weeds sprouting between paver joints and in the gravel patch; grass area has some seed heads/small yellow-flowered weeds mixed in."
                     }
                 ]
             }

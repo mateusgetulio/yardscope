@@ -1,0 +1,62 @@
+{
+    "set": "05-missing-wide-beds",
+    "sentence": "Weed the flower beds along the fence in the backyard.",
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "recorded_at": "2026-09-14T09:20:50+00:00",
+    "observation": {
+        "access": {
+            "narrow_gate_possible": false,
+            "evidence": []
+        },
+        "hazards": [],
+        "model_notes": "Only a medium shot of one segment of the fence-line bed (photo 1) and one extreme close-up of a single flower clump (photo 2) were provided. There is no wide shot showing the full run of flower bed along the backyard fence, so the total length of bed and how much of it actually needs weeding can't be assessed from these photos.",
+        "photos": [
+            {
+                "photo": 1,
+                "view": "medium",
+                "sections": [
+                    "backyard"
+                ],
+                "usable": true
+            },
+            {
+                "photo": 2,
+                "view": "close",
+                "sections": [
+                    "backyard"
+                ],
+                "usable": true
+            }
+        ],
+        "requested_in_sentence": [
+            "bed_weeding"
+        ],
+        "service_lines": [
+            {
+                "type": "bed_weeding",
+                "section": "backyard",
+                "quantity": 1,
+                "counting_evidence": {
+                    "photo": 1,
+                    "note": "One flower bed segment visible running along the wooden fence, planted with mixed perennials (red mums, yellow goldenrod, pink larkspur, blue sea holly) over a low groundcover mat."
+                },
+                "supporting_evidence": [
+                    {
+                        "photo": 2,
+                        "note": "Close-up of a single pink flower clump on bare soil/light mulch, with small green groundcover leaves at the corners; the crop is too tight to show more bed area or confirm it's a different section of the same bed."
+                    }
+                ],
+                "evidence": [
+                    {
+                        "photo": 1,
+                        "note": "Bed against the wood fence is densely planted and blooming; no dandelions, grass clumps, or other obviously non-planted weeds are distinguishable from the cultivated flowers and groundcover in this shot."
+                    }
+                ],
+                "uncertain": "Neither photo clearly shows weeds distinct from the planted flowers/groundcover, so how much actual weed growth is in the bed (and its severity) can't be judged from these images alone."
+            }
+        ]
+    }
+}

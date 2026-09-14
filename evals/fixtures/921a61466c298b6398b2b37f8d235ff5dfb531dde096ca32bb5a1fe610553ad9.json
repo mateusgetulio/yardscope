@@ -6,18 +6,18 @@
         "photo-2.jpg",
         "photo-3.jpg"
     ],
-    "recorded_at": "2026-09-14T09:00:34+00:00",
+    "recorded_at": "2026-09-14T09:25:52+00:00",
     "observation": {
         "access": {
             "narrow_gate_possible": false,
             "evidence": []
         },
         "hazards": [],
-        "model_notes": "No photo shows a side gate, so equipment access width to the side/back yard can't be confirmed. Photo 1 only shows one stretch of the side bed against the siding; whether it continues further toward the back is unknown. Photo 3 shows an in-ground/deck-level pool and a shed in the backyard, neither of which is part of a standard yard cleanup scope. Only one photo covers each of front_yard and backyard, so cleanup severity is based on a single vantage point per section.",
+        "model_notes": "None of the three photos show a side gate or the route equipment/crew would take between front and back yards, so gate width and backyard access should be confirmed on site. Photo 1 is a close-up of only one section of the side bed; the bed's full length beyond the frame isn't shown.",
         "photos": [
             {
                 "photo": 1,
-                "view": "medium",
+                "view": "close",
                 "sections": [
                     "side_yard"
                 ],
@@ -50,60 +50,48 @@
                 "section": "side_yard",
                 "quantity": 1,
                 "severity": "moderate",
+                "uncertain": null,
                 "counting_evidence": {
                     "photo": 1,
-                    "note": "One continuous mulch/planting bed runs along the visible stretch of the house's side, from the foundation to the brick edging near the sidewalk."
+                    "note": "One continuous garden bed runs along the house foundation from the corner to the front walkway."
                 },
                 "supporting_evidence": [],
                 "evidence": [
                     {
                         "photo": 1,
-                        "note": "Grass and broadleaf weeds (including white-flowered clover/weeds) have grown up through the mulch along most of the bed's length."
-                    },
-                    {
-                        "photo": 1,
-                        "note": "Mulch coverage is thin/patchy in several spots where weeds and grass have taken over, and a shovel is staged in the bed, suggesting work has started or is planned."
+                        "note": "Grass and weeds are growing up through the mulch along the full visible length of the bed, with flowering clover/weeds encroaching near the walkway end; a shovel left standing in the bed suggests weeding work already underway."
                     }
-                ],
-                "uncertain": "The bed's full length beyond the framing of this photo (further down the side yard) is not shown."
+                ]
             },
             {
                 "type": "yard_cleanup",
                 "section": "front_yard",
                 "quantity": null,
                 "severity": "light",
+                "uncertain": null,
                 "counting_evidence": null,
                 "supporting_evidence": [],
                 "evidence": [
                     {
                         "photo": 2,
-                        "note": "Lawn is green, mowed, and even; driveway and walkway are clear of debris."
-                    },
-                    {
-                        "photo": 2,
-                        "note": "Foundation shrubs and the flowering tree near the porch appear maintained, no visible overgrowth encroaching on the walkway."
+                        "note": "Lawn is mowed, edged, and green with no visible debris, leaves, or clutter across the visible yard area."
                     }
-                ],
-                "uncertain": "No close-up of the lawn edges, flower beds near the porch, or areas out of frame (e.g. side of the front yard) to confirm whether debris or leaf litter is present there."
+                ]
             },
             {
                 "type": "yard_cleanup",
                 "section": "backyard",
                 "quantity": null,
                 "severity": "light",
+                "uncertain": null,
                 "counting_evidence": null,
                 "supporting_evidence": [],
                 "evidence": [
                     {
                         "photo": 3,
-                        "note": "Lawn is mowed but shows mixed green and brown/dry patches across the yard."
-                    },
-                    {
-                        "photo": 3,
-                        "note": "No visible trash, fallen branches, or large debris on the grass; shed and deck area appear clear."
+                        "note": "Lawn shows recent mower stripes and no visible litter, branches, or debris; shed and deck area appear tidy."
                     }
-                ],
-                "uncertain": "Cause of the brown/dry patches (e.g. thatch, dead grass, mowing pattern) can't be determined from the photo, so it's unclear how much cleanup work, if any, this represents beyond normal mowing."
+                ]
             }
         ]
     }

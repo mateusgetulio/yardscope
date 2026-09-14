@@ -1,0 +1,1382 @@
+{
+    "ran_at": "2026-09-14T09:25:52+00:00",
+    "mode": "live",
+    "driver": "claude-code",
+    "metrics": {
+        "sets": 12,
+        "schema_valid_rate": 1.0,
+        "service_precision": 0.929,
+        "service_recall": 0.684,
+        "count_exact_rate": 0.6,
+        "count_within_one_rate": 0.8,
+        "hallucinated_lines": 1,
+        "duplicate_lines": 0,
+        "severity_accuracy": 0.889,
+        "size_accuracy": 0.5,
+        "disposition_accuracy": 0.737,
+        "readiness_accuracy": 0.75,
+        "photo_request_accuracy": 0.75,
+        "counting_photo_accuracy": 0.8,
+        "unusable_photo_accuracy": 0.917
+    },
+    "sets": [
+        {
+            "slug": "01-cleanup-heavy-leaves",
+            "scenario": "happy_path_cleanup",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "yard_cleanup@backyard"
+            ],
+            "observed_services": [
+                "yard_cleanup@backyard"
+            ],
+            "duplicate_lines": 0,
+            "hallucinated": [],
+            "counts": [],
+            "dispositions": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "expected": "priceable",
+                    "observed": "priceable",
+                    "correct": true
+                }
+            ],
+            "counting_photos": [],
+            "attributes": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "attribute": "severity",
+                    "expected": "heavy",
+                    "observed": "heavy",
+                    "correct": true
+                }
+            ],
+            "optional_services": [],
+            "expected_readiness": "ready",
+            "observed_readiness": "ready",
+            "readiness_correct": true,
+            "photo_request_correct": null,
+            "unusable_photos_correct": true,
+            "observation": {
+                "photos": [
+                    {
+                        "photo": 1,
+                        "view": "wide",
+                        "sections": [
+                            "backyard"
+                        ],
+                        "usable": true
+                    },
+                    {
+                        "photo": 2,
+                        "view": "wide",
+                        "sections": [
+                            "backyard"
+                        ],
+                        "usable": true
+                    }
+                ],
+                "requested_in_sentence": [
+                    "yard_cleanup"
+                ],
+                "service_lines": [
+                    {
+                        "type": "yard_cleanup",
+                        "section": "backyard",
+                        "quantity": null,
+                        "size": null,
+                        "severity": "heavy",
+                        "counting_evidence": null,
+                        "supporting_evidence": [
+                            {
+                                "photo": 2,
+                                "note": "Dry, dead weeds/tall grass densely covering the open ground area beyond the garden bed border, extending across most of the visible yard floor."
+                            }
+                        ],
+                        "evidence": [
+                            {
+                                "photo": 1,
+                                "note": "Ground is completely blanketed in a thick layer of dead leaves from the foreground all the way back to the tree line, with grass barely visible underneath."
+                            },
+                            {
+                                "photo": 2,
+                                "note": "Foreground and mid-ground covered in dense, dried-out dead weeds/tall grass, waist-high in places."
+                            }
+                        ],
+                        "uncertain": null
+                    }
+                ],
+                "access": {
+                    "narrow_gate_possible": false,
+                    "evidence": []
+                },
+                "hazards": [],
+                "model_notes": "Photo 2 shows a stack of cut lumber/wood scraps in the foreground and a metal-framed object near the garden bed \u2014 these look like discarded building material, not tree branches or yard debris covered by the requested cleanup; flag with the customer if removal of that material is wanted. Front yard and side yard are not shown in either photo, so no scope can be reported for those sections."
+            }
+        },
+        {
+            "slug": "02-cleanup-light-tidy",
+            "scenario": "happy_path_cleanup",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "yard_cleanup@backyard"
+            ],
+            "observed_services": [
+                "yard_cleanup@backyard"
+            ],
+            "duplicate_lines": 0,
+            "hallucinated": [],
+            "counts": [],
+            "dispositions": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "expected": "priceable",
+                    "observed": "priceable",
+                    "correct": true
+                }
+            ],
+            "counting_photos": [],
+            "attributes": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "attribute": "severity",
+                    "expected": "light",
+                    "observed": "light",
+                    "correct": true
+                }
+            ],
+            "optional_services": [],
+            "expected_readiness": "ready",
+            "observed_readiness": "ready",
+            "readiness_correct": true,
+            "photo_request_correct": null,
+            "unusable_photos_correct": true,
+            "observation": {
+                "photos": [
+                    {
+                        "photo": 1,
+                        "view": "wide",
+                        "sections": [
+                            "backyard"
+                        ],
+                        "usable": true
+                    },
+                    {
+                        "photo": 2,
+                        "view": "medium",
+                        "sections": [
+                            "backyard"
+                        ],
+                        "usable": true
+                    }
+                ],
+                "requested_in_sentence": [
+                    "yard_cleanup"
+                ],
+                "service_lines": [
+                    {
+                        "type": "yard_cleanup",
+                        "section": "backyard",
+                        "quantity": null,
+                        "size": null,
+                        "severity": "light",
+                        "counting_evidence": null,
+                        "supporting_evidence": [],
+                        "evidence": [
+                            {
+                                "photo": 1,
+                                "note": "Lawn is mowed with visible mower stripes, no debris or overgrowth visible around shed, deck, or fence line."
+                            },
+                            {
+                                "photo": 2,
+                                "note": "Scattered dried leaves across the paver patio and a few small weeds sprouting between paver joints and in the gravel patch; grass area has some seed heads/small yellow-flowered weeds mixed in."
+                            }
+                        ],
+                        "uncertain": null
+                    }
+                ],
+                "access": {
+                    "narrow_gate_possible": false,
+                    "evidence": [
+                        {
+                            "photo": 2,
+                            "note": "Wooden fence includes one lighter-colored panel that may be a secondary gate/door, but its width can't be judged from this angle."
+                        }
+                    ]
+                },
+                "hazards": [],
+                "model_notes": "Photo 1 and Photo 2 appear to show two visually distinct spaces: Photo 1 is an American-style backyard with a storage shed, raised deck and pool. Photo 2 is a small enclosed paved courtyard against a brick outbuilding with a wooden privacy fence, in what looks like a different architectural context. Both were labeled backyard on the assumption they belong to the same property per the customer's request, but this should be confirmed before scoping, since they may represent different areas or even be mismatched photos."
+            }
+        },
+        {
+            "slug": "03-cleanup-plus-hibiscus",
+            "scenario": "cleanup_plus_shrubs",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "yard_cleanup@backyard",
+                "shrub_trimming@backyard"
+            ],
+            "observed_services": [
+                "yard_cleanup@backyard",
+                "shrub_trimming@backyard"
+            ],
+            "duplicate_lines": 0,
+            "hallucinated": [],
+            "counts": [
+                {
+                    "service": "shrub_trimming@backyard",
+                    "expected": 5,
+                    "observed": 6,
+                    "exact": false,
+                    "withinOne": true
+                }
+            ],
+            "dispositions": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "expected": "priceable",
+                    "observed": "priceable",
+                    "correct": true
+                },
+                {
+                    "service": "shrub_trimming@backyard",
+                    "expected": "priceable",
+                    "observed": "manual_quote",
+                    "correct": false
+                }
+            ],
+            "counting_photos": [
+                {
+                    "service": "shrub_trimming@backyard",
+                    "expected": 1,
+                    "observed": 1,
+                    "correct": true
+                }
+            ],
+            "attributes": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "attribute": "severity",
+                    "expected": "light",
+                    "observed": "light",
+                    "correct": true
+                },
+                {
+                    "service": "shrub_trimming@backyard",
+                    "attribute": "size",
+                    "expected": "medium",
+                    "observed": "large",
+                    "correct": false
+                }
+            ],
+            "optional_services": [],
+            "expected_readiness": "ready",
+            "observed_readiness": "partial",
+            "readiness_correct": false,
+            "photo_request_correct": null,
+            "unusable_photos_correct": true,
+            "observation": {
+                "photos": [
+                    {
+                        "photo": 1,
+                        "view": "wide",
+                        "sections": [
+                            "backyard"
+                        ],
+                        "usable": true
+                    },
+                    {
+                        "photo": 2,
+                        "view": "wide",
+                        "sections": [
+                            "backyard"
+                        ],
+                        "usable": true
+                    }
+                ],
+                "requested_in_sentence": [
+                    "yard_cleanup",
+                    "shrub_trimming"
+                ],
+                "service_lines": [
+                    {
+                        "type": "yard_cleanup",
+                        "section": "backyard",
+                        "quantity": null,
+                        "size": null,
+                        "severity": "light",
+                        "counting_evidence": null,
+                        "supporting_evidence": [
+                            {
+                                "photo": 1,
+                                "note": "Lawn strip in front of the pool cage looks green, mowed, and free of debris."
+                            }
+                        ],
+                        "evidence": [
+                            {
+                                "photo": 2,
+                                "note": "Open backyard lawn is mowed with visible mower stripes; some brown/dry patches present but no leaves, sticks, or debris piled up."
+                            },
+                            {
+                                "photo": 1,
+                                "note": "Lawn near the pool enclosure is green and tidy, no visible debris or overgrowth outside the planting bed."
+                            }
+                        ],
+                        "uncertain": "Only two photos are available and neither shows the full backyard up close, so overall debris/clutter levels elsewhere in the yard aren't confirmed."
+                    },
+                    {
+                        "type": "shrub_trimming",
+                        "section": "backyard",
+                        "quantity": 6,
+                        "size": "large",
+                        "severity": null,
+                        "counting_evidence": {
+                            "photo": 1,
+                            "note": "Counted roughly 6 distinct hibiscus canopies: one large shrub with pale pink blooms at the far left, and about 5 more shrubs with red/pink/yellow blooms forming a row along the pool cage screen toward the right."
+                        },
+                        "supporting_evidence": [
+                            {
+                                "photo": 1,
+                                "note": "Hibiscus shrubs are flowering and have grown tall and wide against the screen enclosure, some branches reaching/touching the pool cage mesh."
+                            }
+                        ],
+                        "evidence": [],
+                        "uncertain": "The shrubs along the right side form a continuous hedge with overlapping canopies, so the exact plant count is approximate rather than exact."
+                    }
+                ],
+                "access": {
+                    "narrow_gate_possible": false,
+                    "evidence": [
+                        {
+                            "photo": 2,
+                            "note": "Chain-link fence visible along the left side of the yard, but no gate opening is visible in frame to judge width."
+                        }
+                    ]
+                },
+                "hazards": [],
+                "model_notes": "Photo 1 shows an in-ground pool inside a screened lanai/pool cage, while Photo 2 shows a different-looking backyard (open lawn, shed, wood deck, and what appears to be a separate above-ground/deck-set pool visible through the deck railing). The two photos may not be the same section of the same property, or may even be from different visits \u2014 the scope should confirm this before quoting. Photo 2 does not show the hibiscus/pool-cage bed up close, so the yard_cleanup severity call is based mainly on the general lawn condition in Photo 2, not on close inspection of the bed area itself. Neither photo shows the side yard, so side-yard conditions are unknown."
+            }
+        },
+        {
+            "slug": "04-cleanup-plus-viburnums",
+            "scenario": "cleanup_plus_shrubs",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "yard_cleanup@backyard",
+                "shrub_trimming@backyard"
+            ],
+            "observed_services": [
+                "yard_cleanup@backyard",
+                "shrub_trimming@backyard"
+            ],
+            "duplicate_lines": 0,
+            "hallucinated": [],
+            "counts": [
+                {
+                    "service": "shrub_trimming@backyard",
+                    "expected": 3,
+                    "observed": 3,
+                    "exact": true,
+                    "withinOne": true
+                }
+            ],
+            "dispositions": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "expected": "priceable",
+                    "observed": "priceable",
+                    "correct": true
+                },
+                {
+                    "service": "shrub_trimming@backyard",
+                    "expected": "priceable",
+                    "observed": "priceable",
+                    "correct": true
+                }
+            ],
+            "counting_photos": [
+                {
+                    "service": "shrub_trimming@backyard",
+                    "expected": 1,
+                    "observed": 1,
+                    "correct": true
+                }
+            ],
+            "attributes": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "attribute": "severity",
+                    "expected": "moderate",
+                    "observed": "moderate",
+                    "correct": true
+                },
+                {
+                    "service": "shrub_trimming@backyard",
+                    "attribute": "size",
+                    "expected": "small",
+                    "observed": "small",
+                    "correct": true
+                }
+            ],
+            "optional_services": [],
+            "expected_readiness": "ready",
+            "observed_readiness": "ready",
+            "readiness_correct": true,
+            "photo_request_correct": null,
+            "unusable_photos_correct": true,
+            "observation": {
+                "photos": [
+                    {
+                        "photo": 1,
+                        "view": "wide",
+                        "sections": [
+                            "backyard"
+                        ],
+                        "usable": true
+                    },
+                    {
+                        "photo": 2,
+                        "view": "medium",
+                        "sections": [
+                            "backyard"
+                        ],
+                        "usable": true
+                    }
+                ],
+                "requested_in_sentence": [
+                    "yard_cleanup",
+                    "shrub_trimming"
+                ],
+                "service_lines": [
+                    {
+                        "type": "yard_cleanup",
+                        "section": "backyard",
+                        "quantity": null,
+                        "size": null,
+                        "severity": "moderate",
+                        "counting_evidence": null,
+                        "supporting_evidence": [
+                            {
+                                "photo": 2,
+                                "note": "Larger, denser pile of cut sticks/brush at the base of the fence-line bed, near the marker pole"
+                            }
+                        ],
+                        "evidence": [
+                            {
+                                "photo": 1,
+                                "note": "Pile of cut brush/sticks sitting on bare soil between two of the young shrubs along the fence"
+                            },
+                            {
+                                "photo": 1,
+                                "note": "Several cut log rounds/wood pieces lying at the near end of the bed"
+                            }
+                        ],
+                        "uncertain": null
+                    },
+                    {
+                        "type": "shrub_trimming",
+                        "section": "backyard",
+                        "quantity": 3,
+                        "size": "small",
+                        "severity": null,
+                        "counting_evidence": {
+                            "photo": 1,
+                            "note": "Wide shot shows three distinct young shrubs planted in a row along the fence bed"
+                        },
+                        "supporting_evidence": [
+                            {
+                                "photo": 2,
+                                "note": "Closer view of two of the same shrubs (matching the ones right of the marker pole in photo 1), showing leaf/branch detail"
+                            },
+                            {
+                                "photo": 1,
+                                "note": "Three young, thin shrubs staked/caged in bare soil along the fence, roughly waist to shoulder height"
+                            }
+                        ],
+                        "evidence": [],
+                        "uncertain": "The shrubs appear young with light, open growth and no obviously overgrown or crossing branches in these photos, so it's hard to judge from the images alone how much trimming they need."
+                    }
+                ],
+                "access": {
+                    "narrow_gate_possible": false,
+                    "evidence": []
+                },
+                "hazards": [],
+                "model_notes": "No gate or path into the yard is visible in either photo, so side-yard access could not be assessed. The bed may extend beyond the frame in both directions along the fence line; only what's visible was counted. Cut-brush volume and haul-away needs are not estimated here per instructions."
+            }
+        },
+        {
+            "slug": "05-missing-wide-beds",
+            "scenario": "missing_wide_shot",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "bed_weeding@backyard"
+            ],
+            "observed_services": [],
+            "duplicate_lines": 0,
+            "hallucinated": [],
+            "counts": [],
+            "dispositions": [
+                {
+                    "service": "bed_weeding@backyard",
+                    "expected": "needs_photos",
+                    "observed": null,
+                    "correct": false
+                }
+            ],
+            "counting_photos": [],
+            "attributes": [],
+            "optional_services": [],
+            "expected_readiness": "needs_photos",
+            "observed_readiness": "needs_photos",
+            "readiness_correct": true,
+            "photo_request_correct": false,
+            "unusable_photos_correct": true,
+            "observation": {
+                "photos": [
+                    {
+                        "photo": 1,
+                        "view": "medium",
+                        "sections": [
+                            "backyard"
+                        ],
+                        "usable": true
+                    },
+                    {
+                        "photo": 2,
+                        "view": "close",
+                        "sections": [
+                            "backyard"
+                        ],
+                        "usable": true
+                    }
+                ],
+                "requested_in_sentence": [
+                    "bed_weeding"
+                ],
+                "service_lines": [
+                    {
+                        "type": "bed_weeding",
+                        "section": "backyard",
+                        "quantity": 1,
+                        "counting_evidence": {
+                            "photo": 1,
+                            "note": "One flower bed segment visible running along the wooden fence, planted with mixed perennials (red mums, yellow goldenrod, pink larkspur, blue sea holly) over a low groundcover mat."
+                        },
+                        "supporting_evidence": [
+                            {
+                                "photo": 2,
+                                "note": "Close-up of a single pink flower clump on bare soil/light mulch, with small green groundcover leaves at the corners; the crop is too tight to show more bed area or confirm it's a different section of the same bed."
+                            }
+                        ],
+                        "evidence": [
+                            {
+                                "photo": 1,
+                                "note": "Bed against the wood fence is densely planted and blooming; no dandelions, grass clumps, or other obviously non-planted weeds are distinguishable from the cultivated flowers and groundcover in this shot."
+                            }
+                        ],
+                        "uncertain": "Neither photo clearly shows weeds distinct from the planted flowers/groundcover, so how much actual weed growth is in the bed (and its severity) can't be judged from these images alone."
+                    }
+                ],
+                "access": {
+                    "narrow_gate_possible": false,
+                    "evidence": []
+                },
+                "hazards": [],
+                "model_notes": "Only a medium shot of one segment of the fence-line bed (photo 1) and one extreme close-up of a single flower clump (photo 2) were provided. There is no wide shot showing the full run of flower bed along the backyard fence, so the total length of bed and how much of it actually needs weeding can't be assessed from these photos."
+            }
+        },
+        {
+            "slug": "06-close-ups-only",
+            "scenario": "missing_wide_shot",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "shrub_trimming@none"
+            ],
+            "observed_services": [],
+            "duplicate_lines": 0,
+            "hallucinated": [],
+            "counts": [],
+            "dispositions": [
+                {
+                    "service": "shrub_trimming@none",
+                    "expected": "needs_photos",
+                    "observed": "needs_photos",
+                    "correct": true
+                }
+            ],
+            "counting_photos": [],
+            "attributes": [],
+            "optional_services": [
+                "shrub_trimming@backyard"
+            ],
+            "expected_readiness": "needs_photos",
+            "observed_readiness": "needs_photos",
+            "readiness_correct": true,
+            "photo_request_correct": true,
+            "unusable_photos_correct": false,
+            "observation": {
+                "photos": [
+                    {
+                        "photo": 1,
+                        "view": "close",
+                        "sections": [],
+                        "usable": false
+                    },
+                    {
+                        "photo": 2,
+                        "view": "close",
+                        "sections": [],
+                        "usable": false
+                    }
+                ],
+                "requested_in_sentence": [
+                    "shrub_trimming"
+                ],
+                "service_lines": [
+                    {
+                        "type": "shrub_trimming",
+                        "section": "backyard",
+                        "quantity": null,
+                        "uncertain": "Both photos are extreme macro shots of a single flower bloom, not the shrub itself. No branch structure, plant height/spread, or shrub count is visible, so quantity and size cannot be determined from these images.",
+                        "counting_evidence": null,
+                        "supporting_evidence": [
+                            {
+                                "photo": 1,
+                                "note": "Close-up of a white rose of Sharon flower with magenta center; blurred green foliage in background, no shrub form visible."
+                            },
+                            {
+                                "photo": 2,
+                                "note": "Close-up of a similar rose of Sharon flower with a visible bud beside it; again only foliage in soft background, no shrub structure visible."
+                            }
+                        ],
+                        "evidence": [
+                            {
+                                "photo": 1,
+                                "note": "Flower macro shot confirms rose of Sharon species but gives no view of the shrub to assess trimming needs."
+                            },
+                            {
+                                "photo": 2,
+                                "note": "Second flower macro shot, same limitation \u2014 no shrub structure shown."
+                            }
+                        ]
+                    }
+                ],
+                "access": {
+                    "narrow_gate_possible": false,
+                    "evidence": []
+                },
+                "hazards": [],
+                "model_notes": "Both photos are extreme macro close-ups of a single rose of Sharon flower bloom (white petals with a magenta/crimson eye and cream-colored stamen column). Neither photo shows any part of the shrub's overall form \u2014 no branches, canopy, height, spread, or surrounding yard context (fences, house, other plants) are visible, and no indication of which yard section the plant is in beyond the customer's stated location. As a result these photos cannot support scoping shrub_trimming (no way to judge plant size, overgrowth, or how many shrubs are involved) or confirm access/hazards. A wider, medium-distance photo of the shrub(s) in place would be needed to scope this job."
+            }
+        },
+        {
+            "slug": "07-requested-unseen-branch",
+            "scenario": "requested_service_unseen",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "yard_cleanup@backyard",
+                "branch_removal@none"
+            ],
+            "observed_services": [
+                "yard_cleanup@backyard"
+            ],
+            "duplicate_lines": 0,
+            "hallucinated": [],
+            "counts": [],
+            "dispositions": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "expected": "priceable",
+                    "observed": "priceable",
+                    "correct": true
+                },
+                {
+                    "service": "branch_removal@none",
+                    "expected": "needs_photos",
+                    "observed": "needs_photos",
+                    "correct": true
+                }
+            ],
+            "counting_photos": [],
+            "attributes": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "attribute": "severity",
+                    "expected": "light",
+                    "observed": "light",
+                    "correct": true
+                }
+            ],
+            "optional_services": [
+                "shrub_trimming@backyard",
+                "bed_weeding@backyard"
+            ],
+            "expected_readiness": "partial",
+            "observed_readiness": "partial",
+            "readiness_correct": true,
+            "photo_request_correct": true,
+            "unusable_photos_correct": true,
+            "observation": {
+                "photos": [
+                    {
+                        "photo": 1,
+                        "view": "wide",
+                        "sections": [
+                            "backyard"
+                        ],
+                        "usable": true
+                    },
+                    {
+                        "photo": 2,
+                        "view": "medium",
+                        "sections": [
+                            "backyard"
+                        ],
+                        "usable": true
+                    }
+                ],
+                "requested_in_sentence": [
+                    "yard_cleanup",
+                    "branch_removal"
+                ],
+                "service_lines": [
+                    {
+                        "type": "yard_cleanup",
+                        "section": "backyard",
+                        "quantity": null,
+                        "size": null,
+                        "severity": "light",
+                        "counting_evidence": null,
+                        "supporting_evidence": [
+                            {
+                                "photo": 2,
+                                "note": "Patio, potted plants, and shrub area in the foreground appear tidy and maintained, no loose debris or clutter visible."
+                            }
+                        ],
+                        "evidence": [
+                            {
+                                "photo": 1,
+                                "note": "Lawn is mostly green and mowed; only minor thin/bare turf patches are visible near the tree line at back-left and around the birdbath post, and a few small weeds are visible among the stepping stones on the right side of the yard."
+                            }
+                        ],
+                        "uncertain": null
+                    }
+                ],
+                "access": {
+                    "narrow_gate_possible": false,
+                    "evidence": []
+                },
+                "hazards": [],
+                "model_notes": "The customer's sentence asks to \"haul away the fallen branch,\" but no fallen or downed branch is visible in either photo. Photo 1 is a wide shot of the whole backyard (lawn, fence line, patio, beds) and Photo 2 is a closer shot of a shrub and potted plants \u2014 neither shows any loose branch, log, or brush pile on the ground. The location, size, and quantity of the branch could not be confirmed from these photos and would need to be verified on site."
+            }
+        },
+        {
+            "slug": "08-blurry-photo",
+            "scenario": "unusable_photo",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "yard_cleanup@backyard"
+            ],
+            "observed_services": [
+                "yard_cleanup@backyard"
+            ],
+            "duplicate_lines": 0,
+            "hallucinated": [],
+            "counts": [],
+            "dispositions": [
+                {
+                    "service": "yard_cleanup@backyard",
+                    "expected": "needs_photos",
+                    "observed": "needs_photos",
+                    "correct": true
+                }
+            ],
+            "counting_photos": [],
+            "attributes": [],
+            "optional_services": [],
+            "expected_readiness": "needs_photos",
+            "observed_readiness": "needs_photos",
+            "readiness_correct": true,
+            "photo_request_correct": true,
+            "unusable_photos_correct": true,
+            "observation": {
+                "photos": [
+                    {
+                        "photo": 1,
+                        "view": "close",
+                        "sections": [],
+                        "usable": false
+                    },
+                    {
+                        "photo": 2,
+                        "view": "wide",
+                        "sections": [
+                            "backyard"
+                        ],
+                        "usable": true
+                    }
+                ],
+                "requested_in_sentence": [
+                    "yard_cleanup"
+                ],
+                "service_lines": [
+                    {
+                        "type": "yard_cleanup",
+                        "section": "backyard",
+                        "quantity": null,
+                        "size": null,
+                        "severity": "heavy",
+                        "counting_evidence": null,
+                        "supporting_evidence": [],
+                        "evidence": [
+                            {
+                                "photo": 2,
+                                "note": "Ground is almost entirely blanketed in fallen leaves (orange/brown) across the whole visible lawn area, from foreground to the base of the shed and tree line."
+                            }
+                        ],
+                        "uncertain": null
+                    }
+                ],
+                "access": {
+                    "narrow_gate_possible": false,
+                    "evidence": []
+                },
+                "hazards": [],
+                "model_notes": "Photo 1 is extremely blurry (heavy motion blur, only smeared green tones visible) and could not be identified as any yard section or used as evidence. Only photo 2 is usable, and it shows just one angle of the backyard, so full extent of leaf coverage (e.g., corners, side areas) cannot be confirmed beyond what's visible in that frame."
+            }
+        },
+        {
+            "slug": "09-branch-large",
+            "scenario": "branch_uncertainty",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "branch_removal@backyard",
+                "yard_cleanup@backyard"
+            ],
+            "observed_services": [
+                "branch_removal@backyard",
+                "yard_cleanup@backyard"
+            ],
+            "duplicate_lines": 0,
+            "hallucinated": [],
+            "counts": [
+                {
+                    "service": "branch_removal@backyard",
+                    "expected": 1,
+                    "observed": 1,
+                    "exact": true,
+                    "withinOne": true
+                }
+            ],
+            "dispositions": [
+                {
+                    "service": "branch_removal@backyard",
+                    "expected": "manual_quote",
+                    "observed": "manual_quote",
+                    "correct": true
+                },
+                {
+                    "service": "yard_cleanup@backyard",
+                    "expected": "priceable",
+                    "observed": "manual_quote",
+                    "correct": false
+                }
+            ],
+            "counting_photos": [
+                {
+                    "service": "branch_removal@backyard",
+                    "expected": 1,
+                    "observed": 1,
+                    "correct": true
+                }
+            ],
+            "attributes": [
+                {
+                    "service": "branch_removal@backyard",
+                    "attribute": "size",
+                    "expected": "large",
+                    "observed": "large",
+                    "correct": true
+                },
+                {
+                    "service": "yard_cleanup@backyard",
+                    "attribute": "severity",
+                    "expected": "heavy",
+                    "observed": "moderate",
+                    "correct": false
+                }
+            ],
+            "optional_services": [],
+            "expected_readiness": "partial",
+            "observed_readiness": "manual_quote",
+            "readiness_correct": false,
+            "photo_request_correct": null,
+            "unusable_photos_correct": true,
+            "observation": {
+                "photos": [
+                    {
+                        "photo": 1,
+                        "view": "wide",
+                        "sections": [
+                            "backyard"
+                        ],
+                        "usable": true
+                    },
+                    {
+                        "photo": 2,
+                        "view": "close",
+                        "sections": [
+                            "backyard"
+                        ],
+                        "usable": true
+                    }
+                ],
+                "requested_in_sentence": [
+                    "branch_removal",
+                    "yard_cleanup"
+                ],
+                "service_lines": [
+                    {
+                        "type": "branch_removal",
+                        "section": "backyard",
+                        "quantity": 1,
+                        "size": "large",
+                        "severity": null,
+                        "counting_evidence": {
+                            "photo": 1,
+                            "note": "one large branch/limb (trunk-like diameter) down, spanning from the fence line diagonally across the lawn"
+                        },
+                        "supporting_evidence": [
+                            {
+                                "photo": 2,
+                                "note": "close-up of the same branch's cut end, showing splintered, freshly-cut wood consistent with a large limb"
+                            },
+                            {
+                                "photo": 1,
+                                "note": "full branch visible leaning across yard"
+                            },
+                            {
+                                "photo": 2,
+                                "note": "cut end detail"
+                            }
+                        ],
+                        "evidence": [],
+                        "uncertain": "Cannot tell from the photos whether this came down from a tree still standing in this yard or fell from a neighboring tree, or whether it is one large branch versus a small fallen tree top."
+                    },
+                    {
+                        "type": "yard_cleanup",
+                        "section": "backyard",
+                        "quantity": null,
+                        "size": null,
+                        "severity": "moderate",
+                        "counting_evidence": null,
+                        "supporting_evidence": [
+                            {
+                                "photo": 2,
+                                "note": "smaller cut branch pieces already lying in the grass near the main cut end"
+                            }
+                        ],
+                        "evidence": [
+                            {
+                                "photo": 1,
+                                "note": "scattered smaller twigs, needles, and branch fragments across the lawn around and under the main fallen branch"
+                            }
+                        ],
+                        "uncertain": null
+                    }
+                ],
+                "access": {
+                    "narrow_gate_possible": false,
+                    "evidence": []
+                },
+                "hazards": [
+                    {
+                        "section": "backyard",
+                        "note": "The fallen branch is still propped at a steep angle against the wooden fence rather than lying flat on the ground, so it could shift or drop further while being handled.",
+                        "evidence": [
+                            {
+                                "photo": 1,
+                                "note": "large branch leaning diagonally, resting its upper end against the fence and pergola-style frame, not fully grounded"
+                            }
+                        ]
+                    },
+                    {
+                        "section": "backyard",
+                        "note": "An orange/red extension cord runs across the ground right next to the cut branch end, in the immediate work area.",
+                        "evidence": [
+                            {
+                                "photo": 2,
+                                "note": "cord visible looping across the grass and under the cut branch section"
+                            }
+                        ]
+                    }
+                ],
+                "model_notes": "Neither photo gives a clear read on the branch's full length or whether it came from a tree still standing in this yard or an adjacent one \u2014 only the down section and one cut end are visible. Photo 2 is a close-up of just the cut end plus a hard hat and cord, so it mainly confirms the wood is already partly sectioned rather than showing overall debris extent."
+            }
+        },
+        {
+            "slug": "10-manual-only-large-shrub",
+            "scenario": "manual_only_service",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "shrub_trimming@front_yard"
+            ],
+            "observed_services": [
+                "shrub_trimming@side_yard"
+            ],
+            "duplicate_lines": 0,
+            "hallucinated": [
+                "shrub_trimming@side_yard"
+            ],
+            "counts": [
+                {
+                    "service": "shrub_trimming@front_yard",
+                    "expected": 1,
+                    "observed": null,
+                    "exact": false,
+                    "withinOne": false
+                }
+            ],
+            "dispositions": [
+                {
+                    "service": "shrub_trimming@front_yard",
+                    "expected": "manual_quote",
+                    "observed": null,
+                    "correct": false
+                }
+            ],
+            "counting_photos": [
+                {
+                    "service": "shrub_trimming@front_yard",
+                    "expected": 1,
+                    "observed": null,
+                    "correct": false
+                }
+            ],
+            "attributes": [
+                {
+                    "service": "shrub_trimming@front_yard",
+                    "attribute": "size",
+                    "expected": "large",
+                    "observed": null,
+                    "correct": false
+                }
+            ],
+            "optional_services": [
+                "shrub_trimming@backyard"
+            ],
+            "expected_readiness": "manual_quote",
+            "observed_readiness": "manual_quote",
+            "readiness_correct": true,
+            "photo_request_correct": null,
+            "unusable_photos_correct": true,
+            "observation": {
+                "photos": [
+                    {
+                        "photo": 1,
+                        "view": "medium",
+                        "sections": [
+                            "side_yard"
+                        ],
+                        "usable": true
+                    },
+                    {
+                        "photo": 2,
+                        "view": "wide",
+                        "sections": [
+                            "front_yard"
+                        ],
+                        "usable": true
+                    }
+                ],
+                "requested_in_sentence": [
+                    "shrub_trimming"
+                ],
+                "service_lines": [
+                    {
+                        "type": "shrub_trimming",
+                        "section": "side_yard",
+                        "quantity": 1,
+                        "size": "large",
+                        "severity": null,
+                        "counting_evidence": {
+                            "photo": 1,
+                            "note": "One large, overgrown multi-stemmed shrub (columnar evergreen, arborvitae/juniper type) growing against a wood fence, with several upright leaders rising well above the fence line toward the roof behind it; base shows an old cut stump, indicating prior pruning."
+                        },
+                        "supporting_evidence": [
+                            {
+                                "photo": 1,
+                                "note": "Shrub mass dominates the frame, multiple green columnar branches emerging from one base area, overgrown well past the fence height with some already-cut branch debris piled beside a trash can nearby."
+                            }
+                        ],
+                        "evidence": [],
+                        "uncertain": "Cannot confirm from the photo whether this is one shrub with multiple stems or several columnar shrubs planted close together and merged; also cannot confirm the yard section (front/side/back) since no wider establishing shot of the property is provided."
+                    }
+                ],
+                "access": {
+                    "narrow_gate_possible": false,
+                    "evidence": []
+                },
+                "hazards": [],
+                "model_notes": "Photo 2 shows a different house/property (white siding, front porch, driveway with Jeep, small well-kept shrubs, flowering tree) than photo 1 (reddish wood fence with a large columnar shrub mass and a white roof/structure behind it). It's unclear whether both photos are meant to document the same job site. The shrub_trimming scope below is based entirely on photo 1, since photo 2 does not show the shrub described in the request. Also unclear from either photo whether the plant is a true shrub or a multi-trunk small tree (arborvitae/juniper type), and which yard section it actually sits in (front, side, or back) since no house entry or street-facing view of it is shown."
+            }
+        },
+        {
+            "slug": "11-hallucination-trap",
+            "scenario": "hallucination_trap",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "yard_cleanup@none",
+                "shrub_trimming@none"
+            ],
+            "observed_services": [],
+            "duplicate_lines": 0,
+            "hallucinated": [],
+            "counts": [],
+            "dispositions": [
+                {
+                    "service": "yard_cleanup@none",
+                    "expected": "needs_photos",
+                    "observed": "needs_photos",
+                    "correct": true
+                },
+                {
+                    "service": "shrub_trimming@none",
+                    "expected": "needs_photos",
+                    "observed": "needs_photos",
+                    "correct": true
+                }
+            ],
+            "counting_photos": [],
+            "attributes": [],
+            "optional_services": [],
+            "expected_readiness": "needs_photos",
+            "observed_readiness": "needs_photos",
+            "readiness_correct": true,
+            "photo_request_correct": null,
+            "unusable_photos_correct": true,
+            "observation": {
+                "photos": [
+                    {
+                        "photo": 1,
+                        "view": "wide",
+                        "sections": [],
+                        "usable": false
+                    },
+                    {
+                        "photo": 2,
+                        "view": "wide",
+                        "sections": [],
+                        "usable": false
+                    },
+                    {
+                        "photo": 3,
+                        "view": "wide",
+                        "sections": [],
+                        "usable": false
+                    }
+                ],
+                "requested_in_sentence": [
+                    "yard_cleanup",
+                    "shrub_trimming"
+                ],
+                "service_lines": [],
+                "access": {
+                    "narrow_gate_possible": false,
+                    "evidence": []
+                },
+                "hazards": [],
+                "model_notes": "All 3 supplied photos are interior shots of the same home (a living room with a brick accent wall and fireplace, an adjoining dining area, and what appears to be a second living space with an AC unit and desk) \u2014 none show a yard, backyard, side yard, hedges, or any outdoor area. The customer asked to clean up the backyard and trim hedges, but no yard is visible in any photo, so no service lines, sections, or hazards can be scoped from this photo set. Photo-2 does show a glimpse of an exterior fenced area and street through an open door/window, but it is a narrow street-facing view (parked cars, a railing, a park across the street) with no lawn, planting bed, shrub, or hedge visible \u2014 it cannot be used to scope backyard cleanup or hedge trimming. To scope this job, new photos actually showing the backyard (and any hedges/shrubs in it) are needed."
+            }
+        },
+        {
+            "slug": "12-multiple-sections",
+            "scenario": "multiple_sections",
+            "schema_valid": true,
+            "failure": null,
+            "expected_services": [
+                "bed_weeding@side_yard",
+                "yard_cleanup@front_yard",
+                "yard_cleanup@backyard"
+            ],
+            "observed_services": [
+                "bed_weeding@side_yard",
+                "yard_cleanup@front_yard",
+                "yard_cleanup@backyard"
+            ],
+            "duplicate_lines": 0,
+            "hallucinated": [],
+            "counts": [
+                {
+                    "service": "bed_weeding@side_yard",
+                    "expected": 1,
+                    "observed": 1,
+                    "exact": true,
+                    "withinOne": true
+                }
+            ],
+            "dispositions": [
+                {
+                    "service": "bed_weeding@side_yard",
+                    "expected": "priceable",
+                    "observed": "needs_photos",
+                    "correct": false
+                },
+                {
+                    "service": "yard_cleanup@front_yard",
+                    "expected": "priceable",
+                    "observed": "priceable",
+                    "correct": true
+                },
+                {
+                    "service": "yard_cleanup@backyard",
+                    "expected": "priceable",
+                    "observed": "priceable",
+                    "correct": true
+                }
+            ],
+            "counting_photos": [
+                {
+                    "service": "bed_weeding@side_yard",
+                    "expected": 1,
+                    "observed": 1,
+                    "correct": true
+                }
+            ],
+            "attributes": [
+                {
+                    "service": "bed_weeding@side_yard",
+                    "attribute": "severity",
+                    "expected": "moderate",
+                    "observed": "moderate",
+                    "correct": true
+                },
+                {
+                    "service": "yard_cleanup@front_yard",
+                    "attribute": "severity",
+                    "expected": "light",
+                    "observed": "light",
+                    "correct": true
+                },
+                {
+                    "service": "yard_cleanup@backyard",
+                    "attribute": "severity",
+                    "expected": "light",
+                    "observed": "light",
+                    "correct": true
+                }
+            ],
+            "optional_services": [
+                "shrub_trimming@front_yard"
+            ],
+            "expected_readiness": "ready",
+            "observed_readiness": "partial",
+            "readiness_correct": false,
+            "photo_request_correct": null,
+            "unusable_photos_correct": true,
+            "observation": {
+                "photos": [
+                    {
+                        "photo": 1,
+                        "view": "close",
+                        "sections": [
+                            "side_yard"
+                        ],
+                        "usable": true
+                    },
+                    {
+                        "photo": 2,
+                        "view": "wide",
+                        "sections": [
+                            "front_yard"
+                        ],
+                        "usable": true
+                    },
+                    {
+                        "photo": 3,
+                        "view": "wide",
+                        "sections": [
+                            "backyard"
+                        ],
+                        "usable": true
+                    }
+                ],
+                "requested_in_sentence": [
+                    "bed_weeding",
+                    "yard_cleanup"
+                ],
+                "service_lines": [
+                    {
+                        "type": "bed_weeding",
+                        "section": "side_yard",
+                        "quantity": 1,
+                        "size": null,
+                        "severity": "moderate",
+                        "counting_evidence": {
+                            "photo": 1,
+                            "note": "One continuous garden bed runs along the house foundation from the corner to the front walkway."
+                        },
+                        "supporting_evidence": [
+                            {
+                                "photo": 1,
+                                "note": "Grass and weeds are growing up through the mulch along the full visible length of the bed, with flowering clover/weeds encroaching near the walkway end; a shovel left standing in the bed suggests weeding work already underway."
+                            }
+                        ],
+                        "evidence": [],
+                        "uncertain": null
+                    },
+                    {
+                        "type": "yard_cleanup",
+                        "section": "front_yard",
+                        "quantity": null,
+                        "size": null,
+                        "severity": "light",
+                        "counting_evidence": null,
+                        "supporting_evidence": [],
+                        "evidence": [
+                            {
+                                "photo": 2,
+                                "note": "Lawn is mowed, edged, and green with no visible debris, leaves, or clutter across the visible yard area."
+                            }
+                        ],
+                        "uncertain": null
+                    },
+                    {
+                        "type": "yard_cleanup",
+                        "section": "backyard",
+                        "quantity": null,
+                        "size": null,
+                        "severity": "light",
+                        "counting_evidence": null,
+                        "supporting_evidence": [],
+                        "evidence": [
+                            {
+                                "photo": 3,
+                                "note": "Lawn shows recent mower stripes and no visible litter, branches, or debris; shed and deck area appear tidy."
+                            }
+                        ],
+                        "uncertain": null
+                    }
+                ],
+                "access": {
+                    "narrow_gate_possible": false,
+                    "evidence": []
+                },
+                "hazards": [],
+                "model_notes": "None of the three photos show a side gate or the route equipment/crew would take between front and back yards, so gate width and backyard access should be confirmed on site. Photo 1 is a close-up of only one section of the side bed; the bed's full length beyond the frame isn't shown."
+            }
+        }
+    ]
+}
