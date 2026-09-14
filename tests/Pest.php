@@ -1,7 +1,11 @@
 <?php
 
+use App\Scoping\Data\JobScope;
 use App\Scoping\Data\Observation;
 use App\Scoping\Data\PropertyProfile;
+use App\Scoping\Data\RateCard;
+use App\Scoping\Pricer;
+use App\Scoping\ScopeBuilder;
 use Tests\TestCase;
 
 /*
@@ -33,4 +37,22 @@ function workedObservation(): Observation
 function workedProfile(): PropertyProfile
 {
     return PropertyProfile::fromArray(workedExample()['profile']);
+}
+
+/**
+ * @return array<string, mixed>
+ */
+function shippedRates(): array
+{
+    return (require __DIR__.'/../config/yardscope.php')['rates'];
+}
+
+function pricer(array $overrides = []): Pricer
+{
+    return new Pricer(RateCard::fromArray(array_replace_recursive(shippedRates(), $overrides)));
+}
+
+function workedScope(): JobScope
+{
+    return (new ScopeBuilder)->build(workedObservation(), workedProfile());
 }
