@@ -46,7 +46,11 @@ final readonly class RateCard
         $hours = [];
 
         foreach (self::arrayFrom($config, 'hours') as $type => $ranges) {
-            foreach (self::arrayFrom(['ranges' => $ranges], 'ranges') as $key => $range) {
+            if (! is_array($ranges)) {
+                throw new InvalidRateCard("hours for {$type} must be an array of ranges.");
+            }
+
+            foreach ($ranges as $key => $range) {
                 if (! is_array($range) || count($range) !== 2 || ! is_numeric($range[0] ?? null) || ! is_numeric($range[1] ?? null)) {
                     throw new InvalidRateCard("hours for {$type} {$key} must be a list of two numbers.");
                 }
