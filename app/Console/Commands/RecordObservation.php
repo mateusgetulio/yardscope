@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Extraction\AgentExtractor;
 use App\Extraction\FixtureExtractor;
+use App\Extraction\RecordsObservations;
 use App\Providers\AppServiceProvider;
 use App\Scoping\Data\Observation;
 use App\Scoping\Data\PhotoInput;
@@ -16,7 +16,7 @@ use Illuminate\Console\Command;
 #[Description('Run the vision model once and save its observation as a fixture for fixture mode and the evals')]
 class RecordObservation extends Command
 {
-    public function handle(AgentExtractor $extractor): int
+    public function handle(RecordsObservations $extractor): int
     {
         $sentence = $this->argument('sentence');
         $paths = $this->argument('photos');

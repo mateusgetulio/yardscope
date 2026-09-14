@@ -12,7 +12,7 @@ use Laravel\Ai\Files\Image;
 use Laravel\Ai\Responses\StructuredAgentResponse;
 use RuntimeException;
 
-final readonly class AgentExtractor implements VisionExtractor
+final readonly class AgentExtractor implements RecordsObservations, VisionExtractor
 {
     public function __construct(
         private YardObservationAgent $agent,

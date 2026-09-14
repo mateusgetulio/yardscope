@@ -83,7 +83,7 @@ it('explains when nothing was recorded for these photos instead of guessing', fu
 });
 
 it('routes a model failure to a pro quote instead of an error page', function () {
-    config()->set('yardscope.extraction.live', true);
+    config()->set('yardscope.extraction.driver', 'api');
     Ai::fakeAgent(YardObservationAgent::class, [fn () => throw new ProviderConnectionException('timed out')]);
 
     $this->post('/requests', ['sentence' => 'Clean up the whole backyard please', 'photos' => demoUploads(2)])->assertRedirect();
@@ -273,7 +273,7 @@ it('books priced work at the current price and freezes the scope', function () {
 });
 
 it('refuses to book a request with nothing priced', function () {
-    config()->set('yardscope.extraction.live', true);
+    config()->set('yardscope.extraction.driver', 'api');
     Ai::fakeAgent(YardObservationAgent::class, [fn () => throw new ProviderConnectionException('timed out')]);
     $this->post('/requests', ['sentence' => 'Clean up the whole backyard please', 'photos' => demoUploads(2)]);
     $request = JobRequest::sole();

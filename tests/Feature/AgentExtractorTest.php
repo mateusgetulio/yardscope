@@ -55,7 +55,7 @@ it('reports a provider failure as an extraction failure', function () {
 it('uses recordings by default and the model only when live mode is on', function () {
     expect(app(VisionExtractor::class))->toBeInstanceOf(FixtureExtractor::class);
 
-    config()->set('yardscope.extraction.live', true);
+    config()->set('yardscope.extraction.driver', 'api');
 
     expect(app(VisionExtractor::class))->toBeInstanceOf(AgentExtractor::class);
 });

@@ -3,10 +3,10 @@ import { useEffect, useState, type FormEvent } from 'react';
 
 interface Props {
     profile: Record<string, string>;
-    liveMode: boolean;
+    extractor: 'fixtures' | 'api' | 'claude-code';
 }
 
-export default function RequestPage({ profile, liveMode }: Props) {
+export default function RequestPage({ profile, extractor }: Props) {
     const form = useForm<{ sentence: string; photos: File[] }>({
         sentence: '',
         photos: [],
@@ -128,9 +128,7 @@ export default function RequestPage({ profile, liveMode }: Props) {
                     <p className="text-sm text-stone-500">
                         Simulated property: {describeProfile(profile)}. Rates
                         are synthetic demo rates, not real prices.
-                        {liveMode
-                            ? ' Photos are sent to the vision model.'
-                            : ' Running on recorded analyses, no model call.'}
+                        {extractorNote(extractor)}
                     </p>
 
                     <button
@@ -152,4 +150,15 @@ function describeProfile(profile: Record<string, string>): string {
     return Object.entries(profile)
         .map(([section, size]) => `${size} ${section.replace('_', ' ')}`)
         .join(', ');
+}
+
+function extractorNote(extractor: Props['extractor']): string {
+    switch (extractor) {
+        case 'api':
+            return ' Photos are sent to the vision model.';
+        case 'claude-code':
+            return ' Photos are analyzed through the local Claude Code session.';
+        default:
+            return ' Running on recorded analyses, no model call.';
+    }
 }

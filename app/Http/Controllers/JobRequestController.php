@@ -20,7 +20,7 @@ class JobRequestController extends Controller
     {
         return Inertia::render('request', [
             'profile' => config()->array('yardscope.demo_profile'),
-            'liveMode' => config()->boolean('yardscope.extraction.live'),
+            'extractor' => config()->string('yardscope.extraction.driver'),
         ]);
     }
 

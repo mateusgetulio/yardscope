@@ -7,17 +7,25 @@ return [
     | Extraction
     |--------------------------------------------------------------------------
     |
-    | Fixture mode replays recorded model observations keyed by the photo
-    | bytes and the sentence, so the demo and the tests run without a key.
-    | Live mode sends the photos to the configured vision model.
+    | The "fixtures" driver replays recorded model observations keyed by the
+    | photo bytes and the sentence, so the demo and the tests run without a
+    | key. The "api" driver sends the photos to the configured vision model
+    | through the AI SDK. The "claude-code" driver runs the same instructions
+    | and schema through the local Claude Code CLI on the developer's own
+    | session, for development without an API key.
     |
     */
 
     'extraction' => [
-        'live' => env('YARDSCOPE_LIVE', false),
+        'driver' => env('YARDSCOPE_EXTRACTOR', 'fixtures'),
         'provider' => env('YARDSCOPE_AI_PROVIDER', 'anthropic'),
         'model' => env('YARDSCOPE_AI_MODEL', 'claude-sonnet-5'),
         'fixtures' => 'fixtures/observations',
+        'claude_code' => [
+            'binary' => env('YARDSCOPE_CLAUDE_BINARY', 'claude'),
+            'model' => env('YARDSCOPE_CLAUDE_MODEL', 'sonnet'),
+            'timeout' => 180,
+        ],
     ],
 
     /*

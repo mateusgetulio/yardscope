@@ -10,6 +10,7 @@ beforeEach(function () {
     $this->directory = scratchDirectory();
     $this->photos = scratchPhotos(3, $this->directory);
     config()->set('yardscope.extraction.fixtures', $this->directory);
+    config()->set('yardscope.extraction.driver', 'api');
 });
 
 it('records the model answer and replays it in fixture mode', function () {
@@ -26,8 +27,10 @@ it('records the model answer and replays it in fixture mode', function () {
     expect($written)->toHaveCount(1)
         ->and($saved['observation'])->toBe(workedExample()['observation'])
         ->and($saved['sentence'])->toBe('My backyard is a mess.')
-        ->and($saved['photos'])->toBe(['photo-1.png', 'photo-2.png', 'photo-3.png'])
-        ->and(app(VisionExtractor::class)->extract($this->photos, 'my backyard is a mess')->lines)->toHaveCount(3);
+        ->and($saved['photos'])->toBe(['photo-1.png', 'photo-2.png', 'photo-3.png']);
+
+    config()->set('yardscope.extraction.driver', 'fixtures');
+    expect(app(VisionExtractor::class)->extract($this->photos, 'my backyard is a mess')->lines)->toHaveCount(3);
 });
 
 it('refuses a missing photo and the wrong number of photos', function () {
