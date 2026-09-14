@@ -1,13 +1,16 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { useState, type FormEvent } from 'react';
+import PipelinePanel from '@/components/pipeline-panel';
 import type {
     CorrectionInput,
+    PipelineView,
     RequestView,
     ScopeLineView,
 } from '@/types/scope';
 
 interface Props {
     request: RequestView;
+    pipeline: PipelineView;
 }
 
 const dispositionStyles: Record<ScopeLineView['disposition'], string> = {
@@ -21,7 +24,7 @@ const dispositionStyles: Record<ScopeLineView['disposition'], string> = {
 const sizes: string[] = ['small', 'medium', 'large'];
 const severities: string[] = ['light', 'moderate', 'heavy'];
 
-export default function ResultPage({ request }: Props) {
+export default function ResultPage({ request, pipeline }: Props) {
     const { errors } = usePage().props;
     const [booking, setBooking] = useState(false);
 
@@ -36,6 +39,12 @@ export default function ResultPage({ request }: Props) {
                     {request.booked ? 'Booked' : request.readinessLabel}
                 </h1>
                 <p className="mt-1 text-stone-600">“{request.sentence}”</p>
+
+                {request.proMessage && (
+                    <p className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm">
+                        {request.proMessage}
+                    </p>
+                )}
 
                 {request.requestNote && (
                     <p className="mt-4 rounded-lg border border-stone-300 bg-stone-100 p-3 text-sm">
@@ -156,6 +165,8 @@ export default function ResultPage({ request }: Props) {
                         </button>
                     )}
                 </section>
+
+                <PipelinePanel pipeline={pipeline} />
             </main>
         </>
     );

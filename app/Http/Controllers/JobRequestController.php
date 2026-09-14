@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Presenters\PipelinePresenter;
 use App\Http\Presenters\ScopePresenter;
 use App\Http\Requests\StoreJobRequest;
 use App\Intake\Analyzer;
@@ -52,8 +53,13 @@ class JobRequestController extends Controller
         return redirect()->route('requests.show', $jobRequest);
     }
 
-    public function show(JobRequest $jobRequest, ScopeAssembler $assembler, ScopePresenter $presenter): Response
+    public function show(JobRequest $jobRequest, ScopeAssembler $assembler, ScopePresenter $presenter, PipelinePresenter $pipeline): Response
     {
-        return Inertia::render('result', ['request' => $presenter->present($jobRequest, $assembler->assemble($jobRequest))]);
+        $assembled = $assembler->assemble($jobRequest);
+
+        return Inertia::render('result', [
+            'request' => $presenter->present($jobRequest, $assembled),
+            'pipeline' => $pipeline->present($jobRequest, $assembled),
+        ]);
     }
 }

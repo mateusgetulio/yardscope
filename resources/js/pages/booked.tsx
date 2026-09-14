@@ -53,11 +53,19 @@ export default function BookedPage({ request }: Props) {
 
                 <p className="mt-6 text-sm text-stone-500">
                     <Link
+                        href={`/requests/${request.id}/pro`}
+                        className="underline"
+                    >
+                        See what the pro sees
+                    </Link>
+                    {' or '}
+                    <Link
                         href={`/requests/${request.id}`}
                         className="underline"
                     >
-                        Back to the job
+                        go back to the job
                     </Link>
+                    .
                 </p>
             </main>
         </>

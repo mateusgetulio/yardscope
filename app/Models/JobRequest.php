@@ -42,6 +42,14 @@ class JobRequest extends Model
         return $this->hasMany(ObservationRun::class);
     }
 
+    /**
+     * @return HasMany<ProAction, $this>
+     */
+    public function proActions(): HasMany
+    {
+        return $this->hasMany(ProAction::class)->orderBy('id');
+    }
+
     public function latestRun(): ?ObservationRun
     {
         return $this->runs()->latest('id')->first();

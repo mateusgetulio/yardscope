@@ -71,6 +71,7 @@ export interface RequestView {
     access: { narrowGatePossible: boolean };
     hazards: { section: string; note: string }[];
     unsupportedRequests: string[];
+    proMessage: string | null;
 }
 
 export type CorrectionField =
@@ -82,4 +83,98 @@ export interface CorrectionInput {
     model_value: string;
     customer_value: string;
     reason: string;
+}
+
+export interface PipelineView {
+    photos: {
+        number: number;
+        view: string | null;
+        sections: string[];
+        usable: boolean | null;
+    }[];
+    extraction: {
+        driver: string;
+        runs: {
+            id: number;
+            photoCount: number;
+            failure: string | null;
+            lines: number;
+            at: string | null;
+        }[];
+    };
+    validation: {
+        rejected: { type: string; reason: string }[];
+        unsupportedRequests: string[];
+        requestNote: string | null;
+    };
+    dispositions: {
+        id: string;
+        label: string;
+        disposition: Disposition;
+        checks: ReadinessCheck[];
+    }[];
+    pricing: {
+        lines: {
+            id: string;
+            lowHours: number;
+            highHours: number;
+            laborCents: number;
+        }[];
+        lowHours: number;
+        highHours: number;
+        shownLowHours: number;
+        shownHighHours: number;
+        visitFeeCents: number;
+        priceCents: number;
+    } | null;
+    corrections: {
+        run: number;
+        lineId: string;
+        field: CorrectionField;
+        modelValue: string;
+        customerValue: string;
+        reason: string | null;
+        source: string;
+        skipped: boolean;
+        current: boolean;
+    }[];
+}
+
+export interface BriefLineView {
+    id: string;
+    label: string;
+    section: string | null;
+    disposition: Disposition;
+    dispositionLabel: string;
+    summary: string;
+    origin: 'ai_observed' | 'customer_corrected';
+    originLabel: string;
+    observedSummary: string | null;
+    customerReason: string | null;
+    removedByCustomer: boolean;
+    evidence: Evidence[];
+    note: string | null;
+}
+
+export interface ProActionView {
+    id: number;
+    kind: 'accept_scope' | 'request_photo' | 'adjust_quote';
+    reason: string | null;
+    adjustedPrice: string | null;
+    at: string;
+}
+
+export interface BriefView {
+    id: string;
+    sentence: string;
+    readinessLabel: string;
+    booked: boolean;
+    bookedPrice: string | null;
+    profile: Record<string, string>;
+    lines: BriefLineView[];
+    photos: { number: number; url: string; notes: string[] }[];
+    accessNotes: string[];
+    openQuestions: string[];
+    estimate: { price: string; hours: string } | null;
+    actions: ProActionView[];
 }
