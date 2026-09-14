@@ -8,12 +8,13 @@ use App\Scoping\Data\PropertyProfile;
 use App\Scoping\Data\RateCard;
 use App\Scoping\Pricer;
 use App\Scoping\ScopeBuilder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\RandomScopeFactory;
 use Tests\TestCase;
 
 const RANDOM_SCOPES = 1500;
 
-pest()->extend(TestCase::class)->in('Feature');
+pest()->extend(TestCase::class)->use(RefreshDatabase::class)->in('Feature');
 
 /**
  * @return array<string, mixed>

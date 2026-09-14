@@ -22,6 +22,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Demo Property
+    |--------------------------------------------------------------------------
+    |
+    | A simulated property profile standing in for the address lookup and
+    | satellite measurement a real product would have. Yard sections and their
+    | size buckets scale the cleanup hours; nothing is measured from photos.
+    |
+    */
+
+    'demo_profile' => ['backyard' => 'medium', 'side_yard' => 'small', 'front_yard' => 'small'],
+
+    /*
+    |--------------------------------------------------------------------------
     | Rate Card
     |--------------------------------------------------------------------------
     |

@@ -105,6 +105,43 @@ final readonly class Observation
         return false;
     }
 
+    /**
+     * The observation in the model's own shape, so it can be stored and parsed again unchanged.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(): array
+    {
+        $evidence = fn (array $items): array => array_map(fn (Evidence $item): array => ['photo' => $item->photo, 'note' => $item->note], $items);
+
+        return [
+            'photos' => array_map(fn (PhotoDescription $photo): array => [
+                'photo' => $photo->photo,
+                'view' => $photo->view->value,
+                'sections' => array_map(fn (Section $section): string => $section->value, $photo->sections),
+                'usable' => $photo->usable,
+            ], $this->photos),
+            'requested_in_sentence' => [...array_map(fn (ServiceType $type): string => $type->value, $this->requestedInSentence), ...$this->unsupportedRequests],
+            'service_lines' => [
+                ...array_map(fn (ObservedLine $line): array => [
+                    'type' => $line->type->value,
+                    'section' => $line->section->value,
+                    'quantity' => $line->values->quantity,
+                    'size' => $line->values->size?->value,
+                    'severity' => $line->values->severity?->value,
+                    'counting_evidence' => $line->countingEvidence === null ? null : ['photo' => $line->countingEvidence->photo, 'note' => $line->countingEvidence->note],
+                    'supporting_evidence' => $evidence($line->supportingEvidence),
+                    'evidence' => $evidence($line->evidence),
+                    'uncertain' => $line->uncertain,
+                ], $this->lines),
+                ...array_map(fn (RejectedLine $line): array => ['type' => $line->type, 'rejected' => $line->reason], $this->rejected),
+            ],
+            'access' => ['narrow_gate_possible' => $this->access->narrowGatePossible, 'evidence' => $evidence($this->access->evidence)],
+            'hazards' => array_map(fn (Hazard $hazard): array => ['section' => $hazard->section->value, 'note' => $hazard->note, 'evidence' => $evidence($hazard->evidence)], $this->hazards),
+            'model_notes' => $this->modelNotes,
+        ];
+    }
+
     public function wasRejected(ServiceType $type): bool
     {
         return array_any($this->rejected, fn (RejectedLine $line): bool => $line->type === $type->value);

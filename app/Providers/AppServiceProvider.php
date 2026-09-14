@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Extraction\AgentExtractor;
 use App\Extraction\FixtureExtractor;
 use App\Extraction\YardObservationAgent;
+use App\Scoping\Data\RateCard;
 use App\Scoping\VisionExtractor;
 use Illuminate\Support\ServiceProvider;
 
@@ -15,6 +16,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->singleton(RateCard::class, fn (): RateCard => RateCard::fromArray(config()->array('yardscope.rates')));
+
         $this->app->bind(AgentExtractor::class, fn (): AgentExtractor => new AgentExtractor(
             new YardObservationAgent,
             config()->string('yardscope.extraction.provider'),
