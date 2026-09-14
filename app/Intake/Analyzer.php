@@ -32,6 +32,10 @@ final readonly class Analyzer
         $previous = $request->latestRun();
         $photos = $request->photoInputs();
 
+        // The analysis runs inside the request in this prototype (production would queue it), and a
+        // live driver can take a minute, which is past PHP's default execution limit.
+        set_time_limit(300);
+
         try {
             $run = $request->runs()->create(['photo_count' => count($photos), 'observation' => $this->extractor->extract($photos, $request->sentence)->toArray()]);
         } catch (ExtractionFailed $exception) {
