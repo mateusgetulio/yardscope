@@ -4,6 +4,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Extraction
+    |--------------------------------------------------------------------------
+    |
+    | Fixture mode replays recorded model observations keyed by the photo
+    | bytes and the sentence, so the demo and the tests run without a key.
+    | Live mode sends the photos to the configured vision model.
+    |
+    */
+
+    'extraction' => [
+        'live' => env('YARDSCOPE_LIVE', false),
+        'provider' => env('YARDSCOPE_AI_PROVIDER', 'anthropic'),
+        'model' => env('YARDSCOPE_AI_MODEL', 'claude-sonnet-5'),
+        'fixtures' => 'fixtures/observations',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Rate Card
     |--------------------------------------------------------------------------
     |
