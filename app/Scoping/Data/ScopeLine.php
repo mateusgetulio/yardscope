@@ -43,6 +43,17 @@ final readonly class ScopeLine
         return $this->correction === null ? ValueOrigin::AiObserved : ValueOrigin::CustomerCorrected;
     }
 
+    /**
+     * @param  list<ReadinessCheck>  $checks
+     */
+    public function corrected(LineValues $current, LineDisposition $disposition, array $checks, ?string $note, Correction $correction): self
+    {
+        return new self(
+            $this->id, $this->type, $this->section, $this->observed, $current, $disposition, $disposition, $checks,
+            null, $note, $this->countingEvidence, $this->supportingEvidence, $this->evidence, $this->uncertain, $this->requested, $correction,
+        );
+    }
+
     public function passedChecks(): int
     {
         return count(array_filter($this->checks, fn (ReadinessCheck $check): bool => $check->passed));

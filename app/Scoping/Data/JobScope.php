@@ -4,6 +4,7 @@ namespace App\Scoping\Data;
 
 use App\Scoping\Enums\LineDisposition;
 use App\Scoping\Enums\RequestReadiness;
+use App\Scoping\Enums\Section;
 
 final readonly class JobScope
 {
@@ -43,6 +44,11 @@ final readonly class JobScope
     public function linesWith(LineDisposition $disposition): array
     {
         return array_values(array_filter($this->lines, fn (ScopeLine $line): bool => $line->disposition === $disposition));
+    }
+
+    public function hasHazardIn(Section $section): bool
+    {
+        return array_any($this->hazards, fn (Hazard $hazard): bool => $hazard->section === $section);
     }
 
     public function line(string $id): ?ScopeLine

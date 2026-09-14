@@ -6,6 +6,7 @@ use App\Scoping\Data\LineValues;
 use App\Scoping\Data\Observation;
 use App\Scoping\Data\PhotoRequest;
 use App\Scoping\Data\ReadinessCheck;
+use App\Scoping\Data\ScopeLine;
 use App\Scoping\Enums\LineDisposition;
 use App\Scoping\Enums\ReadinessRule;
 use App\Scoping\Enums\Section;
@@ -24,10 +25,39 @@ final readonly class ReadinessGate
      */
     public function evaluate(ServiceType $type, Section $section, LineValues $values, ?string $uncertain, Observation $observation): array
     {
-        $manualReason = $this->manualOnlyReason($type, $section, $values, $uncertain, $observation);
-        $enoughPhotos = count($observation->usablePhotos()) >= self::MIN_USABLE_PHOTOS;
-        $covered = $observation->covers($section);
+        return $this->decide(
+            $type,
+            $section,
+            $this->manualOnlyReason($type, $section, $values, $uncertain, $observation->hasHazardIn($section)),
+            count($observation->usablePhotos()) >= self::MIN_USABLE_PHOTOS,
+            $observation->covers($section),
+        );
+    }
 
+    /**
+     * Re-gates a line after a correction: the manual-only rule sees the new values, while the photo
+     * rules keep the outcome recorded when the observation was gated.
+     *
+     * @return array{LineDisposition, list<ReadinessCheck>, ?PhotoRequest, ?string}
+     */
+    public function regate(ScopeLine $line, LineValues $values, bool $hasHazard): array
+    {
+        $passed = fn (ReadinessRule $rule): bool => array_any($line->checks, fn (ReadinessCheck $check): bool => $check->rule === $rule && $check->passed);
+
+        return $this->decide(
+            $line->type,
+            $line->section,
+            $this->manualOnlyReason($line->type, $line->section, $values, $line->uncertain, $hasHazard),
+            $passed(ReadinessRule::UsablePhotos),
+            $passed(ReadinessRule::SectionCoverage),
+        );
+    }
+
+    /**
+     * @return array{LineDisposition, list<ReadinessCheck>, ?PhotoRequest, ?string}
+     */
+    private function decide(ServiceType $type, Section $section, ?string $manualReason, bool $enoughPhotos, bool $covered): array
+    {
         $checks = [
             new ReadinessCheck(ReadinessRule::ManualOnly, $manualReason === null, $manualReason ?? 'Nothing here needs a pro to look first.'),
             new ReadinessCheck(ReadinessRule::UsablePhotos, $enoughPhotos, $enoughPhotos ? 'At least two usable photos.' : 'Fewer than two usable photos.'),
@@ -49,9 +79,9 @@ final readonly class ReadinessGate
         return [LineDisposition::Priceable, $checks, null, null];
     }
 
-    private function manualOnlyReason(ServiceType $type, Section $section, LineValues $values, ?string $uncertain, Observation $observation): ?string
+    private function manualOnlyReason(ServiceType $type, Section $section, LineValues $values, ?string $uncertain, bool $hasHazard): ?string
     {
-        if ($observation->hasHazardIn($section)) {
+        if ($hasHazard) {
             return "A hazard was spotted in the {$section->label()}, so a pro has to look first.";
         }
 
