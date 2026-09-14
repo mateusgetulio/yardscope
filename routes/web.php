@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CorrectionController;
+use App\Http\Controllers\EvalsController;
 use App\Http\Controllers\JobRequestController;
 use App\Http\Controllers\ProController;
 use App\Http\Controllers\RequestPhotoController;
@@ -17,3 +18,4 @@ Route::post('/requests/{jobRequest}/book', [BookingController::class, 'store'])-
 Route::get('/requests/{jobRequest}/booked', [BookingController::class, 'show'])->name('requests.booked');
 Route::get('/requests/{jobRequest}/pro', [ProController::class, 'show'])->name('requests.pro');
 Route::post('/requests/{jobRequest}/pro/actions', [ProController::class, 'store'])->name('requests.pro.actions');
+Route::get('/evals', [EvalsController::class, 'show'])->name('evals');

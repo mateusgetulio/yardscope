@@ -191,3 +191,37 @@ export interface BriefView {
     estimate: { price: string; hours: string } | null;
     actions: ProActionView[];
 }
+
+export interface EvalResults {
+    ran_at: string;
+    mode: 'live' | 'fixtures';
+    driver: string;
+    metrics: Record<string, number | null>;
+    sets: {
+        slug: string;
+        scenario: string;
+        schema_valid: boolean;
+        failure: string | null;
+        expected_services: string[];
+        observed_services: string[];
+        hallucinated: string[];
+        counts: {
+            service: string;
+            expected: number;
+            observed: number | null;
+            exact: boolean;
+            withinOne: boolean;
+        }[];
+        dispositions: {
+            service: string;
+            expected: string;
+            observed: string | null;
+            correct: boolean;
+        }[];
+        expected_readiness: string | null;
+        observed_readiness: string | null;
+        readiness_correct: boolean | null;
+        photo_request_correct: boolean | null;
+        unusable_photos_correct: boolean | null;
+    }[];
+}
