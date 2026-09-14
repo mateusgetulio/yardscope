@@ -14,6 +14,8 @@ final readonly class SetScore
      * @param  list<array{service: string, expected: int, observed: int|null, exact: bool, withinOne: bool}>  $counts
      * @param  list<array{service: string, expected: string, observed: string|null, correct: bool}>  $dispositions
      * @param  list<array{service: string, expected: int, observed: int|null, correct: bool}>  $countingPhotos
+     * @param  list<array{service: string, attribute: string, expected: string, observed: string|null, correct: bool}>  $attributes
+     * @param  list<string>  $optionalServices  present in the photos but not requested; neither expected nor hallucinated
      */
     public function __construct(
         public string $slug,
@@ -26,6 +28,8 @@ final readonly class SetScore
         public array $counts,
         public array $dispositions,
         public array $countingPhotos,
+        public array $attributes,
+        public array $optionalServices,
         public ?string $expectedReadiness,
         public ?string $observedReadiness,
         public ?bool $photoRequestCorrect,
@@ -53,6 +57,8 @@ final readonly class SetScore
             'counts' => $this->counts,
             'dispositions' => $this->dispositions,
             'counting_photos' => $this->countingPhotos,
+            'attributes' => $this->attributes,
+            'optional_services' => $this->optionalServices,
             'expected_readiness' => $this->expectedReadiness,
             'observed_readiness' => $this->observedReadiness,
             'readiness_correct' => $this->readinessCorrect(),

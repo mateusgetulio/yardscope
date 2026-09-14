@@ -72,6 +72,11 @@ it('replays recorded answers, scores every set and writes the results file', fun
         ['type' => 'branch_removal', 'section' => 'backyard', 'quantity' => 2, 'disposition' => 'manual_quote'],
     ];
     $second = labeledSet($this->root, 'b-cleanup', $labels);
+    // A third set marks the shrubs optional: volunteered or not, they are neither missed nor hallucinated.
+    $labels['expected']['lines'][] = ['type' => 'shrub_trimming', 'section' => 'backyard', 'optional' => true];
+    $labels['expected']['lines'][1]['quantity'] = 1;
+    $third = labeledSet($this->root, 'c-optional', $labels);
+    recordEval($this->root, $third, $sentence, workedExample()['observation']);
     recordEval($this->root, $second, $sentence, workedExample()['observation']);
 
     // Output expectations are ordered and each consumes one line, so a line is matched once.
@@ -86,20 +91,24 @@ it('replays recorded answers, scores every set and writes the results file', fun
 
     expect($files)->toHaveCount(1)
         ->and($results['mode'])->toBe('fixtures')
-        ->and($results['metrics']['sets'])->toBe(2)
+        ->and($results['metrics']['sets'])->toBe(3)
         ->and($results['metrics']['schema_valid_rate'])->toBe(1.0)
-        ->and($results['metrics']['service_precision'])->toBe(round(5 / 6, 3))
+        ->and($results['metrics']['service_precision'])->toBe(round(8 / 9, 3))
+        ->and($results['metrics']['severity_accuracy'])->toBe(1.0)
+        ->and($results['metrics']['size_accuracy'])->toBe(1.0)
         ->and($results['metrics']['service_recall'])->toBe(1.0)
         ->and($results['metrics']['hallucinated_lines'])->toBe(1)
-        ->and($results['metrics']['count_exact_rate'])->toBe(round(2 / 3, 3))
+        ->and($results['metrics']['count_exact_rate'])->toBe(round(3 / 4, 3))
         ->and($results['metrics']['count_within_one_rate'])->toBe(1.0)
         ->and($results['metrics']['disposition_accuracy'])->toBe(1.0)
-        ->and($results['metrics']['readiness_accuracy'])->toBe(0.5)
+        ->and($results['metrics']['readiness_accuracy'])->toBe(round(1 / 3, 3))
         ->and($results['metrics']['counting_photo_accuracy'])->toBe(1.0)
         ->and($results['metrics']['unusable_photo_accuracy'])->toBe(1.0)
         ->and($results['metrics']['photo_request_accuracy'])->toBeNull()
         ->and($results['sets'][0]['slug'])->toBe('a-worked')
-        ->and($results['sets'][1]['hallucinated'])->toBe(['shrub_trimming@backyard']);
+        ->and($results['sets'][1]['hallucinated'])->toBe(['shrub_trimming@backyard'])
+        ->and($results['sets'][2]['hallucinated'])->toBe([])
+        ->and($results['sets'][2]['optional_services'])->toBe(['shrub_trimming@backyard']);
 });
 
 it('scores the photo request and the unusable photos, and marks a missing recording instead of guessing', function () {

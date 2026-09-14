@@ -16,14 +16,19 @@ final readonly class Scorer
     public function score(EvalSet $set, ?Observation $observation, ?JobScope $scope, ?string $failure): SetScore
     {
         $expectedLines = array_values(array_filter($set->expected['lines'] ?? [], 'is_array'));
-        $expectedServices = array_map(fn (array $line): string => self::key($line['type'] ?? '', $line['section'] ?? null), $expectedLines);
+        // Optional lines are visible in the photos but not asked for: the model may volunteer them
+        // (as suggestions) or not, and neither counts against it.
+        $required = array_values(array_filter($expectedLines, fn (array $line): bool => ($line['optional'] ?? false) !== true));
+        $expectedServices = array_map(fn (array $line): string => self::key($line['type'] ?? '', $line['section'] ?? null), $required);
+        $optionalServices = array_map(fn (array $line): string => self::key($line['type'] ?? '', $line['section'] ?? null), array_values(array_diff_key($expectedLines, $required)));
         $observedLines = $scope === null ? [] : array_values(array_filter($scope->lines, fn (ScopeLine $line): bool => $line->disposition !== LineDisposition::Rejected));
         $observedServices = array_map(fn (ScopeLine $line): string => self::key($line->type->value, $line->section?->value), $observedLines);
-        $hallucinated = array_values(array_diff($observedServices, $expectedServices));
+        $hallucinated = array_values(array_diff($observedServices, $expectedServices, $optionalServices));
 
         $counts = [];
         $dispositions = [];
         $countingPhotos = [];
+        $attributes = [];
 
         foreach ($expectedLines as $expected) {
             $key = self::key($expected['type'] ?? '', $expected['section'] ?? null);
@@ -49,6 +54,13 @@ final readonly class Scorer
                 ];
             }
 
+            foreach (['severity', 'size'] as $attribute) {
+                if (is_string($expected[$attribute] ?? null)) {
+                    $observedValue = $attribute === 'severity' ? $match?->current->severity?->value : $match?->current->size?->value;
+                    $attributes[] = ['service' => $key, 'attribute' => $attribute, 'expected' => $expected[$attribute], 'observed' => $observedValue, 'correct' => $observedValue === $expected[$attribute]];
+                }
+            }
+
             if (isset($expected['counting_photo']) && is_int($expected['counting_photo'])) {
                 $countingPhotos[] = [
                     'service' => $key,
@@ -70,6 +82,8 @@ final readonly class Scorer
             $counts,
             $dispositions,
             $countingPhotos,
+            $attributes,
+            $optionalServices,
             is_string($set->expected['readiness'] ?? null) ? $set->expected['readiness'] : null,
             $scope?->readiness->value,
             $this->photoRequestCorrect($set, $observedLines),
