@@ -5,19 +5,18 @@
         "photo-1.jpg",
         "photo-2.jpg"
     ],
-    "notes": "Two close-ups of foliage in beds (heuchera and bleeding heart; a viburnum shoot over grass), no wide or medium view.",
+    "notes": "Two close-ups of foliage in beds (heuchera and bleeding heart; a viburnum shoot over grass), no wide or medium view. No line can carry a section, so the expected line is the requested-but-unseen placeholder.",
     "expected": {
         "readiness": "needs_photos",
         "wide_view": false,
         "unusable_photos": [],
         "photo_request": {
-            "service": "bed_weeding",
-            "section": "backyard"
+            "service": "bed_weeding"
         },
         "lines": [
             {
                 "type": "bed_weeding",
-                "section": "backyard",
+                "section": null,
                 "disposition": "needs_photos"
             }
         ]

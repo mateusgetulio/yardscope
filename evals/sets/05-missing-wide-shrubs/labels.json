@@ -5,19 +5,18 @@
         "photo-1.jpg",
         "photo-2.jpg"
     ],
-    "notes": "Two close-ups of single flowers on the same shrub; no view shows the yard, so the count cannot be taken.",
+    "notes": "Two close-ups of single flowers on the same shrub; no view shows the yard, so the count cannot be taken. No line can carry a section, so the expected line is the requested-but-unseen placeholder.",
     "expected": {
         "readiness": "needs_photos",
         "wide_view": false,
         "unusable_photos": [],
         "photo_request": {
-            "service": "shrub_trimming",
-            "section": "backyard"
+            "service": "shrub_trimming"
         },
         "lines": [
             {
                 "type": "shrub_trimming",
-                "section": "backyard",
+                "section": null,
                 "disposition": "needs_photos"
             }
         ]
