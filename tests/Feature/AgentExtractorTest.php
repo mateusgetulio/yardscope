@@ -52,7 +52,7 @@ it('reports a provider failure as an extraction failure', function () {
         ->toThrow(ExtractionFailed::class, 'The vision model could not be reached: timed out');
 });
 
-it('uses recordings by default and the model only when live mode is on', function () {
+it('uses recordings by default and the model only with the api driver', function () {
     expect(app(VisionExtractor::class))->toBeInstanceOf(FixtureExtractor::class);
 
     config()->set('yardscope.extraction.driver', 'api');
