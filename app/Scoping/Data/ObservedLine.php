@@ -21,13 +21,4 @@ final readonly class ObservedLine
         public ?string $uncertain,
     ) {}
 
-    /**
-     * @return list<Evidence>
-     */
-    public function allEvidence(): array
-    {
-        return $this->countingEvidence === null
-            ? [...$this->evidence, ...$this->supportingEvidence]
-            : [$this->countingEvidence, ...$this->supportingEvidence, ...$this->evidence];
-    }
 }

@@ -19,6 +19,7 @@ final readonly class Observation
      * @param  list<ObservedLine>  $lines
      * @param  list<RejectedLine>  $rejected
      * @param  list<Hazard>  $hazards
+     * @param  list<string>  $unsupportedRequests
      */
     public function __construct(
         public array $photos,
@@ -28,6 +29,7 @@ final readonly class Observation
         public AccessNote $access,
         public array $hazards,
         public ?string $modelNotes,
+        public array $unsupportedRequests = [],
     ) {
         $numbers = array_map(fn (PhotoDescription $photo): int => $photo->photo, $photos);
 
@@ -59,14 +61,17 @@ final readonly class Observation
             }
         }
 
+        [$requested, $unsupported] = self::servicesFrom($data, 'requested_in_sentence');
+
         return new self(
             photos: $photos,
-            requestedInSentence: self::servicesFrom($data, 'requested_in_sentence'),
+            requestedInSentence: $requested,
             lines: $lines,
             rejected: $rejected,
             access: self::accessFrom($data['access'] ?? [], $photoNumbers),
             hazards: array_map(fn (mixed $hazard): Hazard => self::hazardFrom($hazard, $photoNumbers), self::listFrom($data, 'hazards', required: false)),
             modelNotes: is_string($data['model_notes'] ?? null) ? $data['model_notes'] : null,
+            unsupportedRequests: $unsupported,
         );
     }
 
@@ -98,6 +103,11 @@ final readonly class Observation
         }
 
         return false;
+    }
+
+    public function wasRejected(ServiceType $type): bool
+    {
+        return array_any($this->rejected, fn (RejectedLine $line): bool => $line->type === $type->value);
     }
 
     /**
@@ -182,6 +192,13 @@ final readonly class Observation
             }
 
             $quantity = null;
+            $size = null;
+            $counting = null;
+        }
+
+        if ($type->isCounted()) {
+            $supporting = [...$supporting, ...$evidence];
+            $evidence = [];
         }
 
         return new ObservedLine(
@@ -247,21 +264,24 @@ final readonly class Observation
 
     /**
      * @param  array<array-key, mixed>  $data
-     * @return list<ServiceType>
+     * @return array{list<ServiceType>, list<string>}
      */
     private static function servicesFrom(array $data, string $key): array
     {
         $services = [];
+        $unsupported = [];
 
         foreach (self::listFrom($data, $key) as $value) {
             $type = is_string($value) ? ServiceType::tryFrom($value) : null;
 
             if ($type !== null && ! in_array($type, $services, true)) {
                 $services[] = $type;
+            } elseif ($type === null && is_string($value) && $value !== '' && ! in_array($value, $unsupported, true)) {
+                $unsupported[] = $value;
             }
         }
 
-        return $services;
+        return [$services, $unsupported];
     }
 
     /**

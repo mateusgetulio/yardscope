@@ -68,11 +68,30 @@ it('rejects structural problems so the caller can retry', function (array $data,
     'hazard without a note' => [['photos' => [['photo' => 1, 'view' => 'wide', 'sections' => ['backyard'], 'usable' => true]], 'service_lines' => [], 'requested_in_sentence' => [], 'hazards' => [['section' => 'backyard']]], 'A hazard needs a non-empty note.'],
 ]);
 
-it('ignores unknown requested services instead of failing', function () {
+it('keeps unknown requested services aside instead of failing or forgetting them', function () {
     $data = workedExample()['observation'];
-    $data['requested_in_sentence'] = ['yard_cleanup', 'pool_cleaning', 'yard_cleanup'];
+    $data['requested_in_sentence'] = ['yard_cleanup', 'pool_cleaning', 'yard_cleanup', 'pool_cleaning'];
 
-    expect(Observation::fromArray($data)->requestedInSentence)->toBe([ServiceType::YardCleanup]);
+    $observation = Observation::fromArray($data);
+
+    expect($observation->requestedInSentence)->toBe([ServiceType::YardCleanup])
+        ->and($observation->unsupportedRequests)->toBe(['pool_cleaning']);
+});
+
+it('drops fields that do not belong to the service type', function () {
+    $data = workedExample()['observation'];
+    $data['service_lines'] = [
+        ['type' => 'yard_cleanup', 'section' => 'backyard', 'severity' => 'heavy', 'size' => 'large', 'quantity' => 3, 'counting_evidence' => ['photo' => 1, 'note' => 'x'], 'evidence' => [['photo' => 1, 'note' => 'leaves']]],
+        ['type' => 'shrub_trimming', 'section' => 'backyard', 'quantity' => 2, 'size' => 'small', 'counting_evidence' => ['photo' => 1, 'note' => 'two'], 'evidence' => [['photo' => 2, 'note' => 'stray']]],
+    ];
+
+    $observation = Observation::fromArray($data);
+
+    expect($observation->lines[0]->values->size)->toBeNull()
+        ->and($observation->lines[0]->values->quantity)->toBeNull()
+        ->and($observation->lines[0]->countingEvidence)->toBeNull()
+        ->and($observation->lines[1]->evidence)->toBe([])
+        ->and($observation->lines[1]->supportingEvidence)->toHaveCount(1);
 });
 
 it('counts only usable wide or medium photos as covering a section', function () {
