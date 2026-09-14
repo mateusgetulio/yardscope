@@ -30,6 +30,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Evals
+    |--------------------------------------------------------------------------
+    |
+    | Labeled photo sets live under "sets", one directory per set with a
+    | labels.json next to the photos. A live run records each model answer
+    | under "fixtures" so the same run can be replayed in CI, and writes the
+    | scored results under "results". Paths are relative to the project.
+    |
+    */
+
+    'evals' => [
+        'sets' => 'evals/sets',
+        'fixtures' => 'evals/fixtures',
+        'results' => 'evals/results',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Demo Property
     |--------------------------------------------------------------------------
     |
