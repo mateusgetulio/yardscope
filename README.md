@@ -8,7 +8,15 @@ Instant pricing already works for services that can be measured from satellite i
 
 ## Demo
 
-DEMO
+Both screenshots are live runs through the Claude Code driver on the eval photos.
+
+A partial request: the cleanup is priced now, the shrubs the model rated large go to a pro, and the total is never read as covering them.
+
+![A partial request](docs/demo-partial.png)
+
+The refusal: three living-room photos with a request for a backyard cleanup. The model invents nothing, the pipeline turns the two requested services into placeholders, and the customer is asked for one photo of the area.
+
+![The refusal](docs/demo-refusal.png)
 
 ## How it decides
 

@@ -216,7 +216,7 @@ function LineCard({
             <p className="mt-2 text-xs text-stone-500">
                 {line.checksPassed} of {line.checksTotal} checks passed
                 {line.evidence.length > 0 &&
-                    `, seen in photo ${line.evidence.map((item) => item.photo).join(', ')}`}
+                    `, seen in photo ${[...new Set(line.evidence.map((item) => item.photo))].join(', ')}`}
             </p>
 
             {editable && (
