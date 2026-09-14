@@ -1,5 +1,5 @@
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { useState, type FormEvent } from 'react';
 import type {
     CorrectionInput,
     RequestView,
@@ -18,12 +18,12 @@ const dispositionStyles: Record<ScopeLineView['disposition'], string> = {
     rejected: 'border-stone-200 bg-white text-stone-500',
 };
 
-const sizes = ['small', 'medium', 'large'];
-const severities = ['light', 'moderate', 'heavy'];
+const sizes: string[] = ['small', 'medium', 'large'];
+const severities: string[] = ['light', 'moderate', 'heavy'];
 
 export default function ResultPage({ request }: Props) {
     const { errors } = usePage().props;
-    const booking = useForm({});
+    const [booking, setBooking] = useState(false);
 
     return (
         <>
@@ -81,8 +81,9 @@ export default function ResultPage({ request }: Props) {
                     <p className="mt-4 text-sm text-stone-500">
                         Left out because the analysis could not be read:{' '}
                         {request.rejected
-                            .map((line) => `${line.type} (${line.reason})`)
-                            .join('; ')}
+                            .map((line) => line.label.toLowerCase())
+                            .join(', ')}
+                        . A pro can look at it on site.
                     </p>
                 )}
 
@@ -138,11 +139,16 @@ export default function ResultPage({ request }: Props) {
                     ) : (
                         <button
                             type="button"
-                            disabled={
-                                !request.cta.enabled || booking.processing
-                            }
+                            disabled={!request.cta.enabled || booking}
                             onClick={() =>
-                                booking.post(`/requests/${request.id}/book`)
+                                router.post(
+                                    `/requests/${request.id}/book`,
+                                    {},
+                                    {
+                                        onStart: () => setBooking(true),
+                                        onFinish: () => setBooking(false),
+                                    },
+                                )
                             }
                             className="mt-4 rounded-lg bg-blue-700 px-5 py-2 font-medium text-white disabled:bg-stone-300 disabled:text-stone-600"
                         >
@@ -309,7 +315,7 @@ function CorrectionForm({
         });
     }
 
-    function submit(event: React.FormEvent) {
+    function submit(event: FormEvent) {
         event.preventDefault();
         form.post(`/requests/${requestId}/corrections`, {
             onSuccess: onDone,
@@ -331,11 +337,14 @@ function CorrectionForm({
                 <span className="text-xs text-stone-500">What is off?</span>
                 <select
                     value={form.data.field}
-                    onChange={(event) =>
-                        chooseField(
-                            event.target.value as CorrectionInput['field'],
-                        )
-                    }
+                    onChange={(event) => {
+                        const chosen = fields.find(
+                            (field) => field === event.target.value,
+                        );
+                        if (chosen !== undefined) {
+                            chooseField(chosen);
+                        }
+                    }}
                     className="mt-1 w-full rounded border border-stone-300 px-2 py-1"
                 >
                     {fields.map((field) => (
@@ -405,28 +414,39 @@ function CorrectionForm({
 }
 
 function AddPhoto({ requestId }: { requestId: string }) {
-    const form = useForm<{ photo: File | null }>({ photo: null });
+    const [sending, setSending] = useState(false);
 
     return (
-        <label className="cursor-pointer rounded border border-amber-500 bg-white px-3 py-1">
-            {form.processing ? 'Analyzing again' : 'Add photo'}
-            <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="hidden"
-                disabled={form.processing}
-                onChange={(event) => {
-                    const photo = event.target.files?.[0] ?? null;
-                    if (photo === null) {
-                        return;
-                    }
-                    form.transform(() => ({ photo }));
-                    form.post(`/requests/${requestId}/photos`, {
-                        forceFormData: true,
-                    });
-                }}
-            />
-        </label>
+        <span className="inline-flex flex-wrap items-center gap-2">
+            <label className="cursor-pointer rounded border border-amber-500 bg-white px-3 py-1">
+                {sending ? 'Analyzing again' : 'Add photo'}
+                <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    disabled={sending}
+                    onChange={(event) => {
+                        const photo = event.target.files?.[0];
+                        if (photo === undefined) {
+                            return;
+                        }
+                        router.post(
+                            `/requests/${requestId}/photos`,
+                            { photo },
+                            {
+                                forceFormData: true,
+                                onStart: () => setSending(true),
+                                onFinish: () => setSending(false),
+                            },
+                        );
+                    }}
+                />
+            </label>
+            <span className="text-xs text-stone-500">
+                Runs the analysis again; your corrections are kept where they
+                still apply.
+            </span>
+        </span>
     );
 }
 

@@ -17,6 +17,7 @@ export default function BookedPage({ request }: Props) {
                 <h1 className="text-2xl font-semibold">
                     Booked at {request.bookedPrice}
                 </h1>
+                <p className="text-sm text-stone-500">Synthetic demo rates.</p>
                 <p className="mt-2 text-stone-600">
                     A pro gets a brief built from exactly what you saw on the
                     previous page, with every value marked as seen in the photos

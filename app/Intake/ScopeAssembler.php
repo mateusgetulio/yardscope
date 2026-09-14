@@ -3,9 +3,11 @@
 namespace App\Intake;
 
 use App\Models\JobRequest;
+use App\Models\ObservationRun;
 use App\Scoping\CorrectionApplier;
 use App\Scoping\Data\JobScope;
 use App\Scoping\Data\Observation;
+use App\Scoping\Exceptions\InvalidCorrection;
 use App\Scoping\Pricer;
 use App\Scoping\ScopeBuilder;
 
@@ -23,7 +25,11 @@ final readonly class ScopeAssembler
      */
     public function assemble(JobRequest $request): AssembledScope
     {
-        $run = $request->latestRun();
+        return $this->assembleRun($request, $request->latestRun());
+    }
+
+    public function assembleRun(JobRequest $request, ?ObservationRun $run, bool $withCorrections = true): AssembledScope
+    {
         $profile = $request->propertyProfile();
 
         if ($run === null) {
@@ -37,11 +43,18 @@ final readonly class ScopeAssembler
 
         $observation = Observation::fromArray($run->observation);
         $scope = $this->builder->build($observation, $profile);
+        $skipped = [];
 
-        foreach ($run->corrections as $record) {
-            $scope = $this->applier->apply($scope, $record->toCorrection());
+        foreach ($withCorrections ? $run->corrections : [] as $record) {
+            // A stored correction the domain no longer accepts (a rule changed, or two customers
+            // raced) is skipped and reported rather than taking the whole request down.
+            try {
+                $scope = $this->applier->apply($scope, $record->toCorrection());
+            } catch (InvalidCorrection) {
+                $skipped[] = $record;
+            }
         }
 
-        return new AssembledScope($scope, $this->pricer->estimate($scope), $run, $observation->unsupportedRequests);
+        return new AssembledScope($scope, $this->pricer->estimate($scope), $run, $observation->unsupportedRequests, $skipped);
     }
 }

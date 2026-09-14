@@ -5,11 +5,16 @@ namespace App\Http\Presenters;
 use App\Intake\AssembledScope;
 use App\Models\JobRequest;
 use App\Scoping\Data\Estimate;
+use App\Scoping\Data\Evidence;
+use App\Scoping\Data\Hazard;
 use App\Scoping\Data\LineValues;
+use App\Scoping\Data\ReadinessCheck;
+use App\Scoping\Data\RejectedLine;
 use App\Scoping\Data\ScopeLine;
 use App\Scoping\Enums\LineDisposition;
 use App\Scoping\Enums\RequestReadiness;
 use App\Scoping\Enums\ServiceType;
+use App\Scoping\Enums\ValueOrigin;
 
 final readonly class ScopePresenter
 {
@@ -20,7 +25,6 @@ final readonly class ScopePresenter
     {
         $scope = $assembled->scope;
         $estimate = $assembled->estimate;
-        $excluded = array_values(array_filter($scope->lines, fn (ScopeLine $line): bool => in_array($line->disposition, [LineDisposition::ManualQuote, LineDisposition::NeedsPhotos], true)));
 
         return [
             'id' => $request->id,
@@ -35,11 +39,11 @@ final readonly class ScopePresenter
             'requestNote' => $scope->requestNote,
             'estimate' => $estimate === null ? null : $this->estimate($estimate),
             'cta' => $this->callToAction($scope->readiness, $estimate),
-            'excludedSummary' => $excluded === [] ? null : $this->excludedSummary($excluded),
+            'excludedSummary' => $this->excludedSummary($scope->lines),
             'lines' => array_map(fn (ScopeLine $line): array => $this->line($line, $estimate), $scope->lines),
-            'rejected' => array_map(fn ($line): array => ['type' => $line->type, 'reason' => $line->reason], $scope->rejected),
+            'rejected' => array_map(fn (RejectedLine $line): array => ['label' => ServiceType::tryFrom($line->type)?->label() ?? 'One service', 'reason' => $line->reason], $scope->rejected),
             'access' => ['narrowGatePossible' => $scope->access->narrowGatePossible],
-            'hazards' => array_map(fn ($hazard): array => ['section' => $hazard->section->label(), 'note' => $hazard->note], $scope->hazards),
+            'hazards' => array_map(fn (Hazard $hazard): array => ['section' => $hazard->section->label(), 'note' => $hazard->note], $scope->hazards),
             'unsupportedRequests' => $assembled->unsupportedRequests,
         ];
     }
@@ -73,20 +77,36 @@ final readonly class ScopePresenter
     }
 
     /**
-     * @param  list<ScopeLine>  $excluded
+     * Names every gated line under the price, so the total is never read as covering it. Lines
+     * that only need a photo are told apart from lines a pro has to see.
+     *
+     * @param  list<ScopeLine>  $lines
      */
-    private function excludedSummary(array $excluded): string
+    private function excludedSummary(array $lines): ?string
     {
-        $names = array_map(fn (ScopeLine $line): string => strtolower($line->type->label()), $excluded);
-        $list = count($names) === 1 ? $names[0] : implode(', ', array_slice($names, 0, -1)).' and '.end($names);
-        $verb = count($names) === 1 ? 'is' : 'are';
+        $names = fn (LineDisposition $disposition): array => array_map(
+            fn (ScopeLine $line): string => strtolower($line->type->label()),
+            array_values(array_filter($lines, fn (ScopeLine $line): bool => $line->disposition === $disposition)),
+        );
+        $sentences = [];
 
-        return ucfirst("{$list} {$verb} not included. A pro will quote {$this->pronoun(count($names))} separately.");
+        if (($photos = $names(LineDisposition::NeedsPhotos)) !== []) {
+            $sentences[] = ucfirst($this->list($photos).(count($photos) === 1 ? ' needs' : ' need').' a photo before it can be priced.');
+        }
+
+        if (($manual = $names(LineDisposition::ManualQuote)) !== []) {
+            $sentences[] = ucfirst($this->list($manual).(count($manual) === 1 ? ' is' : ' are').' not included. A pro will quote '.(count($manual) === 1 ? 'it' : 'them').' separately.');
+        }
+
+        return $sentences === [] ? null : implode(' ', $sentences);
     }
 
-    private function pronoun(int $count): string
+    /**
+     * @param  list<string>  $names
+     */
+    private function list(array $names): string
     {
-        return $count === 1 ? 'it' : 'them';
+        return count($names) === 1 ? $names[0] : implode(', ', array_slice($names, 0, -1)).' and '.end($names);
     }
 
     /**
@@ -116,13 +136,13 @@ final readonly class ScopePresenter
             'counted' => $line->type->isCounted(),
             'usesSize' => in_array($line->type, [ServiceType::ShrubTrimming, ServiceType::BranchRemoval], true),
             'origin' => $line->origin()->value,
-            'observedSummary' => $line->origin()->value === 'customer_corrected' ? $this->summaryOf($line->observed, $line) : null,
+            'observedSummary' => $line->origin() === ValueOrigin::CustomerCorrected ? $this->summaryOf($line->observed, $line) : null,
             'note' => $line->note,
             'photoRequest' => $line->photoRequest?->message,
             'checksPassed' => $line->passedChecks(),
             'checksTotal' => count($line->checks),
-            'checks' => array_map(fn ($check): array => ['rule' => $check->rule->value, 'passed' => $check->passed, 'message' => $check->message], $line->checks),
-            'evidence' => array_map(fn ($item): array => ['photo' => $item->photo, 'note' => $item->note], array_values(array_filter([$line->countingEvidence, ...$line->supportingEvidence, ...$line->evidence]))),
+            'checks' => array_map(fn (ReadinessCheck $check): array => ['rule' => $check->rule->value, 'passed' => $check->passed, 'message' => $check->message], $line->checks),
+            'evidence' => array_map(fn (Evidence $item): array => ['photo' => $item->photo, 'note' => $item->note], array_values(array_filter([$line->countingEvidence, ...$line->supportingEvidence, ...$line->evidence]))),
             'hours' => $lineEstimate === null ? null : $this->hours($lineEstimate->hours->low, $lineEstimate->hours->high),
             'labor' => $lineEstimate === null ? null : $this->money($lineEstimate->laborCents),
             'removed' => $line->wasRemoved(),

@@ -27,7 +27,7 @@ class CorrectionController extends Controller
 
         $correction = new Correction(
             $request->string('line_id')->toString(),
-            $request->enum('field', CorrectionField::class) ?? CorrectionField::Quantity,
+            CorrectionField::from($request->string('field')->toString()),
             $request->string('model_value')->toString(),
             $request->string('customer_value')->toString(),
             $request->filled('reason') ? $request->string('reason')->toString() : null,

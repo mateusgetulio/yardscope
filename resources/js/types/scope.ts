@@ -67,7 +67,7 @@ export interface RequestView {
     cta: { label: string; enabled: boolean };
     excludedSummary: string | null;
     lines: ScopeLineView[];
-    rejected: { type: string; reason: string }[];
+    rejected: { label: string; reason: string }[];
     access: { narrowGatePossible: boolean };
     hazards: { section: string; note: string }[];
     unsupportedRequests: string[];

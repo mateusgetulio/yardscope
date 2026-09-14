@@ -233,6 +233,7 @@ it('analyzes again after a photo is added and shows the checks improving', funct
     $this->get(route('requests.show', $request))->assertInertia(fn (AssertableInertia $page) => $page
         ->where('request.readiness', 'partial')
         ->where('request.lines.0.disposition', 'priceable')
+        ->where('request.lines.0.checksPassed', 3)
         ->where('request.estimate.price', '$165')
         ->has('request.photos', 4)
         ->where('request.canAddPhoto', false));
@@ -332,4 +333,74 @@ it('rejects an unreadable upload on the form and keeps nothing', function () {
 
     expect(JobRequest::count())->toBe(0)
         ->and(Storage::disk('local')->allFiles())->toBe([]);
+});
+
+it('carries corrections onto the new run after a photo is added, where they still apply', function () {
+    $uploads = demoUploads();
+    $sentence = 'My backyard is a mess. Clean it up and trim whatever needs trimming.';
+    recordFor($uploads, $sentence, workedExample()['observation'], $this->fixtures);
+    $this->post('/requests', ['sentence' => $sentence, 'photos' => $uploads]);
+    $request = JobRequest::sole();
+
+    correct($request, 'line-2', 'quantity', '6', '4', 'Two more behind the shed')->assertRedirect();
+    correct($request, 'line-1', 'severity', 'moderate', 'heavy')->assertRedirect();
+    correct($request, 'line-3', 'removed', '')->assertRedirect();
+
+    // The new observation has no branch line and already sees moderate cleanup: only the count carries.
+    $fourth = UploadedFile::fake()->image('yard-4.jpg', 800, 600);
+    $again = workedExample()['observation'];
+    $again['photos'][] = ['photo' => 4, 'view' => 'wide', 'sections' => ['backyard'], 'usable' => true];
+    $again['service_lines'][0]['severity'] = 'moderate';
+    array_splice($again['service_lines'], 2, 1);
+    recordFor([...$uploads, $fourth], $sentence, $again, $this->fixtures);
+
+    $this->post(route('requests.photos.store', $request), ['photo' => $fourth])->assertRedirect();
+
+    $this->get(route('requests.show', $request))->assertInertia(fn (AssertableInertia $page) => $page
+        ->where('request.readiness', 'ready')
+        ->where('request.lines.1.summary', '6 shrubs, medium')
+        ->where('request.lines.1.origin', 'customer_corrected')
+        ->where('request.lines.1.lastReason', 'Two more behind the shed')
+        ->where('request.lines.0.summary', 'Moderate cleanup')
+        ->where('request.lines.0.origin', 'ai_observed')
+        ->where('request.cta.label', fn (string $label): bool => str_starts_with($label, 'Book this job, $'))
+        ->has('request.lines', 2));
+
+    $carried = $request->latestRun()?->corrections;
+    expect($carried)->toHaveCount(1)
+        ->and($carried?->first()?->source)->toBe('carried')
+        ->and($carried?->first()?->model_value)->toBe('4')
+        ->and($request->runs()->oldest('id')->first()?->corrections()->count())->toBe(3);
+});
+
+it('tells lines that need a photo apart from lines a pro has to see', function () {
+    $closeOnly = workedExample()['observation'];
+    $closeOnly['photos'][0]['view'] = 'close';
+    $request = submittedWorkedExample($this->fixtures, $closeOnly);
+
+    $this->get(route('requests.show', $request))->assertInertia(fn (AssertableInertia $page) => $page
+        ->where('request.readiness', 'needs_photos')
+        ->where('request.lines.0.checksPassed', 2)
+        ->where('request.excludedSummary', 'Yard cleanup and shrub trimming need a photo before it can be priced. Branch removal is not included. A pro will quote it separately.'));
+});
+
+it('shows the booked state on the result page', function () {
+    $request = submittedWorkedExample($this->fixtures);
+    $this->post(route('requests.book', $request));
+
+    $this->get(route('requests.show', $request))->assertInertia(fn (AssertableInertia $page) => $page
+        ->where('request.booked', true)
+        ->where('request.bookedPrice', '$165')
+        ->where('request.canAddPhoto', false)
+        ->where('request.cta.label', 'Book priced work, $165'));
+});
+
+it('validates a correction before the domain sees it', function () {
+    $request = submittedWorkedExample($this->fixtures);
+
+    $this->post(route('requests.corrections.store', $request), ['line_id' => 'line-2', 'field' => 'colour', 'customer_value' => 'x'])->assertSessionHasErrors('field');
+    $this->post(route('requests.corrections.store', $request), ['line_id' => 'line-2', 'field' => 'quantity', 'customer_value' => '5', 'reason' => str_repeat('a', 201)])->assertSessionHasErrors('reason');
+    $this->post(route('requests.corrections.store', $request), ['field' => 'quantity', 'customer_value' => '5'])->assertSessionHasErrors('line_id');
+
+    expect($request->latestRun()?->corrections()->count())->toBe(0);
 });
