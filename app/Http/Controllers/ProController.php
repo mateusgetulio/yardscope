@@ -6,6 +6,7 @@ use App\Http\Presenters\PipelinePresenter;
 use App\Http\Presenters\ProBriefPresenter;
 use App\Http\Requests\StoreProActionRequest;
 use App\Intake\ScopeAssembler;
+use App\Models\Enums\ProActionKind;
 use App\Models\JobRequest;
 use App\Scoping\ProBriefBuilder;
 use Illuminate\Http\RedirectResponse;
@@ -20,16 +21,18 @@ class ProController extends Controller
 
         return Inertia::render('pro', [
             'brief' => $presenter->present($jobRequest, $builder->build($assembled->scope, $assembled->estimate)),
-            'pipeline' => $pipeline->present($jobRequest, $assembled),
+            'pipeline' => $pipeline->present($jobRequest, $assembled, forPro: true),
         ]);
     }
 
     public function store(StoreProActionRequest $request, JobRequest $jobRequest): RedirectResponse
     {
+        $kind = ProActionKind::from($request->string('kind')->toString());
+
         $jobRequest->proActions()->create([
-            'kind' => $request->string('kind')->toString(),
+            'kind' => $kind,
             'reason' => $request->filled('reason') ? $request->string('reason')->toString() : null,
-            'adjusted_price_cents' => $request->string('kind')->toString() === 'adjust_quote' ? (int) round($request->float('adjusted_price') * 100) : null,
+            'adjusted_price_cents' => $kind === ProActionKind::AdjustQuote ? (int) round($request->float('adjusted_price') * 100) : null,
         ]);
 
         return redirect()->route('requests.pro', $jobRequest);

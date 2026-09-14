@@ -110,7 +110,9 @@ final readonly class ProBriefBuilder
             }
 
             if ($line->photoRequest !== null && $line->disposition === LineDisposition::NeedsPhotos) {
-                $questions[] = "{$line->type->label()}: {$line->photoRequest->message}";
+                $questions[] = $line->isPlaceholder()
+                    ? "{$line->type->label()}: requested, but no photo shows it. The customer was asked for one."
+                    : "{$line->type->label()}: photo requested from the customer. {$line->photoRequest->message}";
             }
         }
 

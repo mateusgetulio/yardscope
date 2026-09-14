@@ -6,7 +6,9 @@ use App\Intake\AssembledScope;
 use App\Models\CorrectionRecord;
 use App\Models\JobRequest;
 use App\Models\ObservationRun;
+use App\Models\ProAction;
 use App\Scoping\Data\LineEstimate;
+use App\Scoping\Data\RateCard;
 use App\Scoping\Data\ReadinessCheck;
 use App\Scoping\Data\RejectedLine;
 use App\Scoping\Data\ScopeLine;
@@ -16,22 +18,26 @@ use App\Scoping\Data\ScopeLine;
  */
 final readonly class PipelinePresenter
 {
+    public function __construct(private RateCard $rates) {}
+
     /**
      * @return array<string, mixed>
      */
-    public function present(JobRequest $request, AssembledScope $assembled): array
+    public function present(JobRequest $request, AssembledScope $assembled, bool $forPro = false): array
     {
         $scope = $assembled->scope;
         $skipped = array_map(fn (CorrectionRecord $record): int => $record->id, $assembled->skippedCorrections);
+        $runs = $request->runs()->with('corrections')->orderBy('id')->get();
 
         return [
             'photos' => $this->photos($request, $assembled->run),
             'extraction' => [
                 'driver' => config()->string('yardscope.extraction.driver'),
-                'runs' => $request->runs()->orderBy('id')->get()->map(fn (ObservationRun $run): array => [
+                'runs' => $runs->map(fn (ObservationRun $run): array => [
                     'id' => $run->id,
                     'photoCount' => $run->photo_count,
-                    'failure' => $run->failure,
+                    // The raw failure can carry local paths, so the customer only learns that the run failed.
+                    'failure' => $run->failure === null ? null : ($forPro ? $run->failure : 'The analysis failed.'),
                     'lines' => is_array($run->observation) ? count($run->observation['service_lines'] ?? []) : 0,
                     'at' => $run->created_at?->toIso8601String(),
                 ])->all(),
@@ -53,10 +59,13 @@ final readonly class PipelinePresenter
                 'highHours' => $assembled->estimate->hours->high,
                 'shownLowHours' => $assembled->estimate->shownLowHours,
                 'shownHighHours' => $assembled->estimate->shownHighHours,
+                'midpointHours' => $assembled->estimate->hours->midpoint(),
+                'hourlyRateCents' => $this->rates->hourlyRateCents,
                 'visitFeeCents' => $assembled->estimate->visitFeeCents,
+                'priceRoundingCents' => $this->rates->priceRoundingCents,
                 'priceCents' => $assembled->estimate->priceCents,
             ],
-            'corrections' => $request->runs()->orderBy('id')->get()->flatMap(fn (ObservationRun $run) => $run->corrections->map(fn (CorrectionRecord $record): array => [
+            'corrections' => $runs->flatMap(fn (ObservationRun $run) => $run->corrections->map(fn (CorrectionRecord $record): array => [
                 'run' => $run->id,
                 'lineId' => $record->line_id,
                 'field' => $record->field->value,
@@ -67,6 +76,13 @@ final readonly class PipelinePresenter
                 'skipped' => in_array($record->id, $skipped, true),
                 'current' => $run->id === $assembled->run?->id,
             ]))->values()->all(),
+            'proActions' => $request->proActions->map(fn (ProAction $action): array => [
+                'kind' => $action->kind->value,
+                'label' => $action->kind->label(),
+                'reason' => $action->reason,
+                'adjustedPriceCents' => $action->adjusted_price_cents,
+                'at' => $action->created_at->toIso8601String(),
+            ])->all(),
         ];
     }
 

@@ -1,18 +1,12 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import { useState, type FormEvent } from 'react';
 import PipelinePanel from '@/components/pipeline-panel';
-import type { BriefView, PipelineView, ProActionView } from '@/types/scope';
+import type { BriefView, PipelineView, ProActionKind } from '@/types/scope';
 
 interface Props {
     brief: BriefView;
     pipeline: PipelineView;
 }
-
-const actionLabels: Record<ProActionView['kind'], string> = {
-    accept_scope: 'Accepted the scope',
-    request_photo: 'Asked for a photo',
-    adjust_quote: 'Adjusted the quote',
-};
 
 export default function ProPage({ brief, pipeline }: Props) {
     return (
@@ -147,7 +141,7 @@ export default function ProPage({ brief, pipeline }: Props) {
                         <ul className="mt-4 space-y-1 text-sm text-stone-600">
                             {brief.actions.map((action) => (
                                 <li key={action.id}>
-                                    {actionLabels[action.kind]}
+                                    {action.label}
                                     {action.adjustedPrice
                                         ? ` to ${action.adjustedPrice}`
                                         : ''}
@@ -165,17 +159,26 @@ export default function ProPage({ brief, pipeline }: Props) {
 }
 
 function ProActions({ requestId }: { requestId: string }) {
-    const [kind, setKind] = useState<ProActionView['kind'] | null>(null);
-    const form = useForm({ kind: '', reason: '', adjusted_price: '' });
+    const [accepting, setAccepting] = useState(false);
+    const form = useForm<{
+        kind: ProActionKind | '';
+        reason: string;
+        adjusted_price: string;
+    }>({ kind: '', reason: '', adjusted_price: '' });
+
+    function toggle(kind: ProActionKind) {
+        form.setData({
+            kind: form.data.kind === kind ? '' : kind,
+            reason: '',
+            adjusted_price: '',
+        });
+        form.clearErrors();
+    }
 
     function submit(event: FormEvent) {
         event.preventDefault();
-        form.transform((data) => ({ ...data, kind: kind ?? '' }));
         form.post(`/requests/${requestId}/pro/actions`, {
-            onSuccess: () => {
-                setKind(null);
-                form.reset();
-            },
+            onSuccess: () => form.reset(),
         });
     }
 
@@ -184,47 +187,46 @@ function ProActions({ requestId }: { requestId: string }) {
             <div className="flex flex-wrap gap-2 text-sm">
                 <button
                     type="button"
-                    disabled={form.processing}
-                    onClick={() => {
-                        setKind('accept_scope');
-                        form.transform(() => ({
-                            kind: 'accept_scope',
-                            reason: '',
-                            adjusted_price: '',
-                        }));
-                        form.post(`/requests/${requestId}/pro/actions`);
-                    }}
+                    disabled={accepting}
+                    onClick={() =>
+                        router.post(
+                            `/requests/${requestId}/pro/actions`,
+                            { kind: 'accept_scope' },
+                            {
+                                onStart: () => setAccepting(true),
+                                onFinish: () => setAccepting(false),
+                            },
+                        )
+                    }
                     className="rounded bg-blue-700 px-3 py-1 font-medium text-white disabled:opacity-60"
                 >
                     Accept scope
                 </button>
                 <button
                     type="button"
-                    onClick={() =>
-                        setKind(
-                            kind === 'request_photo' ? null : 'request_photo',
-                        )
-                    }
+                    onClick={() => toggle('request_photo')}
                     className="rounded border border-stone-400 bg-white px-3 py-1"
                 >
                     Request photo
                 </button>
                 <button
                     type="button"
-                    onClick={() =>
-                        setKind(kind === 'adjust_quote' ? null : 'adjust_quote')
-                    }
+                    onClick={() => toggle('adjust_quote')}
                     className="rounded border border-stone-400 bg-white px-3 py-1"
                 >
                     Adjust quote
                 </button>
             </div>
-            {(kind === 'request_photo' || kind === 'adjust_quote') && (
+            {form.errors.kind && (
+                <p className="mt-2 text-sm text-red-700">{form.errors.kind}</p>
+            )}
+            {(form.data.kind === 'request_photo' ||
+                form.data.kind === 'adjust_quote') && (
                 <form
                     onSubmit={submit}
                     className="mt-3 grid gap-3 text-sm sm:grid-cols-3"
                 >
-                    {kind === 'adjust_quote' && (
+                    {form.data.kind === 'adjust_quote' && (
                         <label className="block">
                             <span className="text-xs text-stone-500">
                                 Adjusted price, $
@@ -251,7 +253,7 @@ function ProActions({ requestId }: { requestId: string }) {
                     )}
                     <label className="block sm:col-span-2">
                         <span className="text-xs text-stone-500">
-                            {kind === 'request_photo'
+                            {form.data.kind === 'request_photo'
                                 ? 'What should the customer photograph?'
                                 : 'Why'}
                         </span>
@@ -276,7 +278,7 @@ function ProActions({ requestId }: { requestId: string }) {
                             disabled={form.processing}
                             className="rounded bg-blue-700 px-4 py-1 font-medium text-white disabled:opacity-60"
                         >
-                            {kind === 'request_photo'
+                            {form.data.kind === 'request_photo'
                                 ? 'Send photo request'
                                 : 'Save adjustment'}
                         </button>

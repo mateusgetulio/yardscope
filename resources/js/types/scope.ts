@@ -124,7 +124,10 @@ export interface PipelineView {
         highHours: number;
         shownLowHours: number;
         shownHighHours: number;
+        midpointHours: number;
+        hourlyRateCents: number;
         visitFeeCents: number;
+        priceRoundingCents: number;
         priceCents: number;
     } | null;
     corrections: {
@@ -138,7 +141,16 @@ export interface PipelineView {
         skipped: boolean;
         current: boolean;
     }[];
+    proActions: {
+        kind: ProActionKind;
+        label: string;
+        reason: string | null;
+        adjustedPriceCents: number | null;
+        at: string;
+    }[];
 }
+
+export type ProActionKind = 'accept_scope' | 'request_photo' | 'adjust_quote';
 
 export interface BriefLineView {
     id: string;
@@ -158,7 +170,8 @@ export interface BriefLineView {
 
 export interface ProActionView {
     id: number;
-    kind: 'accept_scope' | 'request_photo' | 'adjust_quote';
+    kind: ProActionKind;
+    label: string;
     reason: string | null;
     adjustedPrice: string | null;
     at: string;

@@ -200,29 +200,67 @@ it('INV-7 builds the brief from the scope alone, with an origin on every value',
 
         foreach ($brief->lines as $line) {
             $source = $scope->line($line->lineId);
+            $sourceEvidence = $source === null ? [] : array_values(array_filter([$source->countingEvidence, ...$source->supportingEvidence, ...$source->evidence]));
 
             expect($line->origin === ValueOrigin::CustomerCorrected)->toBe($line->observed !== null, invariantFailure('INV-7', $seed))
-                ->and($line->customerReason)->toBe($source?->lastCorrection()?->reason, invariantFailure('INV-7', $seed));
+                ->and($line->customerReason)->toBe($source?->lastCorrection()?->reason, invariantFailure('INV-7', $seed))
+                ->and($line->evidence)->toBe($sourceEvidence, invariantFailure('INV-7', $seed))
+                ->and($line->note)->toBe($source?->note, invariantFailure('INV-7', $seed));
         }
+
+        // Every open question and access note is one the scope can justify, word for word.
+        $allowedQuestions = [];
+
+        foreach ($scope->lines as $line) {
+            if ($line->uncertain !== null) {
+                $allowedQuestions[] = "{$line->type->label()}: {$line->uncertain}";
+            }
+
+            if ($line->photoRequest !== null) {
+                $allowedQuestions[] = $line->isPlaceholder()
+                    ? "{$line->type->label()}: requested, but no photo shows it. The customer was asked for one."
+                    : "{$line->type->label()}: photo requested from the customer. {$line->photoRequest->message}";
+            }
+        }
+
+        foreach ($scope->hazards as $hazard) {
+            $allowedQuestions[] = "Hazard in the {$hazard->section->label()}: {$hazard->note}";
+        }
+
+        if ($scope->requestNote !== null) {
+            $allowedQuestions[] = "From the analysis: {$scope->requestNote}";
+        }
+
+        foreach ($brief->openQuestions as $question) {
+            expect(in_array($question, $allowedQuestions, true))->toBeTrue(invariantFailure('INV-7', $seed).": unjustified question [{$question}]");
+        }
+
+        expect(count($brief->accessNotes))->toBe($scope->access->narrowGatePossible ? 1 : 0, invariantFailure('INV-7', $seed));
 
         $photoNumbers = array_map(fn ($photo): int => $photo->photo, $scope->photos);
         $scopeNotes = [];
 
         foreach ($scope->lines as $line) {
             foreach (array_filter([$line->countingEvidence, ...$line->supportingEvidence, ...$line->evidence]) as $evidence) {
-                $scopeNotes[] = $evidence->note;
+                $scopeNotes[] = "{$line->type->label()}: {$evidence->note}";
             }
         }
 
-        foreach ([...$scope->access->evidence, ...array_merge([], ...array_map(fn ($hazard): array => $hazard->evidence, $scope->hazards))] as $evidence) {
-            $scopeNotes[] = $evidence->note;
+        foreach ($scope->access->evidence as $evidence) {
+            $scopeNotes[] = "Access: {$evidence->note}";
+        }
+
+        foreach ($scope->hazards as $hazard) {
+            foreach ($hazard->evidence as $evidence) {
+                $scopeNotes[] = "Hazard: {$evidence->note}";
+            }
         }
 
         expect(array_keys($brief->photoNotes))->toBe($photoNumbers, invariantFailure('INV-7', $seed));
 
         foreach ($brief->photoNotes as $notes) {
             foreach ($notes as $note) {
-                expect(array_any($scopeNotes, fn (string $known): bool => str_ends_with($note, ": {$known}")))->toBeTrue(invariantFailure('INV-7', $seed));
+                expect(in_array($note, $scopeNotes, true))->toBeTrue(invariantFailure('INV-7', $seed).": unjustified photo note [{$note}]");
             }
         }
     }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\ProAction;
+use App\Models\Enums\ProActionKind;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -14,7 +14,7 @@ class StoreProActionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'kind' => ['required', Rule::in(ProAction::KINDS)],
+            'kind' => ['required', Rule::enum(ProActionKind::class)],
             'reason' => [Rule::requiredIf(fn (): bool => $this->input('kind') !== 'accept_scope'), 'nullable', 'string', 'max:200'],
             'adjusted_price' => [Rule::requiredIf(fn (): bool => $this->input('kind') === 'adjust_quote'), 'nullable', 'numeric', 'min:0', 'max:100000'],
         ];

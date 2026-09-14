@@ -118,17 +118,23 @@ export default function PipelinePanel({
                                     Total {pipeline.pricing.lowHours.toFixed(3)}{' '}
                                     to {pipeline.pricing.highHours.toFixed(3)}{' '}
                                     h, shown as {pipeline.pricing.shownLowHours}{' '}
-                                    to {pipeline.pricing.shownHighHours} h;
-                                    midpoint labor plus{' '}
+                                    to {pipeline.pricing.shownHighHours} h.
+                                    Midpoint{' '}
+                                    {pipeline.pricing.midpointHours.toFixed(4)}{' '}
+                                    h at{' '}
+                                    {money(pipeline.pricing.hourlyRateCents)}/h
+                                    plus the{' '}
                                     {money(pipeline.pricing.visitFeeCents)}{' '}
-                                    visit fee, rounded up to{' '}
-                                    {money(pipeline.pricing.priceCents)}.
+                                    visit fee, rounded up to the next{' '}
+                                    {money(pipeline.pricing.priceRoundingCents)}
+                                    : {money(pipeline.pricing.priceCents)}.
                                 </p>
                             </>
                         )}
                     </Stage>
                     <Stage title="Corrections">
-                        {pipeline.corrections.length === 0 ? (
+                        {pipeline.corrections.length === 0 &&
+                        pipeline.proActions.length === 0 ? (
                             <p>None.</p>
                         ) : (
                             <ul className="space-y-1">
@@ -154,6 +160,17 @@ export default function PipelinePanel({
                                         </li>
                                     ),
                                 )}
+                                {pipeline.proActions.map((action, index) => (
+                                    <li key={`pro-${index}`}>
+                                        Pro: {action.label.toLowerCase()}
+                                        {action.adjustedPriceCents !== null
+                                            ? ` to ${money(action.adjustedPriceCents)}`
+                                            : ''}
+                                        {action.reason
+                                            ? `, ${action.reason}`
+                                            : ''}
+                                    </li>
+                                ))}
                             </ul>
                         )}
                     </Stage>

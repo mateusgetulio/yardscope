@@ -3,11 +3,12 @@
 namespace App\Http\Presenters;
 
 use App\Intake\AssembledScope;
+use App\Models\Enums\ProActionKind;
 use App\Models\JobRequest;
+use App\Models\ProAction;
 use App\Scoping\Data\Estimate;
 use App\Scoping\Data\Evidence;
 use App\Scoping\Data\Hazard;
-use App\Scoping\Data\LineValues;
 use App\Scoping\Data\ReadinessCheck;
 use App\Scoping\Data\RejectedLine;
 use App\Scoping\Data\ScopeLine;
@@ -18,6 +19,8 @@ use App\Scoping\Enums\ValueOrigin;
 
 final readonly class ScopePresenter
 {
+    public function __construct(private Formats $formats = new Formats) {}
+
     /**
      * @return array<string, mixed>
      */
@@ -30,7 +33,7 @@ final readonly class ScopePresenter
             'id' => $request->id,
             'sentence' => $request->sentence,
             'booked' => $request->isBooked(),
-            'bookedPrice' => $request->booked_price_cents === null ? null : $this->money($request->booked_price_cents),
+            'bookedPrice' => $request->booked_price_cents === null ? null : $this->formats->money($request->booked_price_cents),
             'photos' => array_map(fn (array $photo): array => ['number' => $photo['number'], 'url' => route('requests.photo', [$request, $photo['number']])], $request->photos),
             'canAddPhoto' => count($request->photos) < 4 && ! $request->isBooked(),
             'profile' => $request->profile,
@@ -50,16 +53,23 @@ final readonly class ScopePresenter
     }
 
     /**
-     * The latest thing the pro asked of the customer, if any.
+     * What the pro last asked of the customer. A photo request stays up until a newer photo
+     * arrives, even if the pro accepted the scope afterwards.
      */
     private function proMessage(JobRequest $request): ?string
     {
-        $action = $request->proActions->last();
+        $latestRun = $request->latestRun();
+        $photoRequest = $request->proActions
+            ->filter(fn (ProAction $action): bool => $action->kind === ProActionKind::RequestPhoto && ($latestRun === null || $action->created_at >= $latestRun->created_at))
+            ->last();
+        $action = $photoRequest ?? $request->proActions->last();
 
         return match ($action?->kind) {
-            'request_photo' => "Your pro asked for a photo: {$action->reason}",
-            'adjust_quote' => 'Your pro adjusted the quote to '.$this->money((int) $action->adjusted_price_cents).": {$action->reason}",
-            'accept_scope' => 'Your pro has accepted this scope.',
+            ProActionKind::RequestPhoto => "Your pro asked for a photo: {$action->reason}",
+            ProActionKind::AdjustQuote => 'Your pro adjusted the quote to '.$this->formats->money((int) $action->adjusted_price_cents)
+                .($request->booked_price_cents === null ? '' : ' (you booked at '.$this->formats->money($request->booked_price_cents).')')
+                .": {$action->reason}",
+            ProActionKind::AcceptScope => 'Your pro has accepted this scope.',
             default => null,
         };
     }
@@ -71,9 +81,9 @@ final readonly class ScopePresenter
     {
         return [
             'priceCents' => $estimate->priceCents,
-            'price' => $this->money($estimate->priceCents),
-            'hours' => $this->hours($estimate->shownLowHours, $estimate->shownHighHours),
-            'visitFee' => $this->money($estimate->visitFeeCents),
+            'price' => $this->formats->money($estimate->priceCents),
+            'hours' => $this->formats->hours($estimate->shownLowHours, $estimate->shownHighHours),
+            'visitFee' => $this->formats->money($estimate->visitFeeCents),
         ];
     }
 
@@ -82,7 +92,7 @@ final readonly class ScopePresenter
      */
     private function callToAction(RequestReadiness $readiness, ?Estimate $estimate): array
     {
-        $price = $estimate === null ? null : $this->money($estimate->priceCents);
+        $price = $estimate === null ? null : $this->formats->money($estimate->priceCents);
 
         return match ($readiness) {
             RequestReadiness::Ready => ['label' => "Book this job, {$price}", 'enabled' => true],
@@ -145,22 +155,22 @@ final readonly class ScopePresenter
             'section' => $line->section?->label(),
             'disposition' => $line->disposition->value,
             'dispositionLabel' => $line->disposition->label(),
-            'summary' => $this->summary($line),
+            'summary' => $this->formats->summary($line->current, $line->type, $line->isPlaceholder()),
             'quantity' => $line->current->quantity,
             'size' => $line->current->size?->value,
             'severity' => $line->current->severity?->value,
             'counted' => $line->type->isCounted(),
             'usesSize' => in_array($line->type, [ServiceType::ShrubTrimming, ServiceType::BranchRemoval], true),
             'origin' => $line->origin()->value,
-            'observedSummary' => $line->origin() === ValueOrigin::CustomerCorrected ? $this->summaryOf($line->observed, $line) : null,
+            'observedSummary' => $line->origin() === ValueOrigin::CustomerCorrected ? $this->formats->summary($line->observed, $line->type, false) : null,
             'note' => $line->note,
             'photoRequest' => $line->photoRequest?->message,
             'checksPassed' => $line->passedChecks(),
             'checksTotal' => count($line->checks),
             'checks' => array_map(fn (ReadinessCheck $check): array => ['rule' => $check->rule->value, 'passed' => $check->passed, 'message' => $check->message], $line->checks),
             'evidence' => array_map(fn (Evidence $item): array => ['photo' => $item->photo, 'note' => $item->note], array_values(array_filter([$line->countingEvidence, ...$line->supportingEvidence, ...$line->evidence]))),
-            'hours' => $lineEstimate === null ? null : $this->hours($lineEstimate->hours->low, $lineEstimate->hours->high),
-            'labor' => $lineEstimate === null ? null : $this->money($lineEstimate->laborCents),
+            'hours' => $lineEstimate === null ? null : $this->formats->hours($lineEstimate->hours->low, $lineEstimate->hours->high),
+            'labor' => $lineEstimate === null ? null : $this->formats->money($lineEstimate->laborCents),
             'removed' => $line->wasRemoved(),
             'placeholder' => $line->isPlaceholder(),
             'canRemove' => $line->disposition !== LineDisposition::Rejected && $line->disposition !== LineDisposition::Suggested,
@@ -168,60 +178,5 @@ final readonly class ScopePresenter
             'canChange' => ! $line->isPlaceholder() && ! in_array($line->disposition, [LineDisposition::Rejected, LineDisposition::Suggested], true),
             'lastReason' => $line->lastCorrection()?->reason,
         ];
-    }
-
-    private function summary(ScopeLine $line): string
-    {
-        return $this->summaryOf($line->current, $line);
-    }
-
-    private function summaryOf(LineValues $values, ScopeLine $line): string
-    {
-        if ($line->isPlaceholder()) {
-            return 'Not visible in the photos yet';
-        }
-
-        $parts = [];
-
-        if ($values->quantity !== null) {
-            $parts[] = $values->quantity.' '.($values->quantity === 1 ? $this->singular($line) : strtolower($this->plural($line)));
-        }
-
-        if ($values->size !== null) {
-            $parts[] = $values->size->value;
-        }
-
-        if ($values->severity !== null) {
-            $parts[] = $values->severity->value.' '.($line->type->isCounted() ? 'growth' : 'cleanup');
-        }
-
-        return ucfirst(implode(', ', $parts));
-    }
-
-    private function singular(ScopeLine $line): string
-    {
-        return match ($line->type) {
-            ServiceType::ShrubTrimming => 'shrub',
-            ServiceType::BedWeeding => 'bed',
-            ServiceType::BranchRemoval => 'branch',
-            default => 'item',
-        };
-    }
-
-    private function plural(ScopeLine $line): string
-    {
-        return $this->singular($line).($line->type === ServiceType::BranchRemoval ? 'es' : 's');
-    }
-
-    private function money(int $cents): string
-    {
-        return '$'.number_format($cents / 100, $cents % 100 === 0 ? 0 : 2);
-    }
-
-    private function hours(float $low, float $high): string
-    {
-        $format = fn (float $hours): string => rtrim(rtrim(number_format($hours, 1), '0'), '.');
-
-        return $low === $high ? "{$format($low)} h" : "{$format($low)} to {$format($high)} h";
     }
 }
