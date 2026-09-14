@@ -13,13 +13,15 @@ final readonly class PropertyProfile
      */
     public function __construct(public array $sizes)
     {
-        if ($sizes === []) {
-            throw new InvalidPropertyProfile('A property profile needs at least one section.');
-        }
-
         foreach ($sizes as $section => $size) {
             if (Section::tryFrom((string) $section) === null) {
                 throw new InvalidPropertyProfile("Unknown section [{$section}] in the property profile.");
+            }
+        }
+
+        foreach (Section::cases() as $section) {
+            if (! isset($sizes[$section->value])) {
+                throw new InvalidPropertyProfile("The property profile has no {$section->label()}.");
             }
         }
     }
@@ -44,12 +46,6 @@ final readonly class PropertyProfile
 
     public function sizeOf(Section $section): SectionSize
     {
-        return $this->sizes[$section->value]
-            ?? throw new InvalidPropertyProfile("The property profile has no {$section->label()}.");
-    }
-
-    public function has(Section $section): bool
-    {
-        return isset($this->sizes[$section->value]);
+        return $this->sizes[$section->value];
     }
 }
