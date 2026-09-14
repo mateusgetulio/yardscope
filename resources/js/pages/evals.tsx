@@ -1,10 +1,14 @@
-import { Head, Link } from '@inertiajs/react';
+import Layout from '@/components/layout';
+import { Badge, SectionTitle } from '@/components/ui';
+import { cardClass } from '@/lib/styles';
 import type { EvalResults } from '@/types/scope';
 
 interface Props {
     results: EvalResults | null;
     file: string | null;
 }
+
+type EvalSet = EvalResults['sets'][number];
 
 const metricLabels: Record<string, string> = {
     sets: 'Labeled sets',
@@ -24,169 +28,209 @@ const metricLabels: Record<string, string> = {
     unusable_photo_accuracy: 'Unusable photos flagged',
 };
 
+const counts = new Set(['sets', 'hallucinated_lines', 'duplicate_lines']);
+
 function format(name: string, value: number | null): string {
     if (value === null) {
-        return 'nothing to measure';
+        return 'n/a';
     }
-    if (
-        name === 'sets' ||
-        name === 'hallucinated_lines' ||
-        name === 'duplicate_lines'
-    ) {
-        return String(value);
+    return counts.has(name) ? String(value) : `${Math.round(value * 100)}%`;
+}
+
+/** "yard_cleanup@backyard" reads as "Yard cleanup, backyard". */
+function service(key: string): string {
+    const [type, section] = key.split('@');
+    const label = type.replaceAll('_', ' ');
+    const named = label.charAt(0).toUpperCase() + label.slice(1);
+
+    return section === 'none'
+        ? `${named} (no section)`
+        : `${named}, ${section.replaceAll('_', ' ')}`;
+}
+
+/** Disposition and readiness codes in the words the result page uses. */
+function words(code: string | null): string {
+    const named: Record<string, string> = {
+        priceable: 'priced',
+        needs_photos: 'needs photos',
+        manual_quote: 'pro quote',
+        suggested: 'suggested',
+        rejected: 'rejected',
+        ready: 'ready',
+        partial: 'partial',
+    };
+
+    return code === null
+        ? 'nothing'
+        : (named[code] ?? code.replaceAll('_', ' '));
+}
+
+function misses(set: EvalSet): string[] {
+    if (!set.schema_valid) {
+        return [set.failure ?? 'No readable answer.'];
     }
-    return `${Math.round(value * 100)}%`;
+
+    return [
+        ...(set.readiness_correct === false
+            ? [
+                  `Readiness ${words(set.observed_readiness)}, label says ${words(set.expected_readiness)}`,
+              ]
+            : []),
+        ...set.hallucinated.map((key) => `Hallucinated ${service(key)}`),
+        ...set.counts
+            .filter((count) => !count.exact)
+            .map(
+                (count) =>
+                    `${service(count.service)}: counted ${count.observed ?? 'nothing'}, label says ${count.expected}`,
+            ),
+        ...set.attributes
+            .filter((item) => !item.correct)
+            .map(
+                (item) =>
+                    `${service(item.service)}: ${item.attribute} ${item.observed ?? 'missing'}, label says ${item.expected}`,
+            ),
+        ...set.counting_photos
+            .filter((item) => !item.correct)
+            .map(
+                (item) =>
+                    `${service(item.service)}: counted from photo ${item.observed ?? 'none'}, label says ${item.expected}`,
+            ),
+        ...set.dispositions
+            .filter((line) => !line.correct)
+            .map(
+                (line) =>
+                    `${service(line.service)}: ${line.observed === null ? 'no line' : words(line.observed)}, label says ${words(line.expected)}`,
+            ),
+        ...(set.duplicate_lines > 0
+            ? [
+                  `${set.duplicate_lines} duplicate line${set.duplicate_lines === 1 ? '' : 's'}`,
+              ]
+            : []),
+        ...(set.photo_request_correct === false
+            ? ['Photo request did not match the label']
+            : []),
+        ...(set.unusable_photos_correct === false
+            ? ['Unusable photos not flagged as labeled']
+            : []),
+    ];
 }
 
 export default function EvalsPage({ results, file }: Props) {
     return (
-        <>
-            <Head title="Evals" />
-            <main className="mx-auto max-w-3xl px-4 py-10">
-                <p className="text-sm text-stone-500">
-                    <Link href="/">Request form</Link>
+        <Layout title="Evals">
+            <h1 className="text-3xl font-semibold tracking-tight">
+                Latest eval run
+            </h1>
+            {results === null ? (
+                <p className="mt-3 text-stone-600">
+                    No run recorded yet. Run{' '}
+                    <code className="rounded bg-stone-100 px-1">
+                        php artisan yardscope:eval --live
+                    </code>{' '}
+                    or{' '}
+                    <code className="rounded bg-stone-100 px-1">
+                        --fixtures
+                    </code>
+                    .
                 </p>
-                <h1 className="mt-2 text-2xl font-semibold">Latest eval run</h1>
-                {results === null ? (
-                    <p className="mt-2 text-stone-600">
-                        No run recorded yet. Run{' '}
-                        <code>php artisan yardscope:eval --live</code> or{' '}
-                        <code>--fixtures</code>.
+            ) : (
+                <>
+                    <p className="mt-3 text-stone-600">
+                        {results.mode === 'live'
+                            ? `Live run through the ${results.driver} driver`
+                            : 'Replay of recorded answers'}{' '}
+                        on {new Date(results.ran_at).toLocaleString()}. Numbers
+                        are exactly what the run produced.
                     </p>
-                ) : (
-                    <>
-                        <p className="mt-2 text-stone-600">
-                            {results.mode === 'live'
-                                ? `Live run through the ${results.driver} driver`
-                                : 'Replay of recorded answers'}{' '}
-                            on {new Date(results.ran_at).toLocaleString()} (
-                            {file}). Numbers are exactly what the run produced.
-                        </p>
-                        <dl className="mt-6 grid gap-2 sm:grid-cols-2">
-                            {Object.entries(results.metrics).map(
-                                ([name, value]) => (
-                                    <div
-                                        key={name}
-                                        className="flex justify-between rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
-                                    >
-                                        <dt>{metricLabels[name] ?? name}</dt>
-                                        <dd className="font-medium">
-                                            {format(name, value)}
-                                        </dd>
-                                    </div>
-                                ),
-                            )}
-                        </dl>
-                        <section className="mt-8 space-y-3">
-                            {results.sets.map((set) => (
+                    <p className="mt-1 font-mono text-xs text-stone-400">
+                        evals/results/{file}
+                    </p>
+
+                    <dl className="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                        {Object.entries(results.metrics).map(
+                            ([name, value]) => (
+                                <div
+                                    key={name}
+                                    className={`px-4 py-3 ${cardClass}`}
+                                >
+                                    <dd className="text-2xl font-semibold tabular-nums">
+                                        {format(name, value)}
+                                    </dd>
+                                    <dt className="mt-0.5 text-xs text-stone-500">
+                                        {metricLabels[name] ?? name}
+                                    </dt>
+                                </div>
+                            ),
+                        )}
+                    </dl>
+
+                    <section className="mt-10 space-y-3">
+                        <SectionTitle>Per set</SectionTitle>
+                        {results.sets.map((set) => {
+                            const found = misses(set);
+
+                            return (
                                 <article
                                     key={set.slug}
-                                    className={`rounded-lg border p-4 text-sm ${set.schema_valid ? 'border-stone-300 bg-white' : 'border-red-300 bg-red-50'}`}
+                                    className={`p-4 ${cardClass}`}
                                 >
-                                    <h2 className="font-semibold">
-                                        {set.slug}{' '}
-                                        <span className="font-normal text-stone-500">
-                                            {set.scenario.replaceAll('_', ' ')}
-                                        </span>
-                                    </h2>
-                                    {set.failure ? (
-                                        <p className="mt-1">{set.failure}</p>
-                                    ) : (
-                                        <ul className="mt-1 space-y-1">
-                                            <li>
-                                                Readiness:{' '}
-                                                {set.observed_readiness}
-                                                {set.readiness_correct === false
-                                                    ? ` (expected ${set.expected_readiness})`
-                                                    : ''}
-                                            </li>
-                                            <li>
-                                                Services:{' '}
-                                                {set.observed_services.join(
-                                                    ', ',
-                                                ) || 'none'}
-                                                {set.hallucinated.length > 0
-                                                    ? `; hallucinated ${set.hallucinated.join(', ')}`
-                                                    : ''}
-                                            </li>
-                                            {set.counts.map((count) => (
-                                                <li key={count.service}>
-                                                    {count.service}: counted{' '}
-                                                    {count.observed ??
-                                                        'nothing'}{' '}
-                                                    for {count.expected}
-                                                    {count.exact ? '' : ', off'}
+                                    <div className="flex flex-wrap items-center justify-between gap-2">
+                                        <h2 className="font-medium">
+                                            {set.slug}
+                                        </h2>
+                                        <div className="flex gap-1.5">
+                                            <Badge tone="stone">
+                                                {set.scenario.replaceAll(
+                                                    '_',
+                                                    ' ',
+                                                )}
+                                            </Badge>
+                                            {found.length === 0 ? (
+                                                <Badge tone="green">
+                                                    matches labels
+                                                </Badge>
+                                            ) : (
+                                                <Badge tone="amber">
+                                                    {found.length}{' '}
+                                                    {found.length === 1
+                                                        ? 'miss'
+                                                        : 'misses'}
+                                                </Badge>
+                                            )}
+                                        </div>
+                                    </div>
+                                    {set.schema_valid && (
+                                        <p className="mt-2 text-sm text-stone-600">
+                                            {words(set.observed_readiness)}
+                                            {', '}
+                                            {set.observed_services.length > 0
+                                                ? set.observed_services
+                                                      .map(service)
+                                                      .join('; ')
+                                                : 'no service lines from the model'}
+                                        </p>
+                                    )}
+                                    {found.length > 0 && (
+                                        <ul className="mt-2 space-y-0.5 text-sm text-amber-900">
+                                            {found.map((miss) => (
+                                                <li
+                                                    key={miss}
+                                                    className="flex gap-2"
+                                                >
+                                                    <span aria-hidden="true">
+                                                        ✗
+                                                    </span>
+                                                    <span>{miss}</span>
                                                 </li>
                                             ))}
-                                            {set.attributes
-                                                .filter((item) => !item.correct)
-                                                .map((item) => (
-                                                    <li
-                                                        key={`${item.service}-${item.attribute}`}
-                                                    >
-                                                        {item.service}{' '}
-                                                        {item.attribute}:{' '}
-                                                        {item.observed ??
-                                                            'missing'}{' '}
-                                                        instead of{' '}
-                                                        {item.expected}
-                                                    </li>
-                                                ))}
-                                            {set.counting_photos
-                                                .filter((item) => !item.correct)
-                                                .map((item) => (
-                                                    <li
-                                                        key={`${item.service}-counting`}
-                                                    >
-                                                        {item.service}: counted
-                                                        from photo{' '}
-                                                        {item.observed ??
-                                                            'none'}{' '}
-                                                        instead of{' '}
-                                                        {item.expected}
-                                                    </li>
-                                                ))}
-                                            {set.duplicate_lines > 0 && (
-                                                <li>
-                                                    {set.duplicate_lines}{' '}
-                                                    duplicate line
-                                                    {set.duplicate_lines === 1
-                                                        ? ''
-                                                        : 's'}
-                                                </li>
-                                            )}
-                                            {set.dispositions
-                                                .filter((line) => !line.correct)
-                                                .map((line) => (
-                                                    <li key={line.service}>
-                                                        {line.service}:{' '}
-                                                        {line.observed ??
-                                                            'missing'}{' '}
-                                                        instead of{' '}
-                                                        {line.expected}
-                                                    </li>
-                                                ))}
-                                            {set.photo_request_correct ===
-                                                false && (
-                                                <li>
-                                                    Photo request did not match.
-                                                </li>
-                                            )}
-                                            {set.unusable_photos_correct ===
-                                                false && (
-                                                <li>
-                                                    Unusable photos were not
-                                                    flagged as labeled.
-                                                </li>
-                                            )}
                                         </ul>
                                     )}
                                 </article>
-                            ))}
-                        </section>
-                    </>
-                )}
-            </main>
-        </>
+                            );
+                        })}
+                    </section>
+                </>
+            )}
+        </Layout>
     );
 }

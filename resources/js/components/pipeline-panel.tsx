@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
+import { cardClass } from '@/lib/styles';
 import type { PipelineView } from '@/types/scope';
 
 const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
@@ -11,18 +12,31 @@ export default function PipelinePanel({
     const [open, setOpen] = useState(false);
 
     return (
-        <section className="mt-8 rounded-lg border border-stone-300 bg-white">
+        <section className={`mt-10 overflow-hidden ${cardClass}`}>
             <button
                 type="button"
                 onClick={() => setOpen((value) => !value)}
-                className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-semibold"
+                className="flex w-full items-center justify-between gap-4 px-5 py-3.5 text-left hover:bg-stone-50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600"
                 aria-expanded={open}
             >
-                <span>How this request was processed</span>
-                <span className="text-stone-500">{open ? 'Hide' : 'Show'}</span>
+                <span>
+                    <span className="block text-sm font-semibold">
+                        How this request was processed
+                    </span>
+                    <span className="block text-xs text-stone-500">
+                        Photos, extraction, validation, dispositions, pricing
+                        and corrections, with the actual values
+                    </span>
+                </span>
+                <span
+                    aria-hidden="true"
+                    className={`text-lg leading-none text-stone-400 transition-transform ${open ? 'rotate-90' : ''}`}
+                >
+                    ▸
+                </span>
             </button>
             {open && (
-                <div className="space-y-5 border-t border-stone-200 px-4 py-4 text-sm">
+                <div className="divide-y divide-stone-100 border-t border-stone-200 bg-stone-50/60 text-sm">
                     <Stage title="Photos">
                         <ul className="space-y-1">
                             {pipeline.photos.map((photo) => (
@@ -73,7 +87,9 @@ export default function PipelinePanel({
                             </ul>
                         )}
                         {pipeline.validation.requestNote && (
-                            <p>Model note: {pipeline.validation.requestNote}</p>
+                            <p className="text-stone-600">
+                                Model note: {pipeline.validation.requestNote}
+                            </p>
                         )}
                     </Stage>
                     <Stage title="Dispositions">
@@ -81,17 +97,24 @@ export default function PipelinePanel({
                             {pipeline.dispositions.map((line) => (
                                 <li key={line.id}>
                                     <span className="font-medium">
-                                        {line.id} {line.label}:{' '}
-                                        {line.disposition}
+                                        {line.label}
+                                    </span>{' '}
+                                    <span className="text-stone-500">
+                                        {line.id}, {line.disposition}
                                     </span>
-                                    <ul className="ml-4 list-disc">
+                                    <ul className="mt-0.5 space-y-0.5">
                                         {line.checks.map((check) => (
-                                            <li key={check.rule}>
-                                                {check.rule}{' '}
-                                                {check.passed
-                                                    ? 'passed'
-                                                    : 'failed'}
-                                                : {check.message}
+                                            <li
+                                                key={check.rule}
+                                                className="flex gap-2"
+                                            >
+                                                <span
+                                                    className={`w-10 shrink-0 font-mono text-xs leading-5 ${check.passed ? 'text-green-700' : 'text-amber-700'}`}
+                                                >
+                                                    {check.passed ? '✓' : '✗'}{' '}
+                                                    {check.rule}
+                                                </span>
+                                                <span>{check.message}</span>
                                             </li>
                                         ))}
                                     </ul>
@@ -104,7 +127,7 @@ export default function PipelinePanel({
                             <p>No priceable line, so no price.</p>
                         ) : (
                             <>
-                                <ul className="space-y-1">
+                                <ul className="space-y-1 tabular-nums">
                                     {pipeline.pricing.lines.map((line) => (
                                         <li key={line.id}>
                                             {line.id}:{' '}
@@ -114,7 +137,7 @@ export default function PipelinePanel({
                                         </li>
                                     ))}
                                 </ul>
-                                <p>
+                                <p className="text-stone-600">
                                     Total {pipeline.pricing.lowHours.toFixed(3)}{' '}
                                     to {pipeline.pricing.highHours.toFixed(3)}{' '}
                                     h, shown as {pipeline.pricing.shownLowHours}{' '}
@@ -180,19 +203,13 @@ export default function PipelinePanel({
     );
 }
 
-function Stage({
-    title,
-    children,
-}: {
-    title: string;
-    children: React.ReactNode;
-}) {
+function Stage({ title, children }: { title: string; children: ReactNode }) {
     return (
-        <div>
-            <h3 className="text-xs font-semibold tracking-wide text-stone-500 uppercase">
+        <div className="grid gap-1 px-5 py-4 sm:grid-cols-[7rem_1fr] sm:gap-4">
+            <h3 className="text-xs font-semibold tracking-wider text-stone-500 uppercase sm:pt-0.5">
                 {title}
             </h3>
-            <div className="mt-1 space-y-1">{children}</div>
+            <div className="min-w-0 space-y-1 break-words">{children}</div>
         </div>
     );
 }

@@ -1,10 +1,15 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import { useEffect, useState, type FormEvent } from 'react';
+import Layout from '@/components/layout';
+import { PhotoNumber } from '@/components/ui';
+import { buttonPrimary, cardClass, inputClass } from '@/lib/styles';
 
 interface Props {
     profile: Record<string, string>;
     extractor: 'fixtures' | 'api' | 'claude-code';
 }
+
+const MAX_SENTENCE = 300;
 
 export default function RequestPage({ profile, extractor }: Props) {
     const form = useForm<{ sentence: string; photos: File[] }>({
@@ -34,50 +39,88 @@ export default function RequestPage({ profile, extractor }: Props) {
     }
 
     return (
-        <>
-            <Head title="Request" />
-            <main className="mx-auto max-w-3xl px-4 py-10">
-                <h1 className="text-2xl font-semibold">
-                    Turn yard photos into a bookable job
-                </h1>
-                <p className="mt-2 text-stone-600">
-                    Tell us what you need done and add two to four photos. We
-                    price what the photos show and ask for more when they do not
-                    show enough.
-                </p>
+        <Layout title="Request">
+            <h1 className="text-3xl font-semibold tracking-tight">
+                Turn yard photos into a bookable job
+            </h1>
+            <p className="mt-3 text-stone-600">
+                Tell us what you need done and add two to four photos. We price
+                what the photos show and ask for more when they do not show
+                enough.
+            </p>
 
-                <form onSubmit={submit} className="mt-8 space-y-6">
-                    <div>
+            <form
+                onSubmit={submit}
+                className={`mt-8 space-y-6 p-5 sm:p-6 ${cardClass}`}
+            >
+                <div>
+                    <div className="flex items-baseline justify-between">
                         <label
                             htmlFor="sentence"
-                            className="block text-sm font-medium"
+                            className="text-sm font-medium"
                         >
                             What do you need done?
                         </label>
-                        <textarea
-                            id="sentence"
-                            value={form.data.sentence}
-                            onChange={(event) =>
-                                form.setData('sentence', event.target.value)
-                            }
-                            rows={3}
-                            placeholder="My backyard is a mess. Clean it up and trim whatever needs trimming."
-                            className="mt-1 w-full rounded-lg border border-stone-300 bg-white px-3 py-2"
-                        />
-                        {form.errors.sentence && (
-                            <p className="mt-1 text-sm text-red-700">
-                                {form.errors.sentence}
-                            </p>
-                        )}
+                        <span className="text-xs text-stone-400">
+                            {form.data.sentence.length}/{MAX_SENTENCE}
+                        </span>
                     </div>
+                    <textarea
+                        id="sentence"
+                        value={form.data.sentence}
+                        maxLength={MAX_SENTENCE}
+                        onChange={(event) =>
+                            form.setData('sentence', event.target.value)
+                        }
+                        rows={3}
+                        placeholder="My backyard is a mess. Clean it up and trim whatever needs trimming."
+                        className={`mt-2 ${inputClass}`}
+                    />
+                    {form.errors.sentence && (
+                        <p className="mt-1 text-sm text-red-700">
+                            {form.errors.sentence}
+                        </p>
+                    )}
+                </div>
 
-                    <div>
-                        <label
-                            htmlFor="photos"
-                            className="block text-sm font-medium"
-                        >
-                            Photos (2 to 4)
-                        </label>
+                <div>
+                    <div className="flex items-baseline justify-between">
+                        <span className="text-sm font-medium">Photos</span>
+                        <span className="text-xs text-stone-400">
+                            2 to 4, JPEG, PNG or WebP
+                        </span>
+                    </div>
+                    <label
+                        htmlFor="photos"
+                        className="mt-2 grid cursor-pointer grid-cols-2 gap-2 rounded-lg focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-blue-600 sm:grid-cols-4"
+                    >
+                        {[0, 1, 2, 3].map((slot) =>
+                            previews[slot] ? (
+                                <span key={slot} className="relative block">
+                                    <img
+                                        src={previews[slot]}
+                                        alt={`Photo ${slot + 1}`}
+                                        className="aspect-[4/3] w-full rounded-lg object-cover"
+                                    />
+                                    <PhotoNumber number={slot + 1} />
+                                </span>
+                            ) : (
+                                <span
+                                    key={slot}
+                                    className="flex aspect-[4/3] flex-col items-center justify-center gap-0.5 rounded-lg border border-dashed border-stone-300 bg-stone-50 text-stone-500 transition-colors hover:border-blue-400 hover:bg-blue-50/50"
+                                >
+                                    <span className="text-lg leading-none text-stone-400">
+                                        +
+                                    </span>
+                                    <span className="text-xs">
+                                        Photo {slot + 1}
+                                    </span>
+                                    <span className="text-[11px] text-stone-400">
+                                        {slot < 2 ? 'required' : 'optional'}
+                                    </span>
+                                </span>
+                            ),
+                        )}
                         <input
                             id="photos"
                             type="file"
@@ -91,63 +134,39 @@ export default function RequestPage({ profile, extractor }: Props) {
                                     ),
                                 )
                             }
-                            className="mt-1 block w-full text-sm"
+                            className="sr-only"
                         />
-                        <div className="mt-2 grid grid-cols-4 gap-2">
-                            {[0, 1, 2, 3].map((slot) =>
-                                previews[slot] ? (
-                                    <img
-                                        key={slot}
-                                        src={previews[slot]}
-                                        alt={`Photo ${slot + 1}`}
-                                        className="aspect-[4/3] w-full rounded-lg object-cover"
-                                    />
-                                ) : (
-                                    <div
-                                        key={slot}
-                                        className="flex aspect-[4/3] items-center justify-center rounded-lg border border-dashed border-stone-300 text-xs text-stone-400"
-                                    >
-                                        {slot < 2 ? 'Required' : 'Optional'}
-                                    </div>
-                                ),
-                            )}
-                        </div>
-                        <p className="mt-1 text-sm text-stone-500">
-                            Location data is removed from every photo.
+                    </label>
+                    <p className="mt-2 text-xs text-stone-500">
+                        {previews.length > 0
+                            ? 'Click the photos to choose a different set. '
+                            : 'Choose all your photos at once. '}
+                        Location data is removed from every photo.
+                    </p>
+                    {photoErrors.map((message) => (
+                        <p key={message} className="mt-1 text-sm text-red-700">
+                            {message}
                         </p>
-                        {photoErrors.map((message) => (
-                            <p
-                                key={message}
-                                className="mt-1 text-sm text-red-700"
-                            >
-                                {message}
-                            </p>
-                        ))}
-                    </div>
+                    ))}
+                </div>
 
-                    <p className="text-sm text-stone-500">
-                        Simulated property: {describeProfile(profile)}. Rates
-                        are synthetic demo rates, not real prices.
+                <div className="flex flex-col gap-4 border-t border-stone-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-xs text-stone-500 sm:max-w-sm">
+                        Simulated property: {describeProfile(profile)}.
                         {extractorNote(extractor)}
                     </p>
-
                     <button
                         type="submit"
                         disabled={form.processing}
-                        className="rounded-lg bg-blue-700 px-5 py-2 font-medium text-white disabled:opacity-60"
+                        className={`${buttonPrimary} w-full py-2.5 sm:w-auto`}
                     >
                         {form.processing
-                            ? 'Analyzing photos'
+                            ? 'Analyzing photos…'
                             : 'Analyze my yard'}
                     </button>
-                </form>
-                <p className="mt-10 text-sm text-stone-500">
-                    <Link href="/evals">
-                        How the model scores on the labeled photo sets
-                    </Link>
-                </p>
-            </main>
-        </>
+                </div>
+            </form>
+        </Layout>
     );
 }
 
