@@ -2,7 +2,7 @@
 
 arch('the scoping domain does not depend on Laravel')
     ->expect('App\Scoping')
-    ->not->toUse(['Illuminate', 'config', 'env', 'app', 'now', 'collect']);
+    ->not->toUse(['Illuminate', 'Laravel\\Ai', 'config', 'env', 'app', 'now', 'collect']);
 
 arch('scoping data objects are final and readonly')
     ->expect('App\Scoping\Data')

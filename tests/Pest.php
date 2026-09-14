@@ -3,6 +3,7 @@
 use App\Scoping\Data\Estimate;
 use App\Scoping\Data\JobScope;
 use App\Scoping\Data\Observation;
+use App\Scoping\Data\PhotoInput;
 use App\Scoping\Data\PropertyProfile;
 use App\Scoping\Data\RateCard;
 use App\Scoping\Pricer;
@@ -98,4 +99,35 @@ function randomScopeSeeds(): array
 function invariantFailure(string $invariant, int $seed): string
 {
     return "{$invariant} failed for random scope seed {$seed}. Rerun it with SCOPE_TEST_SEED={$seed} vendor/bin/pest --filter='{$invariant}\\b'";
+}
+
+/**
+ * Tiny valid PNG files in a scratch directory, numbered from 1.
+ *
+ * @return list<PhotoInput>
+ */
+function scratchPhotos(int $count, string $directory): array
+{
+    $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==');
+    $photos = [];
+
+    foreach (range(1, $count) as $number) {
+        $path = "{$directory}/photo-{$number}.png";
+        file_put_contents($path, $png.str_repeat("\0", $number));
+        $photos[] = new PhotoInput($number, $path, 'image/png');
+    }
+
+    return $photos;
+}
+
+function scratchDirectory(): string
+{
+    $directory = sys_get_temp_dir().'/yardscope-'.bin2hex(random_bytes(6));
+    mkdir($directory);
+    register_shutdown_function(function () use ($directory): void {
+        array_map(unlink(...), glob("{$directory}/*") ?: []);
+        @rmdir($directory);
+    });
+
+    return $directory;
 }
