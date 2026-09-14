@@ -27,6 +27,7 @@ it('prices the worked example partially, with the large branch left to a pro', f
     expect($scope->readiness)->toBe(RequestReadiness::Partial)
         ->and(array_map(fn ($line) => $line->disposition, $scope->lines))->toBe([LineDisposition::Priceable, LineDisposition::Priceable, LineDisposition::ManualQuote])
         ->and($scope->lines[2]->note)->toBe('Large branches are quoted on site.')
+        ->and($scope->lines[2]->section)->toBe(Section::Backyard)
         ->and($scope->lines[0]->passedChecks())->toBe(3);
 });
 
@@ -99,6 +100,8 @@ it('adds a needs-photos placeholder for a requested service no photo shows (R3)'
     $placeholder = $scope->lines[3];
 
     expect($placeholder->type)->toBe(ServiceType::BedWeeding)
+        ->and($placeholder->section)->toBeNull()
+        ->and($placeholder->isPlaceholder())->toBeTrue()
         ->and($placeholder->disposition)->toBe(LineDisposition::NeedsPhotos)
         ->and($placeholder->checks[0]->rule)->toBe(ReadinessRule::RequestedUnseen)
         ->and($placeholder->photoRequest?->message)->toBe('You asked for Bed weeding, but no photo shows it. Add one photo of that area.')
@@ -118,6 +121,7 @@ it('keeps an invalid line rejected even when its section is covered (R4 before t
         ->and($scope->lines[0]->disposition)->toBe(LineDisposition::Priceable)
         ->and($scope->lines[1]->type)->toBe(ServiceType::ShrubTrimming)
         ->and($scope->lines[1]->disposition)->toBe(LineDisposition::NeedsPhotos)
+        ->and($scope->lines[1]->photoRequest?->message)->toBe('We could not read the Shrub trimming from these photos. Add one clear photo of it.')
         ->and($scope->readiness)->toBe(RequestReadiness::Partial);
 });
 
@@ -127,9 +131,8 @@ it('marks services the customer did not ask for as suggested, never priced', fun
     $scope = (new ScopeBuilder)->build($observation, workedProfile());
 
     expect($scope->lines[1]->disposition)->toBe(LineDisposition::Suggested)
-        ->and($scope->lines[1]->gated)->toBe(LineDisposition::Priceable)
+        ->and($scope->lines[1]->photoRequest)->toBeNull()
         ->and($scope->lines[2]->disposition)->toBe(LineDisposition::Suggested)
-        ->and($scope->lines[2]->gated)->toBe(LineDisposition::ManualQuote)
         ->and($scope->priceableLines())->toHaveCount(1)
         ->and($scope->readiness)->toBe(RequestReadiness::Ready);
 });
@@ -143,21 +146,23 @@ it('sends every line in a section with a hazard to a pro', function () {
         ->and($scope->lines[0]->note)->toBe('A hazard was spotted in the backyard, so a pro has to look first.');
 });
 
-it('treats an uncertain branch as a pro quote', function () {
+it('treats an uncertain branch as a pro quote without repeating the model note to the customer', function () {
     $observation = observationWith(['service_lines' => [
-        ['type' => 'branch_removal', 'section' => 'backyard', 'quantity' => 1, 'size' => 'medium', 'counting_evidence' => ['photo' => 2, 'note' => 'branch'], 'uncertain' => 'could be rotten'],
+        ['type' => 'branch_removal', 'section' => 'backyard', 'quantity' => 1, 'size' => 'medium', 'counting_evidence' => ['photo' => 2, 'note' => 'branch'], 'uncertain' => 'I am 40% sure this is a branch'],
     ], 'requested_in_sentence' => ['branch_removal']]);
 
     $scope = (new ScopeBuilder)->build($observation, workedProfile());
 
-    expect($scope->lines[0]->disposition)->toBe(LineDisposition::ManualQuote);
+    expect($scope->lines[0]->disposition)->toBe(LineDisposition::ManualQuote)
+        ->and($scope->lines[0]->note)->toBe('The branch could not be judged from the photos, so a pro quotes it.')
+        ->and($scope->lines[0]->uncertain)->toBe('I am 40% sure this is a branch');
 });
 
 it('rolls dispositions up into request readiness', function (array $dispositions, RequestReadiness $readiness) {
     $lines = array_map(fn (LineDisposition $disposition) => new ScopeLine(
         id: 'x', type: ServiceType::YardCleanup, section: Section::Backyard,
         observed: new LineValues(null, null, null), current: new LineValues(null, null, null),
-        disposition: $disposition, gated: $disposition, checks: [], photoRequest: null, note: null,
+        disposition: $disposition, checks: [], photoRequest: null, note: null,
         countingEvidence: null, supportingEvidence: [], evidence: [], uncertain: null, requested: true,
     ), $dispositions);
 

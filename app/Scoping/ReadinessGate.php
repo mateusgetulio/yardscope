@@ -12,6 +12,7 @@ use App\Scoping\Enums\ReadinessRule;
 use App\Scoping\Enums\Section;
 use App\Scoping\Enums\ServiceType;
 use App\Scoping\Enums\Size;
+use App\Scoping\Exceptions\InvalidCorrection;
 
 final readonly class ReadinessGate
 {
@@ -43,11 +44,12 @@ final readonly class ReadinessGate
     public function regate(ScopeLine $line, LineValues $values, bool $hasHazard): array
     {
         $passed = fn (ReadinessRule $rule): bool => array_any($line->checks, fn (ReadinessCheck $check): bool => $check->rule === $rule && $check->passed);
+        $section = $line->section ?? throw new InvalidCorrection("Line [{$line->id}] has nothing to correct until a photo shows it.");
 
         return $this->decide(
             $line->type,
-            $line->section,
-            $this->manualOnlyReason($line->type, $line->section, $values, $line->uncertain, $hasHazard),
+            $section,
+            $this->manualOnlyReason($line->type, $section, $values, $line->uncertain, $hasHazard),
             $passed(ReadinessRule::UsablePhotos),
             $passed(ReadinessRule::SectionCoverage),
         );
@@ -94,7 +96,7 @@ final readonly class ReadinessGate
         }
 
         if ($type === ServiceType::BranchRemoval && $uncertain !== null) {
-            return "The branch could not be judged from the photos ({$uncertain}), so a pro quotes it.";
+            return 'The branch could not be judged from the photos, so a pro quotes it.';
         }
 
         return null;

@@ -3,11 +3,14 @@
 use App\Scoping\CorrectionApplier;
 use App\Scoping\Data\AccessNote;
 use App\Scoping\Data\Correction;
+use App\Scoping\Data\Evidence;
 use App\Scoping\Data\LineEstimate;
+use App\Scoping\Data\LineValues;
 use App\Scoping\Data\Observation;
 use App\Scoping\Data\PhotoDescription;
 use App\Scoping\Data\ReadinessRollup;
 use App\Scoping\Data\ScopeLine;
+use App\Scoping\Enums\CorrectionField;
 use App\Scoping\Enums\LineDisposition;
 use App\Scoping\Enums\PhotoView;
 use App\Scoping\Enums\Section;
@@ -39,9 +42,11 @@ it('INV-2 prices only validated lines, never rejected ones', function () {
     foreach (pricedRandomScopes() as $seed => [$observation, , $scope, $estimate]) {
         $priced = array_map(fn (LineEstimate $line): string => $line->lineId, $estimate?->lines ?? []);
         $allowed = array_map(fn (ScopeLine $line): string => $line->id, $scope->priceableLines());
+        $placeholders = count(array_filter($scope->lines, fn (ScopeLine $line): bool => $line->isPlaceholder()));
 
         expect(array_values(array_diff($priced, $allowed)))->toBe([], invariantFailure('INV-2', $seed))
-            ->and(count($scope->lines) + count($scope->rejected))->toBeGreaterThanOrEqual(count($observation->lines), invariantFailure('INV-2', $seed));
+            ->and(count($scope->rejected))->toBe(count($observation->rejected), invariantFailure('INV-2', $seed))
+            ->and(count($scope->lines))->toBe(count($observation->lines) + $placeholders, invariantFailure('INV-2', $seed));
     }
 });
 
@@ -70,28 +75,40 @@ it('INV-4 is deterministic', function () {
     }
 });
 
-it('INV-5 never lowers the price when more work is added within the priceable range', function () {
+it('INV-5 never lowers the price or the hours when more work is added within the priceable range', function () {
     $applier = new CorrectionApplier;
     $pricer = pricer();
 
     foreach (pricedRandomScopes() as $seed => [, , $scope, $estimate]) {
-        foreach ($scope->priceableLines() as $line) {
-            $more = match (true) {
-                $line->type->isCounted() && $line->current->quantity < Observation::MAX_QUANTITY => new Correction($line->id, 'quantity', (string) $line->current->quantity, (string) ($line->current->quantity + 1), null),
-                $line->type === ServiceType::ShrubTrimming && $line->current->size === Size::Small => new Correction($line->id, 'size', 'small', 'medium', null),
-                in_array($line->type, [ServiceType::YardCleanup, ServiceType::BedWeeding], true) && $line->current->severity === Severity::Light => new Correction($line->id, 'severity', 'light', 'moderate', null),
-                default => null,
-            };
+        $raises = [];
 
-            if ($more === null) {
-                continue;
+        foreach ($scope->priceableLines() as $line) {
+            if ($line->type->isCounted() && $line->current->quantity < Observation::MAX_QUANTITY) {
+                $raises[] = new Correction($line->id, CorrectionField::Quantity, '', (string) ($line->current->quantity + 1), null);
             }
 
-            $raised = $pricer->estimate($applier->apply($scope, $more));
+            if (in_array($line->type, [ServiceType::ShrubTrimming, ServiceType::BranchRemoval], true) && $line->current->size === Size::Small) {
+                $raises[] = new Correction($line->id, CorrectionField::Size, '', 'medium', null);
+            }
+
+            if (in_array($line->type, [ServiceType::YardCleanup, ServiceType::BedWeeding], true) && $line->current->severity !== Severity::Heavy) {
+                $raises[] = new Correction($line->id, CorrectionField::Severity, '', $line->current->severity === Severity::Light ? 'moderate' : 'heavy', null);
+            }
+        }
+
+        foreach ($raises as $raise) {
+            $raised = $pricer->estimate($applier->apply($scope, $raise));
 
             expect($raised?->priceCents)->toBeGreaterThanOrEqual($estimate?->priceCents ?? 0, invariantFailure('INV-5', $seed))
+                ->and($raised?->hours->low)->toBeGreaterThanOrEqual($estimate?->hours->low ?? 0.0, invariantFailure('INV-5', $seed))
                 ->and($raised?->hours->high)->toBeGreaterThanOrEqual($estimate?->hours->high ?? 0.0, invariantFailure('INV-5', $seed));
         }
+
+        $extra = new ScopeLine('extra', ServiceType::BranchRemoval, Section::FrontYard, new LineValues(1, Size::Small, null), new LineValues(1, Size::Small, null), LineDisposition::Priceable, [], null, null, new Evidence(1, 'x'), [], [], null, true);
+        $withExtra = $pricer->estimate($scope->withLines([...$scope->lines, $extra]));
+
+        expect($withExtra?->priceCents)->toBeGreaterThanOrEqual($estimate?->priceCents ?? 0, invariantFailure('INV-5', $seed))
+            ->and($withExtra?->hours->high)->toBeGreaterThan($estimate?->hours->high ?? 0.0, invariantFailure('INV-5', $seed));
     }
 });
 
@@ -102,18 +119,18 @@ it('INV-6 keeps corrections within bounds and re-gates the ones that cross a rul
     foreach (pricedRandomScopes() as $seed => [, , $scope, $estimate]) {
         foreach ($scope->priceableLines() as $line) {
             if ($line->type->isCounted()) {
-                expect(fn () => $applier->apply($scope, new Correction($line->id, 'quantity', '', '0', null)))->toThrow(InvalidCorrection::class);
-                expect(fn () => $applier->apply($scope, new Correction($line->id, 'quantity', '', (string) (Observation::MAX_QUANTITY + 1), null)))->toThrow(InvalidCorrection::class);
+                expect(fn () => $applier->apply($scope, new Correction($line->id, CorrectionField::Quantity, '', '0', null)))->toThrow(InvalidCorrection::class);
+                expect(fn () => $applier->apply($scope, new Correction($line->id, CorrectionField::Quantity, '', (string) (Observation::MAX_QUANTITY + 1), null)))->toThrow(InvalidCorrection::class);
             }
 
             if (in_array($line->type, [ServiceType::ShrubTrimming, ServiceType::BranchRemoval], true)) {
-                $large = $applier->apply($scope, new Correction($line->id, 'size', '', 'large', null));
+                $large = $applier->apply($scope, new Correction($line->id, CorrectionField::Size, '', 'large', null));
 
                 expect($large->line($line->id)?->disposition)->toBe(LineDisposition::ManualQuote, invariantFailure('INV-6', $seed))
                     ->and($pricer->estimate($large)?->priceCents ?? 0)->toBeLessThanOrEqual($estimate?->priceCents ?? 0, invariantFailure('INV-6', $seed));
             }
 
-            $removed = $applier->apply($scope, new Correction($line->id, 'removed', '', '', null));
+            $removed = $applier->apply($scope, new Correction($line->id, CorrectionField::Removed, '', '', null));
 
             expect($pricer->estimate($removed)?->priceCents ?? 0)->toBeLessThanOrEqual($estimate?->priceCents ?? 0, invariantFailure('INV-6', $seed));
         }
@@ -141,7 +158,7 @@ it('INV-9 derives readiness from dispositions, and a better photo never makes a 
 
         $photos = $observation->photos;
         $photos[] = new PhotoDescription(count($photos) + 1, PhotoView::Wide, Section::cases(), true);
-        $improved = $builder->build(new Observation($photos, $observation->requestedInSentence, $observation->lines, $observation->rejected, $observation->access, $observation->hazards, $observation->modelNotes), $profile);
+        $improved = $builder->build(new Observation($photos, $observation->requestedInSentence, $observation->lines, $observation->rejected, $observation->access, $observation->hazards, $observation->modelNotes, $observation->unsupportedRequests), $profile);
         $violations = [];
 
         foreach ($scope->lines as $index => $before) {

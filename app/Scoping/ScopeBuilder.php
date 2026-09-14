@@ -13,7 +13,6 @@ use App\Scoping\Data\ReadinessRollup;
 use App\Scoping\Data\ScopeLine;
 use App\Scoping\Enums\LineDisposition;
 use App\Scoping\Enums\ReadinessRule;
-use App\Scoping\Enums\Section;
 use App\Scoping\Enums\ServiceType;
 
 final readonly class ScopeBuilder
@@ -30,7 +29,7 @@ final readonly class ScopeBuilder
 
         foreach ($observation->requestedInSentence as $type) {
             if (! in_array($type, $observation->observedTypes(), true)) {
-                $lines[] = $this->placeholder($type, count($lines) + 1);
+                $lines[] = $this->placeholder($type, count($lines) + 1, $observation->wasRejected($type));
             }
         }
 
@@ -58,7 +57,6 @@ final readonly class ScopeBuilder
             observed: $observed->values,
             current: $observed->values,
             disposition: $requested ? $gated : LineDisposition::Suggested,
-            gated: $gated,
             checks: $checks,
             photoRequest: $requested ? $request : null,
             note: $note,
@@ -73,19 +71,20 @@ final readonly class ScopeBuilder
     /**
      * Requested work no photo shows (rule R3). It deliberately has no evidence, so R4 does not apply.
      */
-    private function placeholder(ServiceType $type, int $number): ScopeLine
+    private function placeholder(ServiceType $type, int $number, bool $rejected): ScopeLine
     {
         $empty = new LineValues(null, null, null);
-        $message = "You asked for {$type->label()}, but no photo shows it. Add one photo of that area.";
+        $message = $rejected
+            ? "We could not read the {$type->label()} from these photos. Add one clear photo of it."
+            : "You asked for {$type->label()}, but no photo shows it. Add one photo of that area.";
 
         return new ScopeLine(
             id: "line-{$number}",
             type: $type,
-            section: Section::Backyard,
+            section: null,
             observed: $empty,
             current: $empty,
             disposition: LineDisposition::NeedsPhotos,
-            gated: LineDisposition::NeedsPhotos,
             checks: [new ReadinessCheck(ReadinessRule::RequestedUnseen, false, $message)],
             photoRequest: new PhotoRequest($message, null, $type),
             note: null,

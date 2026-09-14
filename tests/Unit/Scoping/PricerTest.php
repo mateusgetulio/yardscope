@@ -43,7 +43,7 @@ it('never prices a line the gate did not mark priceable', function () {
     $scope = workedScope();
     $lines = array_map(fn ($line) => new ScopeLine(
         id: $line->id, type: $line->type, section: $line->section, observed: $line->observed, current: $line->current,
-        disposition: LineDisposition::NeedsPhotos, gated: $line->gated, checks: $line->checks, photoRequest: null, note: null,
+        disposition: LineDisposition::NeedsPhotos, checks: $line->checks, photoRequest: null, note: null,
         countingEvidence: $line->countingEvidence, supportingEvidence: $line->supportingEvidence, evidence: $line->evidence,
         uncertain: $line->uncertain, requested: $line->requested,
     ), $scope->lines);

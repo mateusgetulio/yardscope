@@ -2,6 +2,7 @@
 
 namespace App\Scoping\Data;
 
+use App\Scoping\Enums\CorrectionField;
 use App\Scoping\Enums\LineDisposition;
 use App\Scoping\Enums\Section;
 use App\Scoping\Enums\ServiceType;
@@ -13,15 +14,15 @@ final readonly class ScopeLine
      * @param  list<ReadinessCheck>  $checks
      * @param  list<Evidence>  $supportingEvidence
      * @param  list<Evidence>  $evidence
+     * @param  list<Correction>  $corrections
      */
     public function __construct(
         public string $id,
         public ServiceType $type,
-        public Section $section,
+        public ?Section $section,
         public LineValues $observed,
         public LineValues $current,
         public LineDisposition $disposition,
-        public LineDisposition $gated,
         public array $checks,
         public ?PhotoRequest $photoRequest,
         public ?string $note,
@@ -30,7 +31,7 @@ final readonly class ScopeLine
         public array $evidence,
         public ?string $uncertain,
         public bool $requested,
-        public ?Correction $correction = null,
+        public array $corrections = [],
     ) {}
 
     public function isPriceable(): bool
@@ -38,19 +39,36 @@ final readonly class ScopeLine
         return $this->disposition === LineDisposition::Priceable;
     }
 
+    public function isPlaceholder(): bool
+    {
+        return $this->section === null;
+    }
+
     public function origin(): ValueOrigin
     {
-        return $this->correction === null ? ValueOrigin::AiObserved : ValueOrigin::CustomerCorrected;
+        return array_any($this->corrections, fn (Correction $correction): bool => $correction->field->changesValue())
+            ? ValueOrigin::CustomerCorrected
+            : ValueOrigin::AiObserved;
+    }
+
+    public function lastCorrection(): ?Correction
+    {
+        return $this->corrections === [] ? null : $this->corrections[count($this->corrections) - 1];
+    }
+
+    public function wasRemoved(): bool
+    {
+        return $this->lastCorrection()?->field === CorrectionField::Removed;
     }
 
     /**
      * @param  list<ReadinessCheck>  $checks
      */
-    public function corrected(LineValues $current, LineDisposition $disposition, array $checks, ?string $note, Correction $correction): self
+    public function corrected(LineValues $current, LineDisposition $disposition, array $checks, ?PhotoRequest $photoRequest, ?string $note, Correction $correction): self
     {
         return new self(
-            $this->id, $this->type, $this->section, $this->observed, $current, $disposition, $disposition, $checks,
-            null, $note, $this->countingEvidence, $this->supportingEvidence, $this->evidence, $this->uncertain, $this->requested, $correction,
+            $this->id, $this->type, $this->section, $this->observed, $current, $disposition, $checks, $photoRequest, $note,
+            $this->countingEvidence, $this->supportingEvidence, $this->evidence, $this->uncertain, $this->requested, [...$this->corrections, $correction],
         );
     }
 

@@ -51,7 +51,7 @@ final readonly class Pricer
         $values = $line->current;
 
         if ($line->type === ServiceType::YardCleanup) {
-            $hours = $values->severity === null ? null : $this->rates->cleanupHours($values->severity, $scope->profile->sizeOf($line->section));
+            $hours = $values->severity === null || $line->section === null ? null : $this->rates->cleanupHours($values->severity, $scope->profile->sizeOf($line->section));
 
             return $hours ?? throw new UnpriceableLine("Line {$line->id} has no cleanup rate for its severity.");
         }
