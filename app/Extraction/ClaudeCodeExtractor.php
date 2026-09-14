@@ -115,14 +115,17 @@ final readonly class ClaudeCodeExtractor implements RecordsObservations, VisionE
     private function environment(): array
     {
         $account = function_exists('posix_getpwuid') ? posix_getpwuid(posix_geteuid()) : false;
-        $environment = [
-            'HOME' => is_string($account['dir'] ?? null) ? $account['dir'] : (string) getenv('HOME'),
-            'USER' => is_string($account['name'] ?? null) ? $account['name'] : (string) getenv('USER'),
+        $candidates = [
+            'HOME' => $account['dir'] ?? getenv('HOME'),
+            'USER' => $account['name'] ?? getenv('USER'),
+            'PATH' => getenv('PATH'),
         ];
-        $path = getenv('PATH');
+        $environment = [];
 
-        if (is_string($path)) {
-            $environment['PATH'] = $path;
+        foreach ($candidates as $name => $value) {
+            if (is_string($value) && $value !== '') {
+                $environment[$name] = $value;
+            }
         }
 
         return $environment;
