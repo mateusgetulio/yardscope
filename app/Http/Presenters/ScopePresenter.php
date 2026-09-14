@@ -45,7 +45,23 @@ final readonly class ScopePresenter
             'access' => ['narrowGatePossible' => $scope->access->narrowGatePossible],
             'hazards' => array_map(fn (Hazard $hazard): array => ['section' => $hazard->section->label(), 'note' => $hazard->note], $scope->hazards),
             'unsupportedRequests' => $assembled->unsupportedRequests,
+            'proMessage' => $this->proMessage($request),
         ];
+    }
+
+    /**
+     * The latest thing the pro asked of the customer, if any.
+     */
+    private function proMessage(JobRequest $request): ?string
+    {
+        $action = $request->proActions->last();
+
+        return match ($action?->kind) {
+            'request_photo' => "Your pro asked for a photo: {$action->reason}",
+            'adjust_quote' => 'Your pro adjusted the quote to '.$this->money((int) $action->adjusted_price_cents).": {$action->reason}",
+            'accept_scope' => 'Your pro has accepted this scope.',
+            default => null,
+        };
     }
 
     /**
@@ -91,7 +107,7 @@ final readonly class ScopePresenter
         $sentences = [];
 
         if (($photos = $names(LineDisposition::NeedsPhotos)) !== []) {
-            $sentences[] = ucfirst($this->list($photos).(count($photos) === 1 ? ' needs' : ' need').' a photo before it can be priced.');
+            $sentences[] = ucfirst($this->list($photos).(count($photos) === 1 ? ' needs a photo before it can be priced.' : ' need a photo before they can be priced.'));
         }
 
         if (($manual = $names(LineDisposition::ManualQuote)) !== []) {

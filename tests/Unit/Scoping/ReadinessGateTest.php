@@ -104,7 +104,7 @@ it('adds a needs-photos placeholder for a requested service no photo shows (R3)'
         ->and($placeholder->isPlaceholder())->toBeTrue()
         ->and($placeholder->disposition)->toBe(LineDisposition::NeedsPhotos)
         ->and($placeholder->checks[0]->rule)->toBe(ReadinessRule::RequestedUnseen)
-        ->and($placeholder->photoRequest?->message)->toBe('You asked for Bed weeding, but no photo shows it. Add one photo of that area.')
+        ->and($placeholder->photoRequest?->message)->toBe('You asked for bed weeding, but no photo shows it. Add one photo of that area.')
         ->and($scope->readiness)->toBe(RequestReadiness::Partial);
 });
 
@@ -121,7 +121,7 @@ it('keeps an invalid line rejected even when its section is covered (R4 before t
         ->and($scope->lines[0]->disposition)->toBe(LineDisposition::Priceable)
         ->and($scope->lines[1]->type)->toBe(ServiceType::ShrubTrimming)
         ->and($scope->lines[1]->disposition)->toBe(LineDisposition::NeedsPhotos)
-        ->and($scope->lines[1]->photoRequest?->message)->toBe('We could not read the Shrub trimming from these photos. Add one clear photo of it.')
+        ->and($scope->lines[1]->photoRequest?->message)->toBe('We could not read the shrub trimming from these photos. Add one clear photo of it.')
         ->and($scope->readiness)->toBe(RequestReadiness::Partial);
 });
 

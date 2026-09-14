@@ -95,9 +95,10 @@ final readonly class ScopeBuilder
     private function placeholder(ServiceType $type, int $number, bool $rejected): ScopeLine
     {
         $empty = new LineValues(null, null, null);
+        $label = strtolower($type->label());
         $message = $rejected
-            ? "We could not read the {$type->label()} from these photos. Add one clear photo of it."
-            : "You asked for {$type->label()}, but no photo shows it. Add one photo of that area.";
+            ? "We could not read the {$label} from these photos. Add one clear photo of it."
+            : "You asked for {$label}, but no photo shows it. Add one photo of that area.";
 
         return new ScopeLine(
             id: "line-{$number}",

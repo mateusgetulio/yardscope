@@ -381,7 +381,7 @@ it('tells lines that need a photo apart from lines a pro has to see', function (
     $this->get(route('requests.show', $request))->assertInertia(fn (AssertableInertia $page) => $page
         ->where('request.readiness', 'needs_photos')
         ->where('request.lines.0.checksPassed', 2)
-        ->where('request.excludedSummary', 'Yard cleanup and shrub trimming need a photo before it can be priced. Branch removal is not included. A pro will quote it separately.'));
+        ->where('request.excludedSummary', 'Yard cleanup and shrub trimming need a photo before they can be priced. Branch removal is not included. A pro will quote it separately.'));
 });
 
 it('shows the booked state on the result page', function () {
