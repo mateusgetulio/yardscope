@@ -5,7 +5,7 @@
         "photo-1.jpg",
         "photo-2.jpg"
     ],
-    "notes": "Two close-ups of single flowers on the same shrub; no view shows the yard, so the count cannot be taken. No line can carry a section, so the expected line is the requested-but-unseen placeholder.",
+    "notes": "Two close-ups of single flowers on the same shrub. Nothing shows the yard, so the outcome is either a placeholder for the requested service (rule R3) or, if the model still names the section, a line without coverage (rule R2); the photo request must name the service either way.",
     "expected": {
         "readiness": "needs_photos",
         "wide_view": false,
@@ -18,6 +18,11 @@
                 "type": "shrub_trimming",
                 "section": null,
                 "disposition": "needs_photos"
+            },
+            {
+                "type": "shrub_trimming",
+                "section": "backyard",
+                "optional": true
             }
         ]
     }

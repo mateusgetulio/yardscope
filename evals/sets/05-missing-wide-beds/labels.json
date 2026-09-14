@@ -1,22 +1,23 @@
 {
     "scenario": "missing_wide_shot",
-    "sentence": "Weed the flower beds in the backyard.",
+    "sentence": "Weed the flower beds along the fence in the backyard.",
     "photos": [
         "photo-1.jpg",
         "photo-2.jpg"
     ],
-    "notes": "Two close-ups of foliage in beds (heuchera and bleeding heart; a viburnum shoot over grass), no wide or medium view. No line can carry a section, so the expected line is the requested-but-unseen placeholder.",
+    "notes": "Two close views of planted beds, one against a wooden backyard fence and one in a gravel bed; no wide or medium view shows the yard, so the section is evident but its coverage is not (rule R2).",
     "expected": {
         "readiness": "needs_photos",
         "wide_view": false,
         "unusable_photos": [],
         "photo_request": {
-            "service": "bed_weeding"
+            "service": "bed_weeding",
+            "section": "backyard"
         },
         "lines": [
             {
                 "type": "bed_weeding",
-                "section": null,
+                "section": "backyard",
                 "disposition": "needs_photos"
             }
         ]

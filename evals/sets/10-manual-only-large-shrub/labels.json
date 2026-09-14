@@ -5,7 +5,7 @@
         "photo-1.jpg",
         "photo-2.jpg"
     ],
-    "notes": "Photo 1: one very large fan-shaped conifer shrub against a house wall next to a driveway and a bin, which reads as a side yard. Photo 2: a wide view of a different front yard.",
+    "notes": "Photo 1: one very large fan-shaped conifer shrub against a house wall, taller than the roofline of the fence. Photo 2: a wide view of a different front yard.",
     "expected": {
         "readiness": "manual_quote",
         "wide_view": true,
@@ -13,7 +13,7 @@
         "lines": [
             {
                 "type": "shrub_trimming",
-                "section": "side_yard",
+                "section": "front_yard",
                 "quantity": 1,
                 "size": "large",
                 "counting_photo": 1,
@@ -21,12 +21,7 @@
             },
             {
                 "type": "shrub_trimming",
-                "section": "front_yard",
-                "optional": true
-            },
-            {
-                "type": "yard_cleanup",
-                "section": "front_yard",
+                "section": "backyard",
                 "optional": true
             }
         ]
