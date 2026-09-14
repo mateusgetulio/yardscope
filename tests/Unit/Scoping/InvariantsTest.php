@@ -2,6 +2,7 @@
 
 use App\Scoping\CorrectionApplier;
 use App\Scoping\Data\AccessNote;
+use App\Scoping\Data\BriefLine;
 use App\Scoping\Data\Correction;
 use App\Scoping\Data\Evidence;
 use App\Scoping\Data\LineEstimate;
@@ -17,7 +18,9 @@ use App\Scoping\Enums\Section;
 use App\Scoping\Enums\ServiceType;
 use App\Scoping\Enums\Severity;
 use App\Scoping\Enums\Size;
+use App\Scoping\Enums\ValueOrigin;
 use App\Scoping\Exceptions\InvalidCorrection;
+use App\Scoping\ProBriefBuilder;
 use App\Scoping\ScopeBuilder;
 
 it('INV-1 never prices a line without evidence, and never a count without one counting view', function () {
@@ -173,5 +176,54 @@ it('INV-9 derives readiness from dispositions, and a better photo never makes a 
         }
 
         expect($violations)->toBe([], invariantFailure('INV-9', $seed));
+    }
+});
+
+it('INV-7 builds the brief from the scope alone, with an origin on every value', function () {
+    $builder = new ProBriefBuilder;
+    $applier = new CorrectionApplier;
+
+    foreach (pricedRandomScopes() as $seed => [, , $scope, $estimate]) {
+        // Correct the first counted priceable line so both origins appear.
+        foreach ($scope->priceableLines() as $line) {
+            if ($line->type->isCounted() && $line->current->quantity !== null && $line->current->quantity < Observation::MAX_QUANTITY) {
+                $scope = $applier->apply($scope, new Correction($line->id, CorrectionField::Quantity, '', (string) ($line->current->quantity + 1), 'seen one more'));
+                break;
+            }
+        }
+
+        $brief = $builder->build($scope, $estimate);
+        $fromScope = array_map(fn (ScopeLine $line): array => [$line->id, $line->type, $line->section, $line->current->quantity, $line->current->size, $line->current->severity, $line->origin()], $scope->lines);
+        $fromBrief = array_map(fn (BriefLine $line): array => [$line->lineId, $line->type, $line->section, $line->values->quantity, $line->values->size, $line->values->severity, $line->origin], $brief->lines);
+
+        expect($fromBrief)->toBe($fromScope, invariantFailure('INV-7', $seed));
+
+        foreach ($brief->lines as $line) {
+            $source = $scope->line($line->lineId);
+
+            expect($line->origin === ValueOrigin::CustomerCorrected)->toBe($line->observed !== null, invariantFailure('INV-7', $seed))
+                ->and($line->customerReason)->toBe($source?->lastCorrection()?->reason, invariantFailure('INV-7', $seed));
+        }
+
+        $photoNumbers = array_map(fn ($photo): int => $photo->photo, $scope->photos);
+        $scopeNotes = [];
+
+        foreach ($scope->lines as $line) {
+            foreach (array_filter([$line->countingEvidence, ...$line->supportingEvidence, ...$line->evidence]) as $evidence) {
+                $scopeNotes[] = $evidence->note;
+            }
+        }
+
+        foreach ([...$scope->access->evidence, ...array_merge([], ...array_map(fn ($hazard): array => $hazard->evidence, $scope->hazards))] as $evidence) {
+            $scopeNotes[] = $evidence->note;
+        }
+
+        expect(array_keys($brief->photoNotes))->toBe($photoNumbers, invariantFailure('INV-7', $seed));
+
+        foreach ($brief->photoNotes as $notes) {
+            foreach ($notes as $note) {
+                expect(array_any($scopeNotes, fn (string $known): bool => str_ends_with($note, ": {$known}")))->toBeTrue(invariantFailure('INV-7', $seed));
+            }
+        }
     }
 });
